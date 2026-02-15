@@ -19,7 +19,7 @@ const ActionBar = ({ count, totalSol, onSweep }: ActionBarProps) => (
       >
         <div className="glass rounded-2xl p-4 flex items-center justify-between gap-4 shadow-2xl border border-border">
           <p className="text-sm text-foreground">
-            Sweep <span className="font-bold text-primary">{count}</span> items and reclaim{" "}
+            Selected: <span className="font-bold text-primary">{count} tokens</span> | Est. Refund:{" "}
             <span className="font-bold text-primary">{totalSol.toFixed(5)} SOL</span>
           </p>
           <motion.button
