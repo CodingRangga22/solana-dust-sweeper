@@ -4,23 +4,41 @@ import { MessageCircle, X, Send } from "lucide-react";
 import ArsweepLogo from "./ArsweepLogo";
 
 const FAQ_ITEMS = [
-  { label: "How it works?", answer: "Connect your wallet, we scan for empty token accounts and scam airdrops, then you close them to reclaim your SOL rent deposits — all in one click!" },
-  { label: "Is it safe?", answer: "Absolutely! Arsweep only requires read-only access to scan your wallet. We never ask for private keys. The code is fully open source and community-audited." },
-  { label: "What are the fees?", answer: "You receive your gross refund (0.00204 SOL per account) minus the Solana network gas fee and a 1% Arsweep service fee. The exact breakdown is shown before you confirm." },
+  { label: "How does it work?", answer: "Connect your wallet, we scan for empty token accounts and scam airdrops, then you close them to reclaim your SOL rent deposits — all in one click! On Solana, every account costs rent; Arsweep helps you close unused accounts and get that rent back." },
+  { label: "Is it safe?", answer: "Absolutely! Arsweep only requires read-only access to scan your wallet. We never ask for private keys. The code is fully open source and community-audited. Closing accounts is a standard Solana operation — you're just reclaiming rent you've already paid." },
+  { label: "What are the fees?", answer: "You receive your gross refund (0.00204 SOL per account in rent) minus the Solana network gas fee and a 1% Arsweep service fee. The exact breakdown is shown before you confirm. Most of your reclaimed SOL goes straight back to you." },
 ];
+
+const FALLBACK_ANSWER = "I'm still learning! But basically, I help you get back your SOL rent deposits from empty accounts.";
 
 const ChatWidget = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<{ from: "bot" | "user"; text: string }[]>([
     { from: "bot", text: "Hi! 👋 I'm the Arsweep Assistant. How can I help you clean your wallet today?" },
   ]);
+  const [input, setInput] = useState("");
+  const [typing, setTyping] = useState(false);
 
-  const handleFaq = (item: typeof FAQ_ITEMS[number]) => {
-    setMessages((prev) => [
-      ...prev,
-      { from: "user", text: item.label },
-      { from: "bot", text: item.answer },
-    ]);
+  const sendBotReply = (reply: string) => {
+    setTyping(true);
+    setTimeout(() => {
+      setMessages((prev) => [...prev, { from: "bot", text: reply }]);
+      setTyping(false);
+    }, 1000);
+  };
+
+  const handleFaq = (item: (typeof FAQ_ITEMS)[number]) => {
+    setMessages((prev) => [...prev, { from: "user", text: item.label }]);
+    sendBotReply(item.answer);
+  };
+
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || typing) return;
+    setMessages((prev) => [...prev, { from: "user", text }]);
+    setInput("");
+    sendBotReply(FALLBACK_ANSWER);
   };
 
   return (
@@ -76,13 +94,28 @@ const ChatWidget = () => {
                 </div>
               ))}
 
+              <AnimatePresence>
+                {typing && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="glass rounded-xl rounded-tl-none px-4 py-3 max-w-[85%] text-sm text-muted-foreground"
+                  >
+                    Typing...
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {/* FAQ Buttons */}
               <div className="flex flex-wrap gap-2 pt-2">
                 {FAQ_ITEMS.map((item) => (
                   <button
                     key={item.label}
                     onClick={() => handleFaq(item)}
-                    className="text-xs glass glass-hover px-3 py-1.5 rounded-full text-muted-foreground hover:text-primary transition-colors"
+                    disabled={typing}
+                    className="text-xs glass glass-hover px-3 py-1.5 rounded-full text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {item.label}
                   </button>
@@ -91,20 +124,23 @@ const ChatWidget = () => {
             </div>
 
             {/* Input */}
-            <div className="border-t border-border px-4 py-3 flex items-center gap-2">
+            <form onSubmit={handleSend} className="border-t border-border px-4 py-3 flex items-center gap-2">
               <input
                 type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
                 placeholder="Type a message..."
                 className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
-                disabled
+                disabled={typing}
               />
               <button
-                disabled
-                className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center text-primary-foreground opacity-50 cursor-not-allowed"
+                type="submit"
+                disabled={!input.trim() || typing}
+                className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
               >
                 <Send className="w-4 h-4" />
               </button>
-            </div>
+            </form>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Share2 } from "lucide-react";
+import { CheckCircle2, Share2, ExternalLink } from "lucide-react";
 import confetti from "canvas-confetti";
 import {
   Dialog,
@@ -10,14 +10,18 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+const EXPLORER_BASE = "https://solscan.io/tx";
+const CLUSTER = "devnet";
+
 interface SweepSuccessModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   count: number;
   totalSol: number;
+  signature?: string;
 }
 
-const SweepSuccessModal = ({ open, onOpenChange, count, totalSol }: SweepSuccessModalProps) => {
+const SweepSuccessModal = ({ open, onOpenChange, count, totalSol, signature }: SweepSuccessModalProps) => {
   useEffect(() => {
     if (open) {
       const end = Date.now() + 800;
@@ -55,6 +59,17 @@ const SweepSuccessModal = ({ open, onOpenChange, count, totalSol }: SweepSuccess
             <span className="font-semibold text-primary">{totalSol.toFixed(5)} SOL</span>.
           </DialogDescription>
         </DialogHeader>
+        {signature && (
+          <a
+            href={`${EXPLORER_BASE}/${signature}?cluster=${CLUSTER}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl glass glass-hover text-foreground text-sm font-medium transition-colors mb-2"
+          >
+            <ExternalLink className="w-4 h-4" />
+            View Transaction on Solscan
+          </a>
+        )}
         <a
           href={shareUrl}
           target="_blank"

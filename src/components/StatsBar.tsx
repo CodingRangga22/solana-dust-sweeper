@@ -3,14 +3,20 @@ import { motion } from "framer-motion";
 import { Coins, RefreshCw, Layers, Info } from "lucide-react";
 import AnimatedCounter from "./AnimatedCounter";
 
-const stats = [
-  { label: "Total Dust Found", value: "24", icon: Coins, color: "text-primary", hasTooltip: false },
-  { label: "Potential Refund", value: "0.0489 SOL", icon: RefreshCw, color: "text-secondary", hasTooltip: true },
-  { label: "Accounts to Close", value: "24", icon: Layers, color: "text-primary", hasTooltip: false },
-];
+interface StatsBarProps {
+  totalDust: number;
+  potentialRefund: number;
+  accountsToClose: number;
+}
 
-const StatsBar = () => {
+const StatsBar = ({ totalDust, potentialRefund, accountsToClose }: StatsBarProps) => {
   const [hoveredTooltip, setHoveredTooltip] = useState(false);
+
+  const stats = [
+    { label: "Total Dust Found", value: String(totalDust), icon: Coins, color: "text-primary", hasTooltip: false },
+    { label: "Potential Refund", value: `${potentialRefund.toFixed(5)} SOL`, icon: RefreshCw, color: "text-secondary", hasTooltip: true },
+    { label: "Accounts to Close", value: String(accountsToClose), icon: Layers, color: "text-primary", hasTooltip: false },
+  ];
 
   return (
     <section className="px-4 pb-8">
@@ -41,9 +47,9 @@ const StatsBar = () => {
                       className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 glass rounded-xl p-3 text-xs text-muted-foreground shadow-xl z-50 border border-border"
                     >
                       <p className="font-semibold text-foreground mb-1">Fee Breakdown</p>
-                      <p>Gross Refund: 0.00204 SOL/account</p>
+                      <p>Gross Refund: 0.002042 SOL/account</p>
                       <p>− Network Gas Fee</p>
-                      <p>− 1% Arsweep Service Fee</p>
+                      <p>− 1.5% Arsweep Service Fee</p>
                       <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 glass border-b border-r border-border -mt-1" />
                     </motion.div>
                   )}

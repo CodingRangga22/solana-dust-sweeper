@@ -143,7 +143,7 @@ const PremiumFooter = () => {
                   { label: "Dashboard", onClick: () => navigate("/app") },
                   { label: "Simulation", onClick: () => navigate("/app") },
                   { label: "Direct Sweep", onClick: () => navigate("/app") },
-                  { label: "Documentation", href: "#" },
+                  { label: "Documentation", onClick: () => navigate("/docs") },
                 ].map((item) => (
                   <li key={item.label}>
                     {"href" in item ? (
@@ -205,7 +205,7 @@ const PremiumFooter = () => {
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
                   </span>
                   <div>
-                    <p className="text-xs font-medium text-foreground">Solana Mainnet</p>
+                    <p className="text-xs font-medium text-foreground">Solana Devnet</p>
                     <p className="text-[10px] text-primary">Online</p>
                   </div>
                 </div>

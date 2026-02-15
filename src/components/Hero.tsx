@@ -1,18 +1,25 @@
-import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles, Loader2 } from "lucide-react";
 
-const Hero = () => {
-  const [scanning, setScanning] = useState(false);
-  const [scanned, setScanned] = useState(false);
+interface HeroProps {
+  scanning?: boolean;
+  scanned?: boolean;
+  onScan?: () => void;
+}
+
+const Hero = ({ scanning = false, scanned = false, onScan }: HeroProps) => {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const handleScan = () => {
-    if (scanning || scanned) return;
-    setScanning(true);
-    setTimeout(() => {
-      setScanning(false);
-      setScanned(true);
-    }, 2500);
+    if (pathname !== "/app") {
+      navigate("/app");
+      return;
+    }
+    if (onScan) {
+      onScan();
+    }
   };
 
   return (
@@ -46,13 +53,13 @@ const Hero = () => {
             className="inline-flex flex-col items-center gap-3"
           >
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            <p className="text-sm text-muted-foreground">Simulating scan…</p>
+            <p className="text-sm text-muted-foreground">Scanning wallet…</p>
             <div className="w-48 h-1.5 rounded-full bg-muted overflow-hidden">
               <motion.div
                 className="h-full rounded-full gradient-bg"
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
-                transition={{ duration: 2.5, ease: "easeInOut" }}
+                transition={{ duration: 2, ease: "easeInOut" }}
               />
             </div>
           </motion.div>

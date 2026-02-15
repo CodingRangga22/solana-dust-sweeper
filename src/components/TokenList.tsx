@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ExternalLink, AlertTriangle } from "lucide-react";
 
-interface Token {
+export interface Token {
   id: string;
   name: string;
   mint: string;
@@ -10,17 +9,6 @@ interface Token {
   rentRefundable: number;
   icon: string;
 }
-
-const MOCK_TOKENS: Token[] = [
-  { id: "1", name: "DustCoin", mint: "Dust4k...xR7m", balance: "0.000001", rentRefundable: 0.00204, icon: "🪙" },
-  { id: "2", name: "SolPup", mint: "SPup3q...wN2a", balance: "0", rentRefundable: 0.00204, icon: "🐶" },
-  { id: "3", name: "MoonDust", mint: "Moon7z...pK5f", balance: "0.0000003", rentRefundable: 0.00204, icon: "🌙" },
-  { id: "4", name: "RektInu", mint: "Rekt2m...vL9c", balance: "0", rentRefundable: 0.00204, icon: "💀" },
-  { id: "5", name: "BabyDoge", mint: "BDog8r...tH3e", balance: "0.00001", rentRefundable: 0.00204, icon: "🐕" },
-  { id: "6", name: "SafeRug", mint: "SRug1a...qM4d", balance: "0", rentRefundable: 0.00204, icon: "🧹" },
-  { id: "7", name: "ElonFart", mint: "EFrt5w...bJ8g", balance: "0", rentRefundable: 0.00204, icon: "💨" },
-  { id: "8", name: "CatWIF", mint: "CWif9x...nP6h", balance: "0.000002", rentRefundable: 0.00204, icon: "🐱" },
-];
 
 const SkeletonRow = () => (
   <div className="flex items-center gap-4 p-4 animate-pulse">
@@ -35,21 +23,18 @@ const SkeletonRow = () => (
   </div>
 );
 
+const formatMint = (mint: string) => (mint.length > 12 ? `${mint.slice(0, 4)}...${mint.slice(-4)}` : mint);
+
 interface TokenListProps {
+  tokens: Token[];
   selectedIds: Set<string>;
   onToggle: (id: string) => void;
   onSelectAll: () => void;
+  loading?: boolean;
 }
 
-const TokenList = ({ selectedIds, onToggle, onSelectAll }: TokenListProps) => {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 2000);
-    return () => clearTimeout(t);
-  }, []);
-
-  const allSelected = !loading && selectedIds.size === MOCK_TOKENS.length;
+const TokenList = ({ tokens, selectedIds, onToggle, onSelectAll, loading = false }: TokenListProps) => {
+  const allSelected = !loading && tokens.length > 0 && selectedIds.size === tokens.length;
 
   return (
     <section className="px-4 pb-32">
@@ -65,7 +50,8 @@ const TokenList = ({ selectedIds, onToggle, onSelectAll }: TokenListProps) => {
           <div className="flex items-center gap-4 px-4 py-3 border-b border-border text-xs text-muted-foreground font-medium uppercase tracking-wider">
             <button
               onClick={onSelectAll}
-              className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 ${
+              disabled={loading || tokens.length === 0}
+              className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 disabled:opacity-50 ${
                 allSelected ? "gradient-bg border-transparent" : "border-border hover:border-muted-foreground"
               }`}
             >
@@ -80,9 +66,13 @@ const TokenList = ({ selectedIds, onToggle, onSelectAll }: TokenListProps) => {
           {/* Rows */}
           {loading ? (
             Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+          ) : tokens.length === 0 ? (
+            <div className="px-4 py-12 text-center text-muted-foreground text-sm">
+              No dust accounts found. Your wallet is clean! 🧹
+            </div>
           ) : (
             <AnimatePresence>
-              {MOCK_TOKENS.map((token, i) => {
+              {tokens.map((token, i) => {
                 const selected = selectedIds.has(token.id);
                 return (
                   <motion.div
@@ -108,9 +98,9 @@ const TokenList = ({ selectedIds, onToggle, onSelectAll }: TokenListProps) => {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{token.name}</p>
                       <span className="flex items-center gap-1 text-xs text-muted-foreground font-mono">
-                        {token.mint}
+                        {formatMint(token.mint)}
                         <a
-                          href={`https://solscan.io/token/${token.mint}`}
+                          href={`https://solscan.io/token/${token.mint}?cluster=devnet`}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
@@ -124,7 +114,7 @@ const TokenList = ({ selectedIds, onToggle, onSelectAll }: TokenListProps) => {
                       {token.balance}
                     </div>
                     <div className="w-28 text-right text-sm text-primary font-semibold font-mono">
-                      {token.rentRefundable} SOL
+                      {token.rentRefundable.toFixed(5)} SOL
                     </div>
                   </motion.div>
                 );
@@ -137,5 +127,4 @@ const TokenList = ({ selectedIds, onToggle, onSelectAll }: TokenListProps) => {
   );
 };
 
-export { MOCK_TOKENS };
 export default TokenList;

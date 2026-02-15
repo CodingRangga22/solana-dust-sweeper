@@ -1,7 +1,9 @@
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { Shield, Github, Users, Wallet, Search, Sparkles, ArrowRight, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
+import { Shield, Github, Users, Wallet, Search, Sparkles, ArrowRight, ChevronRight, BookOpen } from "lucide-react";
 import ArsweepLogo from "@/components/ArsweepLogo";
+import ThemeToggle from "@/components/ThemeToggle";
 import ChatWidget from "@/components/ChatWidget";
 import PremiumFooter from "@/components/PremiumFooter";
 
@@ -119,6 +121,15 @@ const DustAnimation = () => (
 
 const Landing = () => {
   const navigate = useNavigate();
+  const [totalSolReclaimed, setTotalSolReclaimed] = useState(1240.55);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const increment = 0.002 + Math.random() * (0.04 - 0.002);
+      setTotalSolReclaimed((prev) => Math.round((prev + increment) * 100) / 100);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLaunch = () => {
     navigate("/app");
@@ -134,10 +145,21 @@ const Landing = () => {
       <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ArsweepLogo className="w-8 h-8" />
-            <span className="text-xl font-bold gradient-text">Arsweep</span>
+            <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+              <ArsweepLogo className="w-8 h-8" />
+              <span className="text-xl font-bold gradient-text">Arsweep</span>
+            </Link>
           </div>
-          <motion.button
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              to="/docs"
+              className="glass glass-hover flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              Docs
+            </Link>
+            <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={handleLaunch}
@@ -146,6 +168,7 @@ const Landing = () => {
             Launch App
             <ArrowRight className="w-4 h-4" />
           </motion.button>
+          </div>
         </div>
       </header>
 
@@ -204,8 +227,26 @@ const Landing = () => {
                 </motion.a>
               </motion.div>
 
-              <motion.p custom={4} variants={fadeUp} className="mt-6 text-sm text-muted-foreground">
-                💰 Over <span className="text-primary font-semibold">0.00204 SOL</span> recovered per account
+              <motion.p custom={4} variants={fadeUp} className="mt-6 text-sm text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1">
+                <span>
+                  💰 Over <span className="text-primary font-semibold">0.00204 SOL</span> recovered per account
+                </span>
+                <span className="text-border">|</span>
+                <span className="flex items-center gap-1.5">
+                  Total SOL Reclaimed:{" "}
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={totalSolReclaimed}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      className="text-primary font-semibold tabular-nums"
+                    >
+                      {totalSolReclaimed.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SOL
+                    </motion.span>
+                  </AnimatePresence>
+                </span>
               </motion.p>
             </motion.div>
 
