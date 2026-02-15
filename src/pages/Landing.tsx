@@ -365,10 +365,19 @@ const Landing = () => {
               ))}
             </div>
 
-            {/* Right: Powered by */}
-            <div className="text-sm text-muted-foreground text-center sm:text-right">
+            {/* Right: Powered by + GitHub */}
+            <div className="text-sm text-muted-foreground text-center sm:text-right flex flex-col items-center sm:items-end gap-2">
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Github className="w-4 h-4" />
+                Open Source
+              </a>
               <p>Powered by <span className="text-primary font-semibold">Solana</span></p>
-              <p className="text-xs mt-1">© 2024 Arsweep. All rights reserved.</p>
+              <p className="text-xs">© 2024 Arsweep. All rights reserved.</p>
             </div>
           </div>
         </footer>
