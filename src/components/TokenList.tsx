@@ -91,13 +91,13 @@ const TokenList = ({ selectedIds, onToggle, onSelectAll }: TokenListProps) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.04 }}
                     onClick={() => onToggle(token.id)}
-                    className={`flex items-center gap-4 px-4 py-3.5 cursor-pointer transition-colors duration-150 border-b border-border last:border-b-0 ${
-                      selected ? "bg-primary/5" : "hover:bg-muted/30"
+                    className={`flex items-center gap-4 px-4 py-3.5 cursor-pointer transition-all duration-200 border-b border-border last:border-b-0 ${
+                      selected ? "bg-primary/5" : "hover:bg-muted/30 hover:shadow-[inset_0_0_30px_hsla(162,93%,51%,0.04)]"
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 ${
-                        selected ? "gradient-bg border-transparent" : "border-border"
+                        selected ? "gradient-bg border-transparent animate-[pulse_0.4s_ease-in-out_1]" : "border-border"
                       }`}
                     >
                       {selected && <Check className="w-3 h-3 text-primary-foreground" />}

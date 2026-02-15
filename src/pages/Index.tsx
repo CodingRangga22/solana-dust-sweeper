@@ -6,6 +6,7 @@ import StatsBar from "@/components/StatsBar";
 import TokenList, { MOCK_TOKENS } from "@/components/TokenList";
 import ActionBar from "@/components/ActionBar";
 import SweepSuccessModal from "@/components/SweepSuccessModal";
+import ChatWidget from "@/components/ChatWidget";
 
 const Index = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -59,6 +60,7 @@ const Index = () => {
         count={successModal.count}
         totalSol={successModal.totalSol}
       />
+      <ChatWidget />
     </div>
   );
 };
