@@ -1,7 +1,44 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Shield, Github, Users, Wallet, Search, Sparkles, ArrowRight, ChevronRight } from "lucide-react";
+import { Shield, Github, Users, Wallet, Search, Sparkles, ArrowRight, ChevronRight, MessageCircle, X } from "lucide-react";
+import { useRef } from "react";
 import ArsweepLogo from "@/components/ArsweepLogo";
+
+// Social icon components
+const TwitterIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 4l11.733 16h4.267l-11.733 -16z" /><path d="M4 20l6.768 -6.768" /><path d="M20 4l-6.768 6.768" />
+  </svg>
+);
+const YoutubeIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="5" width="20" height="14" rx="2" /><polygon points="10,8.5 16,12 10,15.5" />
+  </svg>
+);
+const InstagramIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+  </svg>
+);
+const DiscordIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" fill="currentColor" />
+    <path d="M8.5 17c0 0 1.5 2 3.5 2s3.5-2 3.5-2" /><path d="M18.4 7.3a16 16 0 0 0-4-1.3l-.5 1a12.5 12.5 0 0 0-3.8 0l-.5-1a16 16 0 0 0-4 1.3A17.2 17.2 0 0 0 3 18c1.5 1.2 3.8 2 6 2l.7-1.3A10.5 10.5 0 0 1 6 17.5l.5-.4c2.8 1.3 6.2 1.3 9 0l.5.4a10.5 10.5 0 0 1-3.7 1.2L13 20c2.2 0 4.5-.8 6-2a17.2 17.2 0 0 0-2.6-10.7z" />
+  </svg>
+);
+
+// Scroll-triggered section wrapper with fade in/out
+const ScrollSection = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: false, amount: 0.15 }}
+    transition={{ duration: 0.7, ease: "easeOut" }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+);
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -203,78 +240,71 @@ const Landing = () => {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-24 px-4 relative">
-        <div className="container mx-auto max-w-5xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-foreground">
-              How It <span className="gradient-text">Works</span>
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-md mx-auto">
-              Three simple steps to a cleaner wallet.
-            </p>
-          </motion.div>
+      <ScrollSection>
+        <section id="how-it-works" className="py-24 px-4 relative">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-foreground">
+                How It <span className="gradient-text">Works</span>
+              </h2>
+              <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                Three simple steps to a cleaner wallet.
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {steps.map((step, i) => (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15, duration: 0.5 }}
-                className="glass rounded-2xl p-8 text-center relative group hover:glow-primary transition-shadow duration-300"
-              >
-                <div className="w-14 h-14 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-5">
-                  <step.icon className="w-7 h-7 text-primary-foreground" />
-                </div>
-                <div className="text-xs font-bold text-primary mb-2">STEP {i + 1}</div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">{step.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
-              </motion.div>
-            ))}
+            <div className="grid md:grid-cols-3 gap-8">
+              {steps.map((step, i) => (
+                <motion.div
+                  key={step.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.3 }}
+                  transition={{ delay: i * 0.15, duration: 0.5 }}
+                  className="glass rounded-2xl p-8 text-center relative group hover:glow-primary transition-shadow duration-300"
+                >
+                  <div className="w-14 h-14 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-5">
+                    <step.icon className="w-7 h-7 text-primary-foreground" />
+                  </div>
+                  <div className="text-xs font-bold text-primary mb-2">STEP {i + 1}</div>
+                  <h3 className="text-xl font-bold mb-3 text-foreground">{step.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollSection>
 
-      {/* Why Arsweep */}
-      <section className="py-24 px-4 relative">
-        <div className="container mx-auto max-w-5xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-foreground">
-              Why <span className="gradient-text">Arsweep</span>?
-            </h2>
-          </motion.div>
+      <ScrollSection>
+        <section className="py-24 px-4 relative">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-foreground">
+                Why <span className="gradient-text">Arsweep</span>?
+              </h2>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {trustItems.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15, duration: 0.5 }}
-                className="glass rounded-2xl p-8 text-center"
-              >
-                <item.icon className="w-10 h-10 text-primary mx-auto mb-4" />
-                <h3 className="text-lg font-bold mb-2 text-foreground">{item.title}</h3>
-                <p className="text-muted-foreground text-sm">{item.description}</p>
-              </motion.div>
-            ))}
+            <div className="grid md:grid-cols-3 gap-8">
+              {trustItems.map((item, i) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.3 }}
+                  transition={{ delay: i * 0.15, duration: 0.5 }}
+                  className="glass rounded-2xl p-8 text-center"
+                >
+                  <item.icon className="w-10 h-10 text-primary mx-auto mb-4" />
+                  <h3 className="text-lg font-bold mb-2 text-foreground">{item.title}</h3>
+                  <p className="text-muted-foreground text-sm">{item.description}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollSection>
 
-      {/* Final CTA */}
+      <ScrollSection>
       <section className="py-24 px-4 relative">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -300,17 +330,61 @@ const Landing = () => {
           </motion.button>
         </motion.div>
       </section>
+      </ScrollSection>
 
       {/* Footer */}
-      <footer className="py-8 px-4 border-t border-border">
-        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <ArsweepLogo className="w-5 h-5" />
-            <span>Arsweep © 2026</span>
+      <ScrollSection>
+        <footer className="py-12 px-4 border-t border-border">
+          <div className="container mx-auto max-w-5xl flex flex-col items-center gap-8">
+            <div className="flex items-center gap-3">
+              <ArsweepLogo className="w-7 h-7" />
+              <span className="text-lg font-bold gradient-text">Arsweep</span>
+            </div>
+
+            {/* Social Icons */}
+            <div className="flex items-center gap-5">
+              {[
+                { Icon: TwitterIcon, href: "#", label: "X (Twitter)" },
+                { Icon: YoutubeIcon, href: "#", label: "YouTube" },
+                { Icon: InstagramIcon, href: "#", label: "Instagram" },
+                { Icon: DiscordIcon, href: "#", label: "Discord" },
+              ].map(({ Icon, href, label }) => (
+                <motion.a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="glass w-11 h-11 rounded-xl flex items-center justify-center text-muted-foreground transition-all duration-300 hover:text-primary hover:glow-primary"
+                >
+                  <Icon />
+                </motion.a>
+              ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-2 text-sm text-muted-foreground">
+              <span>© 2024 Arsweep. All rights reserved.</span>
+              <span className="hidden sm:inline">·</span>
+              <span>Built for the Solana community.</span>
+            </div>
           </div>
-          <p>Built for the Solana community.</p>
-        </div>
-      </footer>
+        </footer>
+      </ScrollSection>
+
+      {/* Customer Service FAB */}
+      <motion.button
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 1, type: "spring", stiffness: 200 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full gradient-bg shadow-lg flex items-center justify-center text-primary-foreground hover:shadow-[0_0_30px_hsla(162,93%,51%,0.3)] transition-shadow duration-300"
+        aria-label="Customer Support"
+      >
+        <MessageCircle className="w-6 h-6" />
+      </motion.button>
     </div>
   );
 };
