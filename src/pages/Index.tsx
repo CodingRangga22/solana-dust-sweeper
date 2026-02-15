@@ -5,9 +5,15 @@ import Hero from "@/components/Hero";
 import StatsBar from "@/components/StatsBar";
 import TokenList, { MOCK_TOKENS } from "@/components/TokenList";
 import ActionBar from "@/components/ActionBar";
+import SweepSuccessModal from "@/components/SweepSuccessModal";
 
 const Index = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [successModal, setSuccessModal] = useState<{ open: boolean; count: number; totalSol: number }>({
+    open: false,
+    count: 0,
+    totalSol: 0,
+  });
 
   const handleToggle = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -27,10 +33,13 @@ const Index = () => {
   const totalSol = selectedIds.size * 0.00204;
 
   const handleSweep = () => {
-    toast.success(`🎉 Successfully swept ${selectedIds.size} accounts and reclaimed ${totalSol.toFixed(5)} SOL!`, {
+    const count = selectedIds.size;
+    const sol = totalSol;
+    setSelectedIds(new Set());
+    setSuccessModal({ open: true, count, totalSol: sol });
+    toast.success(`🎉 Successfully swept ${count} accounts and reclaimed ${sol.toFixed(5)} SOL!`, {
       duration: 4000,
     });
-    setSelectedIds(new Set());
   };
 
   return (
@@ -44,6 +53,12 @@ const Index = () => {
       <StatsBar />
       <TokenList selectedIds={selectedIds} onToggle={handleToggle} onSelectAll={handleSelectAll} />
       <ActionBar count={selectedIds.size} totalSol={totalSol} onSweep={handleSweep} />
+      <SweepSuccessModal
+        open={successModal.open}
+        onOpenChange={(open) => setSuccessModal((prev) => ({ ...prev, open }))}
+        count={successModal.count}
+        totalSol={successModal.totalSol}
+      />
     </div>
   );
 };

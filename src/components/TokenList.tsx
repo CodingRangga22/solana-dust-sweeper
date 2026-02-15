@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, ExternalLink, AlertTriangle } from "lucide-react";
 
 interface Token {
   id: string;
@@ -54,6 +54,12 @@ const TokenList = ({ selectedIds, onToggle, onSelectAll }: TokenListProps) => {
   return (
     <section className="px-4 pb-32">
       <div className="container mx-auto max-w-3xl">
+        {/* Safety Warning Banner */}
+        <div className="flex items-center gap-3 mb-4 px-4 py-3 rounded-xl border border-destructive/30 bg-destructive/5 text-sm text-destructive">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <p>Warning: Closing accounts is permanent. Ensure the token balance is zero or insignificant.</p>
+        </div>
+
         <div className="glass rounded-2xl overflow-hidden">
           {/* Table header */}
           <div className="flex items-center gap-4 px-4 py-3 border-b border-border text-xs text-muted-foreground font-medium uppercase tracking-wider">
@@ -101,7 +107,18 @@ const TokenList = ({ selectedIds, onToggle, onSelectAll }: TokenListProps) => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{token.name}</p>
-                      <p className="text-xs text-muted-foreground font-mono">{token.mint}</p>
+                      <span className="flex items-center gap-1 text-xs text-muted-foreground font-mono">
+                        {token.mint}
+                        <a
+                          href={`https://solscan.io/token/${token.mint}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </span>
                     </div>
                     <div className="w-24 text-right text-sm text-muted-foreground font-mono">
                       {token.balance}
