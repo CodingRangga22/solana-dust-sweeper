@@ -3,29 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Shield, Github, Users, Wallet, Search, Sparkles, ArrowRight, ChevronRight } from "lucide-react";
 import ArsweepLogo from "@/components/ArsweepLogo";
 import ChatWidget from "@/components/ChatWidget";
+import PremiumFooter from "@/components/PremiumFooter";
 
-// Social icon components
-const TwitterIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 4l11.733 16h4.267l-11.733 -16z" /><path d="M4 20l6.768 -6.768" /><path d="M20 4l-6.768 6.768" />
-  </svg>
-);
-const YoutubeIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="5" width="20" height="14" rx="2" /><polygon points="10,8.5 16,12 10,15.5" />
-  </svg>
-);
-const InstagramIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
-  </svg>
-);
-const DiscordIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" fill="currentColor" />
-    <path d="M8.5 17c0 0 1.5 2 3.5 2s3.5-2 3.5-2" /><path d="M18.4 7.3a16 16 0 0 0-4-1.3l-.5 1a12.5 12.5 0 0 0-3.8 0l-.5-1a16 16 0 0 0-4 1.3A17.2 17.2 0 0 0 3 18c1.5 1.2 3.8 2 6 2l.7-1.3A10.5 10.5 0 0 1 6 17.5l.5-.4c2.8 1.3 6.2 1.3 9 0l.5.4a10.5 10.5 0 0 1-3.7 1.2L13 20c2.2 0 4.5-.8 6-2a17.2 17.2 0 0 0-2.6-10.7z" />
-  </svg>
-);
+
+
 
 // Scroll-triggered section wrapper with fade in/out
 const ScrollSection = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
@@ -334,53 +315,7 @@ const Landing = () => {
 
       {/* Footer */}
       <ScrollSection>
-        <footer className="py-10 px-4 border-t border-border glass">
-          <div className="container mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-6">
-            {/* Left: Logo */}
-            <div className="flex items-center gap-3">
-              <ArsweepLogo className="w-7 h-7" />
-              <span className="text-lg font-bold gradient-text">Arsweep</span>
-            </div>
-
-            {/* Center: Socials */}
-            <div className="flex items-center gap-4">
-              {[
-                { Icon: TwitterIcon, href: "#", label: "X (Twitter)" },
-                { Icon: YoutubeIcon, href: "#", label: "YouTube" },
-                { Icon: InstagramIcon, href: "#", label: "Instagram" },
-                { Icon: DiscordIcon, href: "#", label: "Discord" },
-              ].map(({ Icon, href, label }) => (
-                <motion.a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  whileHover={{ scale: 1.15 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="glass w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground transition-all duration-300 hover:text-primary hover:glow-primary"
-                >
-                  <Icon />
-                </motion.a>
-              ))}
-            </div>
-
-            {/* Right: Powered by + GitHub */}
-            <div className="text-sm text-muted-foreground text-center sm:text-right flex flex-col items-center sm:items-end gap-2">
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Github className="w-4 h-4" />
-                Open Source
-              </a>
-              <p>Powered by <span className="text-primary font-semibold">Solana</span></p>
-              <p className="text-xs">© 2024 Arsweep. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
+        <PremiumFooter />
       </ScrollSection>
 
       {/* Chat Widget */}
