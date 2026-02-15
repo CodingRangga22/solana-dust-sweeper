@@ -3,8 +3,25 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send } from "lucide-react";
 import ArsweepLogo from "./ArsweepLogo";
 
+const FAQ_ITEMS = [
+  { label: "How it works?", answer: "Connect your wallet, we scan for empty token accounts and scam airdrops, then you close them to reclaim your SOL rent deposits — all in one click!" },
+  { label: "Is it safe?", answer: "Absolutely! Arsweep only requires read-only access to scan your wallet. We never ask for private keys. The code is fully open source and community-audited." },
+  { label: "What are the fees?", answer: "You receive your gross refund (0.00204 SOL per account) minus the Solana network gas fee and a 1% Arsweep service fee. The exact breakdown is shown before you confirm." },
+];
+
 const ChatWidget = () => {
   const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<{ from: "bot" | "user"; text: string }[]>([
+    { from: "bot", text: "Hi! 👋 I'm the Arsweep Assistant. How can I help you clean your wallet today?" },
+  ]);
+
+  const handleFaq = (item: typeof FAQ_ITEMS[number]) => {
+    setMessages((prev) => [
+      ...prev,
+      { from: "user", text: item.label },
+      { from: "bot", text: item.answer },
+    ]);
+  };
 
   return (
     <>
@@ -20,7 +37,6 @@ const ChatWidget = () => {
         aria-label="Customer Support"
       >
         {open ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
-        {/* Pulse dot */}
         {!open && (
           <span className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-destructive border-2 border-background animate-pulse" />
         )}
@@ -46,9 +62,31 @@ const ChatWidget = () => {
             </div>
 
             {/* Messages */}
-            <div className="p-4 h-64 overflow-y-auto">
-              <div className="glass rounded-xl rounded-tl-none px-4 py-3 text-sm text-foreground max-w-[85%]">
-                Hi! 👋 I'm the Arsweep Assistant. How can I help you clean your wallet today?
+            <div className="p-4 h-64 overflow-y-auto space-y-3">
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`text-sm px-4 py-3 rounded-xl max-w-[85%] ${
+                    msg.from === "bot"
+                      ? "glass rounded-tl-none text-foreground"
+                      : "ml-auto gradient-bg rounded-tr-none text-primary-foreground"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              ))}
+
+              {/* FAQ Buttons */}
+              <div className="flex flex-wrap gap-2 pt-2">
+                {FAQ_ITEMS.map((item) => (
+                  <button
+                    key={item.label}
+                    onClick={() => handleFaq(item)}
+                    className="text-xs glass glass-hover px-3 py-1.5 rounded-full text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
             </div>
 
