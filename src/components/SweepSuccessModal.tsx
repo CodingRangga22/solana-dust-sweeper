@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Share2 } from "lucide-react";
+import confetti from "canvas-confetti";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +18,18 @@ interface SweepSuccessModalProps {
 }
 
 const SweepSuccessModal = ({ open, onOpenChange, count, totalSol }: SweepSuccessModalProps) => {
+  useEffect(() => {
+    if (open) {
+      const end = Date.now() + 800;
+      const frame = () => {
+        confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ["#14F195", "#9945FF", "#ffffff"] });
+        confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ["#14F195", "#9945FF", "#ffffff"] });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      };
+      frame();
+    }
+  }, [open]);
+
   const shareText = encodeURIComponent(
     `🧹 Just swept ${count} dust accounts and reclaimed ${totalSol.toFixed(5)} SOL with @Arsweep! Clean wallet, happy life. #Solana #Arsweep`
   );
