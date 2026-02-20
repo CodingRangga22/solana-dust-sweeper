@@ -3,6 +3,7 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import { Github, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ArsweepLogo from "./ArsweepLogo";
+import { isDevnet } from "@/config/env";
 
 // Social icon components
 const TwitterIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
@@ -161,14 +162,16 @@ const PremiumFooter = () => {
               </ul>
             </div>
 
-            {/* Col 3: Ecosystem */}
+            {/* Col 3: Legal & Ecosystem */}
             <div className="space-y-4">
-              <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Ecosystem</p>
+              <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Legal & Resources</p>
               <ul className="space-y-2.5">
                 {[
-                  { label: "Solana Explorer", href: "https://explorer.solana.com" },
-                  { label: "Rent Guide", href: "#" },
+                  { label: "Privacy Policy", href: "#" },
+                  { label: "Terms of Service", href: "#" },
+                  { label: "Contact", href: "mailto:contact@arsweep.io" },
                   { label: "GitHub (Open Source)", href: "https://github.com", icon: Github },
+                  { label: "Solana Explorer", href: isDevnet ? "https://explorer.solana.com/?cluster=devnet" : "https://explorer.solana.com" },
                 ].map((item) => (
                   <li key={item.label}>
                     <a
@@ -198,14 +201,16 @@ const PremiumFooter = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Network Status</p>
+                <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Network</p>
                 <div className="glass rounded-xl px-4 py-3 flex items-center gap-3">
                   <span className="relative flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
                   </span>
                   <div>
-                    <p className="text-xs font-medium text-foreground">Solana Devnet</p>
+                    <p className="text-xs font-medium text-foreground">
+                      {isDevnet ? "Solana Devnet" : "Solana Mainnet"}
+                    </p>
                     <p className="text-[10px] text-primary">Online</p>
                   </div>
                 </div>

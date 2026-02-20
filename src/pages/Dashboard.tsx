@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { PublicKey, Transaction, SystemProgram, ComputeBudgetProgram } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID, createCloseAccountInstruction } from "@solana/spl-token";
 import { motion } from "framer-motion";
 import { Wallet } from "lucide-react";
@@ -15,12 +15,15 @@ import SweepSuccessModal from "@/components/SweepSuccessModal";
 import ChatWidget from "@/components/ChatWidget";
 import PremiumFooter from "@/components/PremiumFooter";
 
-const RENT_PER_ACCOUNT = 0.002042; // SOL per closed account
+import { EXPLORER_TX_URL } from "@/config/env";
+import { ACCOUNTS_PER_TX, RENT_LAMPORTS_PER_ACCOUNT } from "@/config/sweep";
+import { confirmTransactionWithTimeout } from "@/utils/transaction";
+
+const RENT_PER_ACCOUNT = 0.002042; // SOL per closed account (~2,039,280 lamports)
+const FEE_PERCENT = 0.015; // 1.5% platform fee
+const TREASURY_WALLET = "J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi";
 const DUST_THRESHOLD = 0.000001;
 const TOKEN_ICONS = ["🪙", "🐶", "🌙", "💀", "🐕", "🧹", "💨", "🐱", "🦊", "🐸"];
-const ACCOUNTS_PER_TX = 8; // Batch size for transactions (Solana tx size limit)
-const EXPLORER_BASE = "https://solscan.io/tx";
-const CLUSTER = "devnet";
 
 async function fetchTokenAccounts(
   connection: import("@solana/web3.js").Connection,
@@ -68,6 +71,11 @@ const Dashboard = () => {
   const [scanning, setScanning] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [sweeping, setSweeping] = useState(false);
+  const [sweepProgress, setSweepProgress] = useState<{
+    currentBatch: number;
+    totalBatches: number;
+    confirmingSlow?: boolean;
+  } | null>(null);
   const [successModal, setSuccessModal] = useState<{
     open: boolean;
     count: number;
@@ -126,33 +134,58 @@ const Dashboard = () => {
     if (selectedTokens.length === 0) return;
 
     setSweeping(true);
+    setSweepProgress(null);
 
     try {
       const accountPubkeys = selectedTokens.map((t) => new PublicKey(t.id));
-      const destination = publicKey;
-      const authority = publicKey;
+      const treasuryPubkey = new PublicKey(TREASURY_WALLET);
 
-      // Batch instructions into chunks (Solana tx size limit)
+      // Auto-batching: split into chunks of max ACCOUNTS_PER_TX
       const batches: PublicKey[][] = [];
       for (let i = 0; i < accountPubkeys.length; i += ACCOUNTS_PER_TX) {
         batches.push(accountPubkeys.slice(i, i + ACCOUNTS_PER_TX));
       }
 
+      setSweepProgress({ currentBatch: 0, totalBatches: batches.length });
+
       let lastSignature: string | undefined;
 
-      for (const batch of batches) {
+      for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+        const batch = batches[batchIndex];
+        setSweepProgress({ currentBatch: batchIndex + 1, totalBatches: batches.length, confirmingSlow: false });
         const tx = new Transaction();
+
+        // Compute budget protection (prepend to every batch)
+        tx.add(
+          ComputeBudgetProgram.setComputeUnitLimit({ units: 1_000_000 }),
+          ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1 })
+        );
+
+        // Fee: 1.5% of rent lamports per account (~0.00204 SOL per account)
+        const feePerAccount = Math.floor(RENT_LAMPORTS_PER_ACCOUNT * FEE_PERCENT);
+        const totalFeeLamports = feePerAccount * batch.length;
+
+        // Close: Return rent to user's wallet (must happen first so user receives lamports)
         for (const accountPubkey of batch) {
           tx.add(
             createCloseAccountInstruction(
               accountPubkey,
-              destination,
-              authority,
+              publicKey, // destination: rent goes to user
+              publicKey, // authority: user owns the account
               [],
               TOKEN_PROGRAM_ID
             )
           );
         }
+
+        // Transfer: Send 1.5% platform fee to treasury (user pays from rent just received)
+        tx.add(
+          SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: treasuryPubkey,
+            lamports: totalFeeLamports,
+          })
+        );
 
         const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
         tx.recentBlockhash = blockhash;
@@ -163,13 +196,18 @@ const Dashboard = () => {
           preflightCommitment: "confirmed",
           maxRetries: 3,
         });
-
-        await connection.confirmTransaction(
-          { signature: sig, blockhash, lastValidBlockHeight },
-          "confirmed"
-        );
         lastSignature = sig;
+
+        await confirmTransactionWithTimeout(
+          connection,
+          sig,
+          blockhash,
+          lastValidBlockHeight,
+          () => setSweepProgress((p) => (p ? { ...p, confirmingSlow: true } : null))
+        );
       }
+
+      setSweepProgress(null);
 
       const closedIds = new Set(selectedTokens.map((t) => t.id));
       const count = closedIds.size;
@@ -178,9 +216,7 @@ const Dashboard = () => {
       setTokens((prev) => prev.filter((t) => !closedIds.has(t.id)));
       setSuccessModal({ open: true, count, totalSol: sol, signature: lastSignature });
 
-      const explorerUrl = lastSignature
-        ? `${EXPLORER_BASE}/${lastSignature}?cluster=${CLUSTER}`
-        : undefined;
+      const explorerUrl = lastSignature ? EXPLORER_TX_URL(lastSignature) : undefined;
       toast.success(
         `🎉 Swept ${count} accounts, reclaimed ${sol.toFixed(5)} SOL!`,
         explorerUrl
@@ -199,6 +235,7 @@ const Dashboard = () => {
       toast.error(`Sweep failed: ${errorMessage}`);
     } finally {
       setSweeping(false);
+      setSweepProgress(null);
     }
   }, [publicKey, connection, sendTransaction, selectedIds, tokens, totalSol, sweeping]);
 
@@ -237,7 +274,7 @@ const Dashboard = () => {
       <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
 
       <Header />
-      <Hero scanning={scanning} scanned={scanned} onScan={handleScan} />
+      <Hero scanning={scanning} scanned={scanned} onScan={handleScan} sweeping={sweeping} />
       <StatsBar
         totalDust={tokens.length}
         potentialRefund={totalSol}
@@ -249,12 +286,14 @@ const Dashboard = () => {
         onToggle={handleToggle}
         onSelectAll={handleSelectAll}
         loading={scanning}
+        disabled={sweeping}
       />
       <ActionBar
         count={selectedIds.size}
         totalSol={totalSol}
         onSweep={handleSweep}
         sweeping={sweeping}
+        sweepProgress={sweepProgress}
       />
       <SweepSuccessModal
         open={successModal.open}

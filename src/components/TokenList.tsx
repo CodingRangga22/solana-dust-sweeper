@@ -31,10 +31,12 @@ interface TokenListProps {
   onToggle: (id: string) => void;
   onSelectAll: () => void;
   loading?: boolean;
+  disabled?: boolean;
 }
 
-const TokenList = ({ tokens, selectedIds, onToggle, onSelectAll, loading = false }: TokenListProps) => {
-  const allSelected = !loading && tokens.length > 0 && selectedIds.size === tokens.length;
+const TokenList = ({ tokens, selectedIds, onToggle, onSelectAll, loading = false, disabled = false }: TokenListProps) => {
+  const allSelected = !loading && !disabled && tokens.length > 0 && selectedIds.size === tokens.length;
+  const isDisabled = loading || disabled;
 
   return (
     <section className="px-4 pb-32">
@@ -50,7 +52,7 @@ const TokenList = ({ tokens, selectedIds, onToggle, onSelectAll, loading = false
           <div className="flex items-center gap-4 px-4 py-3 border-b border-border text-xs text-muted-foreground font-medium uppercase tracking-wider">
             <button
               onClick={onSelectAll}
-              disabled={loading || tokens.length === 0}
+              disabled={isDisabled || tokens.length === 0}
               className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 disabled:opacity-50 ${
                 allSelected ? "gradient-bg border-transparent" : "border-border hover:border-muted-foreground"
               }`}
@@ -80,10 +82,10 @@ const TokenList = ({ tokens, selectedIds, onToggle, onSelectAll, loading = false
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.04 }}
-                    onClick={() => onToggle(token.id)}
-                    className={`flex items-center gap-4 px-4 py-3.5 cursor-pointer transition-all duration-200 border-b border-border last:border-b-0 ${
-                      selected ? "bg-primary/5" : "hover:bg-muted/30 hover:shadow-[inset_0_0_30px_hsla(162,93%,51%,0.04)]"
-                    }`}
+                    onClick={() => !isDisabled && onToggle(token.id)}
+                    className={`flex items-center gap-4 px-4 py-3.5 transition-all duration-200 border-b border-border last:border-b-0 ${
+                      isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+                    } ${!isDisabled && (selected ? "bg-primary/5" : "hover:bg-muted/30 hover:shadow-[inset_0_0_30px_hsla(162,93%,51%,0.04)]")}`}
                   >
                     <div
                       className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 ${

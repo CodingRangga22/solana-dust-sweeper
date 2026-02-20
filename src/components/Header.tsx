@@ -3,19 +3,17 @@ import ArsweepLogo from "./ArsweepLogo";
 import { Github, BookOpen } from "lucide-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import ThemeToggle from "./ThemeToggle";
+import { useBanner } from "./BannerProvider";
 
-interface HeaderProps {
-  topOffset?: string;
-}
-
-const Header = ({ topOffset }: HeaderProps) => {
+const Header = () => {
   const location = useLocation();
   const isDocs = location.pathname === "/docs";
+  const { bannerHeight } = useBanner();
 
   return (
   <header
-    className="fixed left-0 right-0 z-50 glass border-b border-border"
-    style={topOffset ? { top: topOffset } : { top: 0 }}
+    className="fixed left-0 right-0 z-50 glass border-b border-border transition-[top] duration-200"
+    style={{ top: bannerHeight }}
   >
     <div className="container mx-auto px-4 h-16 flex items-center justify-between">
       <div className="flex items-center gap-3">

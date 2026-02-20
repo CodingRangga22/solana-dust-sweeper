@@ -11,9 +11,10 @@ interface ActionBarProps {
   totalSol: number;
   onSweep: () => void;
   sweeping?: boolean;
+  sweepProgress?: { currentBatch: number; totalBatches: number; confirmingSlow?: boolean } | null;
 }
 
-const ActionBar = ({ count, totalSol, onSweep, sweeping = false }: ActionBarProps) => {
+const ActionBar = ({ count, totalSol, onSweep, sweeping = false, sweepProgress }: ActionBarProps) => {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const gasFee = GAS_FEE_PER_ACCOUNT * count;
   const serviceFee = totalSol * SERVICE_FEE_PERCENT;
@@ -77,7 +78,11 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false }: ActionBarProp
                 {sweeping ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Processing Transaction...
+                    {sweepProgress?.confirmingSlow
+                      ? "Still confirming on network..."
+                      : sweepProgress
+                        ? `Batch ${sweepProgress.currentBatch} of ${sweepProgress.totalBatches}...`
+                        : "Processing Transaction..."}
                   </>
                 ) : (
                   <>

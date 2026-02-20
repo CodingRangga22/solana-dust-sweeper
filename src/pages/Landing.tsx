@@ -1,12 +1,19 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Shield, Github, Users, Wallet, Search, Sparkles, ArrowRight, ChevronRight, BookOpen } from "lucide-react";
+import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen } from "lucide-react";
 import ArsweepLogo from "@/components/ArsweepLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import ChatWidget from "@/components/ChatWidget";
 import PremiumFooter from "@/components/PremiumFooter";
-
+import { useBanner } from "@/components/BannerProvider";
+import SecurityTransparencySection from "@/components/landing/SecurityTransparencySection";
+import ProblemEducationSection from "@/components/landing/ProblemEducationSection";
+import ComparisonTable from "@/components/landing/ComparisonTable";
+import LiveMetricsStrip from "@/components/landing/LiveMetricsStrip";
+import RoadmapSection from "@/components/landing/RoadmapSection";
+import FAQSection from "@/components/landing/FAQSection";
+import { isDevnet } from "@/config/env";
+import FeedbackSection from "@/components/landing/FeedbackSection";
 
 
 
@@ -36,17 +43,17 @@ const steps = [
   {
     icon: Wallet,
     title: "Connect Wallet",
-    description: "Securely view your token accounts. No private keys needed — read-only access.",
+    description: "Connect for a read-only scan first. We identify your token accounts without moving any funds.",
   },
   {
     icon: Search,
-    title: "Scan for Dust",
-    description: "Our scanner identifies empty accounts, scam airdrops, and reclaimable rent deposits.",
+    title: "Identify Empty Accounts & Rent Value",
+    description: "See which accounts are empty and exactly how much SOL you can reclaim from each.",
   },
   {
-    icon: Sparkles,
-    title: "Sweep & Refund",
-    description: "Close worthless accounts and get your SOL rent back instantly in one click.",
+    icon: CheckCircle2,
+    title: "Close Accounts & Reclaim SOL",
+    description: "Approve the transaction to close selected accounts. Rent is refunded directly to your wallet.",
   },
 ];
 
@@ -121,15 +128,7 @@ const DustAnimation = () => (
 
 const Landing = () => {
   const navigate = useNavigate();
-  const [totalSolReclaimed, setTotalSolReclaimed] = useState(1240.55);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const increment = 0.002 + Math.random() * (0.04 - 0.002);
-      setTotalSolReclaimed((prev) => Math.round((prev + increment) * 100) / 100);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+  const { bannerHeight } = useBanner();
 
   const handleLaunch = () => {
     navigate("/app");
@@ -142,7 +141,10 @@ const Landing = () => {
       <div className="orb w-[500px] h-[500px] bg-secondary/8 bottom-1/4 -left-40 animate-pulse-glow" style={{ animationDelay: "2s" }} />
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
+      <header
+        className="fixed left-0 right-0 z-50 glass border-b border-border transition-[top] duration-200"
+        style={{ top: bannerHeight }}
+      >
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
@@ -160,14 +162,17 @@ const Landing = () => {
               Docs
             </Link>
             <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={handleLaunch}
-            className="gradient-bg gradient-bg-hover px-5 py-2 rounded-xl text-primary-foreground text-sm font-semibold transition-all duration-200 flex items-center gap-2"
-          >
-            Launch App
-            <ArrowRight className="w-4 h-4" />
-          </motion.button>
+              whileHover={{
+                scale: 1.03,
+                boxShadow: "0 0 20px hsla(162, 93%, 51%, 0.3), 0 0 40px hsla(271, 100%, 63%, 0.15)",
+              }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleLaunch}
+              className="gradient-bg gradient-bg-hover px-5 py-2 rounded-xl text-primary-foreground text-sm font-semibold transition-all duration-200 flex items-center gap-2"
+            >
+              Launch App
+              <ArrowRight className="w-4 h-4" />
+            </motion.button>
           </div>
         </div>
       </header>
@@ -184,10 +189,16 @@ const Landing = () => {
               <motion.div
                 custom={0}
                 variants={fadeUp}
-                className="inline-flex items-center gap-2 glass px-4 py-1.5 rounded-full text-sm text-muted-foreground mb-6"
+                className="flex flex-wrap items-center gap-2 mb-6"
               >
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-                Solana Wallet Cleaner
+                <span className="inline-flex items-center gap-2 glass px-4 py-1.5 rounded-full text-sm text-muted-foreground">
+                  Solana Wallet Cleaner
+                </span>
+                {isDevnet && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border border-amber-500/30 bg-amber-500/10 text-amber-400">
+                    Currently in Devnet Testing Phase
+                  </span>
+                )}
               </motion.div>
 
               <motion.h1
@@ -195,8 +206,8 @@ const Landing = () => {
                 variants={fadeUp}
                 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-5 text-foreground"
               >
-                Your Solana Wallet is{" "}
-                <span className="gradient-text">Hiding Money</span>.
+                Reclaim Locked SOL from{" "}
+                <span className="gradient-text">Empty Token Accounts</span>
               </motion.h1>
 
               <motion.p
@@ -204,12 +215,15 @@ const Landing = () => {
                 variants={fadeUp}
                 className="text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed"
               >
-                Reclaim stuck SOL from empty token accounts and scam airdrops in seconds. Clean, Secure, and Instant.
+                Close unused Solana token accounts and instantly recover rent deposits — fully non-custodial and on-chain.
               </motion.p>
 
               <motion.div custom={3} variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
+                  whileHover={{
+                    scale: 1.03,
+                    boxShadow: "0 0 24px hsla(162, 93%, 51%, 0.35), 0 0 48px hsla(271, 100%, 63%, 0.2)",
+                  }}
                   whileTap={{ scale: 0.97 }}
                   onClick={handleLaunch}
                   className="gradient-bg gradient-bg-hover px-8 py-3.5 rounded-2xl text-primary-foreground font-semibold text-base transition-all duration-200 shadow-lg flex items-center justify-center gap-2"
@@ -227,27 +241,29 @@ const Landing = () => {
                 </motion.a>
               </motion.div>
 
-              <motion.p custom={4} variants={fadeUp} className="mt-6 text-sm text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1">
-                <span>
+              <motion.div custom={4} variants={fadeUp} className="mt-8 space-y-4">
+                <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    Non-custodial
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    No private key access
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    Fully on-chain & verifiable
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    Open source
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
                   💰 Over <span className="text-primary font-semibold">0.00204 SOL</span> recovered per account
-                </span>
-                <span className="text-border">|</span>
-                <span className="flex items-center gap-1.5">
-                  Total SOL Reclaimed:{" "}
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={totalSolReclaimed}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
-                      className="text-primary font-semibold tabular-nums"
-                    >
-                      {totalSolReclaimed.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SOL
-                    </motion.span>
-                  </AnimatePresence>
-                </span>
-              </motion.p>
+                </p>
+              </motion.div>
             </motion.div>
 
             <motion.div
@@ -267,10 +283,13 @@ const Landing = () => {
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-foreground">
-                How It <span className="gradient-text">Works</span>
+                How <span className="gradient-text">Arsweep</span> Works
               </h2>
-              <p className="text-muted-foreground text-lg max-w-md mx-auto">
-                Three simple steps to a cleaner wallet.
+              <p className="text-muted-foreground text-lg max-w-md mx-auto mb-2">
+                Three simple steps to reclaim your SOL.
+              </p>
+              <p className="text-xs text-muted-foreground italic">
+                No transactions occur until you approve.
               </p>
             </div>
 
@@ -295,6 +314,14 @@ const Landing = () => {
             </div>
           </div>
         </section>
+      </ScrollSection>
+
+      <ScrollSection>
+        <ProblemEducationSection />
+      </ScrollSection>
+
+      <ScrollSection>
+        <SecurityTransparencySection />
       </ScrollSection>
 
       <ScrollSection>
@@ -327,6 +354,18 @@ const Landing = () => {
       </ScrollSection>
 
       <ScrollSection>
+        <ComparisonTable />
+      </ScrollSection>
+
+      <ScrollSection>
+        <LiveMetricsStrip />
+      </ScrollSection>
+
+      <ScrollSection>
+        <RoadmapSection />
+      </ScrollSection>
+
+      <ScrollSection>
       <section className="py-24 px-4 relative">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -342,16 +381,41 @@ const Landing = () => {
           <p className="text-muted-foreground mb-8 relative z-10">
             Stop leaving SOL on the table. Start reclaiming in seconds.
           </p>
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={handleLaunch}
-            className="gradient-bg gradient-bg-hover px-10 py-4 rounded-2xl text-primary-foreground font-semibold text-lg transition-all duration-200 shadow-lg relative z-10"
-          >
-            Launch Arsweep
-          </motion.button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+            <motion.button
+              whileHover={{
+                scale: 1.03,
+                boxShadow: "0 0 28px hsla(162, 93%, 51%, 0.35), 0 0 56px hsla(271, 100%, 63%, 0.2)",
+              }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleLaunch}
+              className="gradient-bg gradient-bg-hover px-10 py-4 rounded-2xl text-primary-foreground font-semibold text-lg transition-all duration-200 shadow-lg flex items-center justify-center gap-2"
+            >
+              Launch Arsweep
+              <ArrowRight className="w-5 h-5" />
+            </motion.button>
+            <motion.a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="glass glass-hover px-10 py-4 rounded-2xl text-foreground font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2 border border-border"
+            >
+              View GitHub
+              <Github className="w-5 h-5" />
+            </motion.a>
+          </div>
         </motion.div>
       </section>
+      </ScrollSection>
+
+      <ScrollSection>
+        <FAQSection />
+      </ScrollSection>
+
+      <ScrollSection>
+        <FeedbackSection />
       </ScrollSection>
 
       {/* Footer */}

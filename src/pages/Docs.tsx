@@ -17,6 +17,7 @@ import {
 import ArsweepLogo from "@/components/ArsweepLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import PremiumFooter from "@/components/PremiumFooter";
+import { useBanner } from "@/components/BannerProvider";
 
 const SIDEBAR_ITEMS = [
   { id: "intro", title: "Introduction", icon: BookOpen },
@@ -82,6 +83,7 @@ const fadeIn = {
 
 const Docs = () => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const { bannerHeight } = useBanner();
 
   useEffect(() => {
     const hash = window.location.hash.slice(1);
@@ -100,7 +102,10 @@ const Docs = () => {
       <div className="orb w-[500px] h-[500px] bg-secondary/8 bottom-1/3 -left-40 animate-pulse-glow" style={{ animationDelay: "2s" }} />
 
       {/* Top bar */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
+      <header
+        className="fixed left-0 right-0 z-50 glass border-b border-border transition-[top] duration-200"
+        style={{ top: bannerHeight }}
+      >
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">

@@ -6,9 +6,10 @@ interface HeroProps {
   scanning?: boolean;
   scanned?: boolean;
   onScan?: () => void;
+  sweeping?: boolean;
 }
 
-const Hero = ({ scanning = false, scanned = false, onScan }: HeroProps) => {
+const Hero = ({ scanning = false, scanned = false, onScan, sweeping = false }: HeroProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -65,10 +66,11 @@ const Hero = ({ scanning = false, scanned = false, onScan }: HeroProps) => {
           </motion.div>
         ) : (
           <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={!sweeping ? { scale: 1.03 } : undefined}
+            whileTap={!sweeping ? { scale: 0.97 } : undefined}
             onClick={handleScan}
-            className="gradient-bg gradient-bg-hover px-8 py-3.5 rounded-2xl text-primary-foreground font-semibold text-base transition-all duration-200 shadow-lg"
+            disabled={sweeping}
+            className="gradient-bg gradient-bg-hover px-8 py-3.5 rounded-2xl text-primary-foreground font-semibold text-base transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {scanned ? "✓ Scan Complete" : "Start Scanning"}
           </motion.button>

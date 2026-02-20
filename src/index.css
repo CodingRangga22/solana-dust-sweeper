@@ -121,6 +121,12 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6, p {
+    line-height: 1.5;
   }
 }
 
@@ -141,6 +147,10 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    /* Prevent letter clipping - ensure descenders/ascenders are fully visible */
+    display: inline-block;
+    padding: 0.05em 0;
+    line-height: 1.3;
   }
 
   .gradient-bg {
