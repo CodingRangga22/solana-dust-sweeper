@@ -64,6 +64,23 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
 
+### Subdomain-style deployment (Arsweep)
+
+Deploy the **same build** to two subdomains for a startup-style setup:
+
+| Subdomain           | Purpose                          |
+|---------------------|----------------------------------|
+| **app.arsweep.xyz** | Main app (Landing, Dashboard)    |
+| **docs.arsweep.xyz**| Documentation (root → `/docs`)   |
+
+- **app.arsweep.xyz** — Normal app; `/` shows Landing, `/app` is the Dashboard.
+- **docs.arsweep.xyz** — Root `/` redirects to `/docs` automatically.
+
+Configure your host (e.g. Vercel, Netlify, or nginx) so both subdomains point to the same SPA. No separate build needed. Optional env for custom hostnames:
+
+- `VITE_APP_HOST=app.arsweep.xyz`
+- `VITE_DOCS_HOST=docs.arsweep.xyz`
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!

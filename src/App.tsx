@@ -5,15 +5,21 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import type { WalletAdapter } from "@solana/wallet-adapter-base";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
-import { RPC_ENDPOINT, isDevnet } from "@/config/env";
+import { RPC_ENDPOINT, isDevnet, isDocsSubdomain } from "@/config/env";
 import { BannerProvider, useBanner } from "./components/BannerProvider";
 import DevnetBanner from "./components/DevnetBanner";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
-import Docs from "./pages/Docs";
+import DocsLayout from "@/layouts/DocsLayout";
+import Overview from "@/pages/docs/Overview";
+import Technical from "@/pages/docs/Technical";
+import Security from "@/pages/docs/Security";
+import Fees from "@/pages/docs/Fees";
+import FAQ from "@/pages/docs/FAQ";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "@solana/wallet-adapter-react-ui/styles.css";
@@ -40,7 +46,7 @@ const AppContent = ({
   wallets,
 }: {
   endpoint: string;
-  wallets: ReturnType<typeof PhantomWalletAdapter>[];
+  wallets: WalletAdapter[];
 }) => {
   const { bannerHeight } = useBanner();
 
@@ -55,7 +61,16 @@ const AppContent = ({
                 <Sonner />
                 <BrowserRouter>
                 <Routes>
-                  <Route path="/" element={<Landing />} />
+                  <Route
+                    path="/"
+                    element={
+                      isDocsSubdomain() ? (
+                        <Navigate to="/docs" replace />
+                      ) : (
+                        <Landing />
+                      )
+                    }
+                  />
                   <Route
                     path="/app"
                     element={
@@ -65,7 +80,13 @@ const AppContent = ({
                     }
                   />
                   <Route path="/dashboard" element={<Navigate to="/app" replace />} />
-                  <Route path="/docs" element={<Docs />} />
+                  <Route path="/docs" element={<DocsLayout />}>
+                    <Route index element={<Overview />} />
+                    <Route path="technical" element={<Technical />} />
+                    <Route path="security" element={<Security />} />
+                    <Route path="fees" element={<Fees />} />
+                    <Route path="faq" element={<FAQ />} />
+                  </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </BrowserRouter>

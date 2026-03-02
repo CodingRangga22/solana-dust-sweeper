@@ -30,3 +30,13 @@ export const EXPLORER_TX_URL = (signature: string) =>
 export const EXPLORER_CLUSTER = isDevnet ? "devnet" : "mainnet-beta";
 
 export const FAUCET_URL = "https://faucet.solana.com/";
+
+/** Subdomain-style deployment: app.arsweep.xyz (app) vs docs.arsweep.xyz (docs) */
+export const DOCS_HOST =
+  import.meta.env.VITE_DOCS_HOST ?? "docs.arsweep.xyz";
+export const APP_HOST =
+  import.meta.env.VITE_APP_HOST ?? "app.arsweep.xyz";
+
+/** True when running on the docs subdomain (e.g. docs.arsweep.xyz). Use for redirect root → /docs. */
+export const isDocsSubdomain = (): boolean =>
+  typeof window !== "undefined" && window.location.hostname === DOCS_HOST;

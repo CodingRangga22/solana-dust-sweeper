@@ -27,15 +27,17 @@ const Header = () => {
       </div>
       <div className="flex items-center gap-3">
         <ThemeToggle />
-        <Link
-          to="/docs"
+        <a
+          href="/docs"
+          target="_blank"
+          rel="noopener noreferrer"
           className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-colors duration-200 ${
             isDocs ? "text-primary" : "text-muted-foreground hover:text-primary glass glass-hover"
           }`}
         >
           <BookOpen className="w-4 h-4" />
           <span className="hidden sm:inline text-xs">Docs</span>
-        </Link>
+        </a>
         <a
           href="https://github.com"
           target="_blank"
