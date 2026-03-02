@@ -191,11 +191,15 @@ const Dashboard = () => {
         tx.recentBlockhash = blockhash;
         tx.feePayer = publicKey;
 
-        const sig = await sendTransaction(tx, {
-          skipPreflight: false,
-          preflightCommitment: "confirmed",
-          maxRetries: 3,
-        });
+        const sig = await sendTransaction(
+          tx,
+          connection,
+          {
+            skipPreflight: false,
+            preflightCommitment: "confirmed",
+            maxRetries: 3,
+          }
+        );
         lastSignature = sig;
 
         await confirmTransactionWithTimeout(

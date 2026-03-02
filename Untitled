@@ -1,0 +1,1 @@
+solana config set --keypair target/deploy/arsweep-keypair.json

@@ -1,0 +1,98 @@
+{
+  "address": "5mwPJnU6dK24gwSMh1Dwh5LgwuM6CkwRTYL4oXi5yyuS",
+  "metadata": {
+    "name": "arsweep",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Close empty SPL token accounts with platform fee"
+  },
+  "instructions": [
+    {
+      "name": "close_empty_account",
+      "docs": [
+        "Closes an empty SPL token account, reclaiming rent.",
+        "Takes a 1.5% platform fee to the treasury and returns the rest to the user."
+      ],
+      "discriminator": [
+        202,
+        111,
+        6,
+        43,
+        122,
+        78,
+        218,
+        187
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_account",
+          "writable": true
+        },
+        {
+          "name": "treasury",
+          "docs": [
+            "Treasury wallet that receives the 1.5% platform fee"
+          ],
+          "writable": true
+        },
+        {
+          "name": "fee_collector",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  95,
+                  99,
+                  111,
+                  108,
+                  108,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "TokenAccountNotEmpty",
+      "msg": "Token account must have zero balance to close"
+    },
+    {
+      "code": 6001,
+      "name": "UnauthorizedOwner",
+      "msg": "Only the token account owner can close it"
+    },
+    {
+      "code": 6002,
+      "name": "MathOverflow",
+      "msg": "Math overflow during fee calculation"
+    }
+  ]
+}
