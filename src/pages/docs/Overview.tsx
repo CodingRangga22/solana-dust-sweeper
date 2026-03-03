@@ -1,7 +1,7 @@
 const Overview = () => {
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">Arsweep Documentation</h1>
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">Arsweep Documentation</h1>
 
       <p className="text-muted-foreground leading-relaxed mb-6">
         Arsweep is a non-custodial Solana utility that enables users to reclaim

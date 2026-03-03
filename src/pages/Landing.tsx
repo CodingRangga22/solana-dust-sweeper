@@ -14,6 +14,7 @@ import RoadmapSection from "@/components/landing/RoadmapSection";
 import FAQSection from "@/components/landing/FAQSection";
 import { isDevnet } from "@/config/env";
 import FeedbackSection from "@/components/landing/FeedbackSection";
+import HeroDemo from "@/components/HeroDemo";
 
 
 
@@ -266,13 +267,9 @@ const Landing = () => {
               </motion.div>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <DustAnimation />
-            </motion.div>
+            <div className="lg:pl-16 xl:pl-24">
+              <HeroDemo />
+            </div>
           </div>
         </div>
       </section>

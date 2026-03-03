@@ -1,7 +1,7 @@
 export default function Fees() {
   return (
     <>
-      <h1 className="text-2xl sm:text-3xl font-semibold mb-6">Fee Model</h1>
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6">Fee Model</h1>
 
       <h2 className="text-xl font-medium mt-8 mb-2">Service Fee</h2>
       <p className="text-muted-foreground leading-7 mb-4">

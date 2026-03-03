@@ -1,5 +1,5 @@
 {
-  "address": "5mwPJnU6dK24gwSMh1Dwh5LgwuM6CkwRTYL4oXi5yyuS",
+  "address": "4cS4fZH6DoFown46UiF2EtG412PVd5BSi8m4tmefAq9o",
   "metadata": {
     "name": "arsweep",
     "version": "0.1.0",
@@ -9,10 +9,6 @@
   "instructions": [
     {
       "name": "close_empty_account",
-      "docs": [
-        "Closes an empty SPL token account, reclaiming rent.",
-        "Takes a 1.5% platform fee to the treasury and returns the rest to the user."
-      ],
       "discriminator": [
         202,
         111,
@@ -35,36 +31,8 @@
         },
         {
           "name": "treasury",
-          "docs": [
-            "Treasury wallet that receives the 1.5% platform fee"
-          ],
-          "writable": true
-        },
-        {
-          "name": "fee_collector",
           "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  102,
-                  101,
-                  101,
-                  95,
-                  99,
-                  111,
-                  108,
-                  108,
-                  101,
-                  99,
-                  116,
-                  111,
-                  114
-                ]
-              }
-            ]
-          }
+          "address": "J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi"
         },
         {
           "name": "token_program",
@@ -78,6 +46,21 @@
       "args": []
     }
   ],
+  "events": [
+    {
+      "name": "SweepEvent",
+      "discriminator": [
+        112,
+        81,
+        56,
+        216,
+        105,
+        243,
+        34,
+        221
+      ]
+    }
+  ],
   "errors": [
     {
       "code": 6000,
@@ -86,13 +69,35 @@
     },
     {
       "code": 6001,
-      "name": "UnauthorizedOwner",
-      "msg": "Only the token account owner can close it"
+      "name": "MathOverflow",
+      "msg": "Math overflow during fee calculation"
     },
     {
       "code": 6002,
-      "name": "MathOverflow",
-      "msg": "Math overflow during fee calculation"
+      "name": "InvalidTreasury",
+      "msg": "Invalid treasury account"
+    }
+  ],
+  "types": [
+    {
+      "name": "SweepEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "rent_recovered",
+            "type": "u64"
+          },
+          {
+            "name": "fee_charged",
+            "type": "u64"
+          }
+        ]
+      }
     }
   ]
 }

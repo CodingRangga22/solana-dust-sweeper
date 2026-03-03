@@ -1,7 +1,7 @@
 export default function Security() {
   return (
     <>
-      <h1 className="text-2xl sm:text-3xl font-semibold mb-6">Security</h1>
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6">Security</h1>
 
       <h2 className="text-xl font-medium mt-8 mb-2">Security Protocol</h2>
       <p className="text-muted-foreground leading-7 mb-4">

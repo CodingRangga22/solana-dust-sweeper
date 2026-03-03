@@ -1,7 +1,7 @@
 const Technical = () => {
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8">Technical Specifications</h1>
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-8">Technical Specifications</h1>
 
       <h2 className="text-2xl font-semibold mb-4">Rent-Exempt Mechanism</h2>
       <p className="text-muted-foreground mb-6">
@@ -15,13 +15,13 @@ const Technical = () => {
         Arsweep uses a single native SPL Token instruction:
       </p>
 
-      <div className="bg-muted rounded-xl p-5 font-mono text-sm">
-        createCloseAccountInstruction(
-          tokenAccount,
-          destinationWallet,
-          ownerWallet
-        );
-      </div>
+      <pre className="overflow-x-auto bg-muted rounded-xl p-5 text-sm font-mono">
+        {`createCloseAccountInstruction(
+  tokenAccount,
+  destinationWallet,
+  ownerWallet
+);`}
+      </pre>
 
       <p className="text-muted-foreground mt-6">
         No custom on-chain programs are deployed. All transactions interact

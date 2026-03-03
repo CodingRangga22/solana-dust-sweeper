@@ -1,7 +1,7 @@
 export default function FAQ() {
   return (
     <>
-      <h1 className="text-2xl sm:text-3xl font-semibold mb-6">FAQ</h1>
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6">FAQ</h1>
 
       <div className="space-y-6">
         <div>

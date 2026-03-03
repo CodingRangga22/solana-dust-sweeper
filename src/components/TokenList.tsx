@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ExternalLink, AlertTriangle } from "lucide-react";
+import { type TokenAccountInfo, INACTIVITY_DAYS } from "@/lib/tokenAccounts";
 
 export interface Token {
   id: string;
@@ -26,7 +27,7 @@ const SkeletonRow = () => (
 const formatMint = (mint: string) => (mint.length > 12 ? `${mint.slice(0, 4)}...${mint.slice(-4)}` : mint);
 
 interface TokenListProps {
-  tokens: Token[];
+  tokenAccounts: TokenAccountInfo[];
   selectedIds: Set<string>;
   onToggle: (id: string) => void;
   onSelectAll: () => void;
@@ -34,8 +35,9 @@ interface TokenListProps {
   disabled?: boolean;
 }
 
-const TokenList = ({ tokens, selectedIds, onToggle, onSelectAll, loading = false, disabled = false }: TokenListProps) => {
-  const allSelected = !loading && !disabled && tokens.length > 0 && selectedIds.size === tokens.length;
+const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading = false, disabled = false }: TokenListProps) => {
+  const sweepableCount = tokenAccounts.filter((a) => a.isSweepable).length;
+  const allSelected = !loading && !disabled && sweepableCount > 0 && selectedIds.size === sweepableCount;
   const isDisabled = loading || disabled;
 
   return (
@@ -52,71 +54,105 @@ const TokenList = ({ tokens, selectedIds, onToggle, onSelectAll, loading = false
           <div className="flex items-center gap-4 px-4 py-3 border-b border-border text-xs text-muted-foreground font-medium uppercase tracking-wider">
             <button
               onClick={onSelectAll}
-              disabled={isDisabled || tokens.length === 0}
+              disabled={isDisabled || sweepableCount === 0}
               className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 disabled:opacity-50 ${
                 allSelected ? "gradient-bg border-transparent" : "border-border hover:border-muted-foreground"
               }`}
             >
               {allSelected && <Check className="w-3 h-3 text-primary-foreground" />}
             </button>
-            <div className="w-10" />
-            <div className="flex-1">Token</div>
+            <div className="flex-1">Account</div>
             <div className="w-24 text-right">Balance</div>
-            <div className="w-28 text-right">Rent Refund</div>
+            <div className="w-28 text-right">Rent</div>
           </div>
 
           {/* Rows */}
           {loading ? (
             Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
-          ) : tokens.length === 0 ? (
+          ) : tokenAccounts.length === 0 ? (
             <div className="px-4 py-12 text-center text-muted-foreground text-sm">
-              No dust accounts found. Your wallet is clean! 🧹
+              No token accounts found. Connect and scan to see accounts.
             </div>
           ) : (
             <AnimatePresence>
-              {tokens.map((token, i) => {
-                const selected = selectedIds.has(token.id);
+              {tokenAccounts.map((account, i) => {
+                const id = account.pubkey.toBase58();
+                const selected = account.isSweepable && selectedIds.has(id);
                 return (
                   <motion.div
-                    key={token.id}
+                    key={id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.04 }}
-                    onClick={() => !isDisabled && onToggle(token.id)}
+                    onClick={() => account.isSweepable && !isDisabled && onToggle(id)}
                     className={`flex items-center gap-4 px-4 py-3.5 transition-all duration-200 border-b border-border last:border-b-0 ${
-                      isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
-                    } ${!isDisabled && (selected ? "bg-primary/5" : "hover:bg-muted/30 hover:shadow-[inset_0_0_30px_hsla(162,93%,51%,0.04)]")}`}
+                      account.isSweepable ? (isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer") : "cursor-default"
+                    } ${!isDisabled && account.isSweepable && (selected ? "bg-primary/5" : "hover:bg-muted/30 hover:shadow-[inset_0_0_30px_hsla(162,93%,51%,0.04)]")}`}
                   >
+                    <div className="w-5 h-5 shrink-0 flex items-center justify-center">
+                      {account.isSweepable ? (
+                        <div
+                          className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 ${
+                            selected ? "gradient-bg border-transparent animate-[pulse_0.4s_ease-in-out_1]" : "border-border"
+                          }`}
+                        >
+                          {selected && <Check className="w-3 h-3 text-primary-foreground" />}
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-md border border-border bg-muted/30" />
+                      )}
+                    </div>
                     <div
-                      className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 ${
-                        selected ? "gradient-bg border-transparent animate-[pulse_0.4s_ease-in-out_1]" : "border-border"
+                      className={`flex-1 min-w-0 flex items-center justify-between p-4 rounded-xl border transition-all ${
+                        account.isSweepable
+                          ? "bg-card border-primary/30"
+                          : "bg-card border-border opacity-40"
                       }`}
                     >
-                      {selected && <Check className="w-3 h-3 text-primary-foreground" />}
-                    </div>
-                    <div className="w-10 h-10 rounded-xl glass flex items-center justify-center text-lg">
-                      {token.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{token.name}</p>
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground font-mono">
-                        {formatMint(token.mint)}
-                        <a
-                          href={`https://solscan.io/token/${token.mint}?cluster=devnet`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-muted-foreground hover:text-primary transition-colors"
+                      <div>
+                        <p className="text-sm font-mono">
+                          {account.pubkey.toBase58().slice(0, 4)}...
+                          {account.pubkey.toBase58().slice(-4)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Mint: {account.mint.toBase58().slice(0, 6)}...
+                        </p>
+                      </div>
+                      <div className="text-right flex flex-col items-end gap-1">
+                        <p className="text-sm">
+                          Balance: {account.amount.toString()}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Rent: {(account.rentLamports / 1e9).toFixed(6)} SOL
+                        </p>
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full ${
+                            account.isSweepable
+                              ? "bg-emerald-500/20 text-emerald-400"
+                              : "bg-muted text-muted-foreground"
+                          }`}
                         >
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      </span>
-                    </div>
-                    <div className="w-24 text-right text-sm text-muted-foreground font-mono">
-                      {token.balance}
-                    </div>
-                    <div className="w-28 text-right text-sm text-primary font-semibold font-mono">
-                      {token.rentRefundable.toFixed(5)} SOL
+                          {account.isSweepable ? "Sweepable" : "Active"}
+                        </span>
+                        {account.isSweepable && account.eligibilityReasons.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1 justify-end">
+                            {account.eligibilityReasons.map((reason) => (
+                              <span
+                                key={reason}
+                                className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground"
+                              >
+                                {reason === "zero_balance" && "Empty"}
+                                {reason === "dust_amount" && "Dust"}
+                                {reason === "no_liquidity" && "No Pool"}
+                                {reason === "low_usd_value" && (
+                                  `$${(account.usdValueCents / 100).toFixed(2)}`
+                                )}
+                                {reason === "inactive" && `${INACTIVITY_DAYS}d inactive`}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 );

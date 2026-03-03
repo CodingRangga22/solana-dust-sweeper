@@ -22,6 +22,13 @@ import tokenomics from "@/docs/tokenomics.md?raw";
 import roadmap from "@/docs/roadmap.md?raw";
 import faq from "@/docs/faq.md?raw";
 
+const markdownComponents = {
+  pre: (props: React.ComponentPropsWithoutRef<"pre"> & { node?: unknown }) => {
+    const { node: _node, ...preProps } = props;
+    return <pre {...preProps} className={(preProps.className ?? "") + " overflow-x-auto"} />;
+  },
+};
+
 const SIDEBAR_ITEMS = [
   { id: "intro", title: "Introduction", icon: BookOpen },
   { id: "technical", title: "Technical Specs", icon: Cpu },
@@ -124,12 +131,24 @@ const Docs = () => {
         <div className="flex-1 min-w-0 px-4 lg:px-8 py-6">
           <main ref={contentRef} className="max-w-3xl mx-auto">
             <div className="prose prose-invert max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{overview}</ReactMarkdown>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{architecture}</ReactMarkdown>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{security}</ReactMarkdown>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{tokenomics}</ReactMarkdown>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{roadmap}</ReactMarkdown>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{faq}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                {overview}
+              </ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                {architecture}
+              </ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                {security}
+              </ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                {tokenomics}
+              </ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                {roadmap}
+              </ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                {faq}
+              </ReactMarkdown>
             </div>
           </main>
         </div>

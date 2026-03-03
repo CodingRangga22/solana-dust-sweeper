@@ -10,6 +10,18 @@ export default function DocsLayout(_props?: { children?: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
 
+      {/* Mobile header — hamburger toggle (drawer can be wired later) */}
+      <header className="lg:hidden h-14 border-b border-border flex items-center px-4 shrink-0 bg-background">
+        <button
+          type="button"
+          aria-label="Open menu"
+          className="p-2"
+          onClick={() => setDrawerOpen(true)}
+        >
+          <Menu className="w-5 h-5 text-foreground" />
+        </button>
+      </header>
+
       {/* Mobile overlay — tap to close drawer */}
       <button
         type="button"
@@ -18,9 +30,9 @@ export default function DocsLayout(_props?: { children?: React.ReactNode }) {
         onClick={closeDrawer}
       />
 
-      {/* Sidebar — drawer on mobile, fixed column on desktop */}
+      {/* Sidebar — hidden on mobile/tablet, drawer when menu opened; visible on desktop (lg) */}
       <aside
-        className={`fixed lg:relative inset-y-0 left-0 z-50 w-full max-w-[16rem] lg:max-w-none lg:w-64 border-r border-border bg-background p-6 flex flex-col transition-transform duration-200 ease-out ${drawerOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+        className={`hidden lg:block fixed lg:relative inset-y-0 left-0 z-50 w-full max-w-[16rem] lg:max-w-none lg:w-64 border-r border-border bg-background p-6 flex flex-col transition-transform duration-200 ease-out ${drawerOpen ? "!block translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold">Arsweep Docs</h2>
@@ -50,7 +62,7 @@ export default function DocsLayout(_props?: { children?: React.ReactNode }) {
       </aside>
 
       {/* Content + mobile menu button */}
-      <main className="flex-1 min-w-0 px-4 sm:px-6 md:px-8 lg:px-12 py-8 relative">
+      <main className="flex-1 min-w-0 py-8 relative">
         <button
           type="button"
           aria-label="Open menu"
@@ -59,7 +71,7 @@ export default function DocsLayout(_props?: { children?: React.ReactNode }) {
         >
           <Menu className="w-5 h-5" />
         </button>
-        <div className="pt-12 lg:pt-0">
+        <div className="pt-12 lg:pt-0 w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-10">
           <Outlet />
         </div>
       </main>

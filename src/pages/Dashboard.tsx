@@ -1,8 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, Transaction, SystemProgram, ComputeBudgetProgram } from "@solana/web3.js";
-import { TOKEN_PROGRAM_ID, createCloseAccountInstruction } from "@solana/spl-token";
+import { useConnection, useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
+import { PublicKey, Transaction } from "@solana/web3.js";
 import { motion } from "framer-motion";
 import { Wallet } from "lucide-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
@@ -15,58 +14,21 @@ import SweepSuccessModal from "@/components/SweepSuccessModal";
 import ChatWidget from "@/components/ChatWidget";
 import PremiumFooter from "@/components/PremiumFooter";
 
+import { getProgram } from "@/lib/anchor";
 import { EXPLORER_TX_URL } from "@/config/env";
-import { ACCOUNTS_PER_TX, RENT_LAMPORTS_PER_ACCOUNT } from "@/config/sweep";
+import { ACCOUNTS_PER_TX } from "@/config/sweep";
 import { confirmTransactionWithTimeout } from "@/utils/transaction";
+import { fetchAllTokenAccounts, type TokenAccountInfo } from "@/lib/tokenAccounts";
 
 const RENT_PER_ACCOUNT = 0.002042; // SOL per closed account (~2,039,280 lamports)
-const FEE_PERCENT = 0.015; // 1.5% platform fee
-const TREASURY_WALLET = "J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi";
-const DUST_THRESHOLD = 0.000001;
 const TOKEN_ICONS = ["🪙", "🐶", "🌙", "💀", "🐕", "🧹", "💨", "🐱", "🦊", "🐸"];
-
-async function fetchTokenAccounts(
-  connection: import("@solana/web3.js").Connection,
-  publicKey: PublicKey
-): Promise<Token[]> {
-  const parsedAccounts = await connection.getParsedTokenAccountsByOwner(publicKey, {
-    programId: TOKEN_PROGRAM_ID,
-  });
-
-  const dustTokens: Token[] = [];
-  for (let i = 0; i < parsedAccounts.value.length; i++) {
-    const { pubkey, account } = parsedAccounts.value[i];
-    const info = account.data.parsed?.info;
-    if (!info) continue;
-
-    const mint = info.mint as string;
-    const tokenAmount = info.tokenAmount;
-    const amount = tokenAmount?.amount ? BigInt(tokenAmount.amount) : BigInt(0);
-    const uiAmount = tokenAmount?.uiAmount ?? 0;
-    const uiAmountString = tokenAmount?.uiAmountString ?? "0";
-
-    const isDust =
-      amount === BigInt(0) || (typeof uiAmount === "number" && uiAmount < DUST_THRESHOLD);
-
-    if (isDust) {
-      dustTokens.push({
-        id: pubkey.toBase58(),
-        name: `Token ${mint.slice(0, 4)}...`,
-        mint,
-        balance: uiAmountString,
-        rentRefundable: RENT_PER_ACCOUNT,
-        icon: TOKEN_ICONS[i % TOKEN_ICONS.length],
-      });
-    }
-  }
-  return dustTokens;
-}
 
 const Dashboard = () => {
   const { connection } = useConnection();
   const { publicKey, connected, sendTransaction } = useWallet();
+  const anchorWallet = useAnchorWallet();
 
-  const [tokens, setTokens] = useState<Token[]>([]);
+  const [tokenAccounts, setTokenAccounts] = useState<TokenAccountInfo[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [scanning, setScanning] = useState(false);
   const [scanned, setScanned] = useState(false);
@@ -92,6 +54,29 @@ const Dashboard = () => {
     });
   }, []);
 
+  const sweepableAccounts = useMemo(
+    () => tokenAccounts.filter((a) => a.isSweepable),
+    [tokenAccounts]
+  );
+
+  const nonSweepableAccounts = useMemo(
+    () => tokenAccounts.filter((a) => !a.isSweepable),
+    [tokenAccounts]
+  );
+
+  const tokens: Token[] = useMemo(
+    () =>
+      sweepableAccounts.map((a, i) => ({
+        id: a.pubkey.toBase58(),
+        name: `Token ${a.mint.toBase58().slice(0, 4)}...`,
+        mint: a.mint.toBase58(),
+        balance: "0",
+        rentRefundable: RENT_PER_ACCOUNT,
+        icon: TOKEN_ICONS[i % TOKEN_ICONS.length],
+      })),
+    [sweepableAccounts]
+  );
+
   const handleSelectAll = useCallback(() => {
     setSelectedIds((prev) =>
       prev.size === tokens.length ? new Set() : new Set(tokens.map((t) => t.id))
@@ -105,12 +90,11 @@ const Dashboard = () => {
 
     setScanning(true);
 
-    await new Promise((r) => setTimeout(r, 2000));
-
     try {
-      const dustTokens = await fetchTokenAccounts(connection, publicKey);
-      setTokens(dustTokens);
-      setSelectedIds(new Set(dustTokens.map((t) => t.id)));
+      const accounts = await fetchAllTokenAccounts(connection, publicKey);
+      setTokenAccounts(accounts);
+      const sweepable = accounts.filter((a) => a.isSweepable);
+      setSelectedIds(new Set(sweepable.map((a) => a.pubkey.toBase58())));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       const errorStack = err instanceof Error ? err.stack : undefined;
@@ -120,7 +104,7 @@ const Dashboard = () => {
         stack: errorStack,
       });
       toast.error(`Failed to scan wallet: ${errorMessage}`);
-      setTokens([]);
+      setTokenAccounts([]);
     } finally {
       setScanning(false);
       setScanned(true);
@@ -128,78 +112,62 @@ const Dashboard = () => {
   }, [publicKey, connection, scanning, scanned]);
 
   const handleSweep = useCallback(async () => {
-    if (!publicKey || selectedIds.size === 0 || sweeping) return;
+    if (!publicKey || !anchorWallet || selectedIds.size === 0 || sweeping) return;
 
-    const selectedTokens = tokens.filter((t) => selectedIds.has(t.id));
-    if (selectedTokens.length === 0) return;
+    const program = getProgram(anchorWallet);
+    const TREASURY = new PublicKey("J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi");
 
     setSweeping(true);
     setSweepProgress(null);
 
     try {
-      const accountPubkeys = selectedTokens.map((t) => new PublicKey(t.id));
-      const treasuryPubkey = new PublicKey(TREASURY_WALLET);
+      const selectedAccounts = tokenAccounts.filter(
+        (a) => a.isSweepable && selectedIds.has(a.pubkey.toBase58())
+      );
 
-      // Auto-batching: split into chunks of max ACCOUNTS_PER_TX
-      const batches: PublicKey[][] = [];
-      for (let i = 0; i < accountPubkeys.length; i += ACCOUNTS_PER_TX) {
-        batches.push(accountPubkeys.slice(i, i + ACCOUNTS_PER_TX));
+      // Batch: max ACCOUNTS_PER_TX per transaction
+      const batches: typeof selectedAccounts[] = [];
+      for (let i = 0; i < selectedAccounts.length; i += ACCOUNTS_PER_TX) {
+        batches.push(selectedAccounts.slice(i, i + ACCOUNTS_PER_TX));
       }
 
       setSweepProgress({ currentBatch: 0, totalBatches: batches.length });
-
       let lastSignature: string | undefined;
 
       for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
         const batch = batches[batchIndex];
-        setSweepProgress({ currentBatch: batchIndex + 1, totalBatches: batches.length, confirmingSlow: false });
-        const tx = new Transaction();
+        setSweepProgress({
+          currentBatch: batchIndex + 1,
+          totalBatches: batches.length,
+          confirmingSlow: false,
+        });
 
-        // Compute budget protection (prepend to every batch)
-        tx.add(
-          ComputeBudgetProgram.setComputeUnitLimit({ units: 1_000_000 }),
-          ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1 })
+        // Build one ix per account via Anchor program
+        // Each ix routes through on-chain fee logic (treasury validated)
+        const ixs = await Promise.all(
+          batch.map((account) =>
+            program.methods
+              .closeEmptyAccount()
+              .accounts({
+                user: publicKey,
+                tokenAccount: account.pubkey,
+                treasury: TREASURY,
+              })
+              .instruction()
+          )
         );
 
-        // Fee: 1.5% of rent lamports per account (~0.00204 SOL per account)
-        const feePerAccount = Math.floor(RENT_LAMPORTS_PER_ACCOUNT * FEE_PERCENT);
-        const totalFeeLamports = feePerAccount * batch.length;
-
-        // Close: Return rent to user's wallet (must happen first so user receives lamports)
-        for (const accountPubkey of batch) {
-          tx.add(
-            createCloseAccountInstruction(
-              accountPubkey,
-              publicKey, // destination: rent goes to user
-              publicKey, // authority: user owns the account
-              [],
-              TOKEN_PROGRAM_ID
-            )
-          );
-        }
-
-        // Transfer: Send 1.5% platform fee to treasury (user pays from rent just received)
-        tx.add(
-          SystemProgram.transfer({
-            fromPubkey: publicKey,
-            toPubkey: treasuryPubkey,
-            lamports: totalFeeLamports,
-          })
-        );
-
-        const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+        const tx = new Transaction().add(...ixs);
+        const { blockhash, lastValidBlockHeight } =
+          await connection.getLatestBlockhash();
         tx.recentBlockhash = blockhash;
         tx.feePayer = publicKey;
 
-        const sig = await sendTransaction(
-          tx,
-          connection,
-          {
-            skipPreflight: false,
-            preflightCommitment: "confirmed",
-            maxRetries: 3,
-          }
-        );
+        const sig = await sendTransaction(tx, connection, {
+          skipPreflight: false,
+          preflightCommitment: "confirmed",
+          maxRetries: 3,
+        });
         lastSignature = sig;
 
         await confirmTransactionWithTimeout(
@@ -207,41 +175,44 @@ const Dashboard = () => {
           sig,
           blockhash,
           lastValidBlockHeight,
-          () => setSweepProgress((p) => (p ? { ...p, confirmingSlow: true } : null))
+          () =>
+            setSweepProgress((p) =>
+              p ? { ...p, confirmingSlow: true } : null
+            )
         );
       }
 
+      // Success
       setSweepProgress(null);
-
-      const closedIds = new Set(selectedTokens.map((t) => t.id));
+      const closedIds = new Set(selectedAccounts.map((a) => a.pubkey.toBase58()));
       const count = closedIds.size;
-      const sol = totalSol;
+      const sol = selectedIds.size * RENT_PER_ACCOUNT;
+
       setSelectedIds(new Set());
-      setTokens((prev) => prev.filter((t) => !closedIds.has(t.id)));
+      setTokenAccounts((prev) =>
+        prev.filter((a) => !closedIds.has(a.pubkey.toBase58()))
+      );
       setSuccessModal({ open: true, count, totalSol: sol, signature: lastSignature });
 
-      const explorerUrl = lastSignature ? EXPLORER_TX_URL(lastSignature) : undefined;
-      toast.success(
-        `🎉 Swept ${count} accounts, reclaimed ${sol.toFixed(5)} SOL!`,
-        explorerUrl
+      toast.success(`🎉 Swept ${count} accounts, reclaimed ${sol.toFixed(5)} SOL!`, {
+        duration: 8000,
+        action: lastSignature
           ? {
-              duration: 8000,
-              action: {
-                label: "View on Solscan",
-                onClick: () => window.open(explorerUrl, "_blank"),
-              },
+              label: "View on Solscan",
+              onClick: () =>
+                window.open(EXPLORER_TX_URL(lastSignature!), "_blank"),
             }
-          : { duration: 6000 }
-      );
+          : undefined,
+      });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      console.error("[Arsweep] Sweep failed:", { error: err, message: errorMessage });
-      toast.error(`Sweep failed: ${errorMessage}`);
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[Arsweep] Sweep failed:", err);
+      toast.error(`Sweep failed: ${msg}`);
     } finally {
       setSweeping(false);
       setSweepProgress(null);
     }
-  }, [publicKey, connection, sendTransaction, selectedIds, tokens, totalSol, sweeping]);
+  }, [publicKey, anchorWallet, connection, sendTransaction, tokenAccounts, selectedIds, sweeping]);
 
   // Not connected
   if (!connected) {
@@ -285,7 +256,7 @@ const Dashboard = () => {
         accountsToClose={selectedIds.size}
       />
       <TokenList
-        tokens={tokens}
+        tokenAccounts={tokenAccounts}
         selectedIds={selectedIds}
         onToggle={handleToggle}
         onSelectAll={handleSelectAll}
