@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, Loader2 } from "lucide-react";
+import { isMainnet } from "@/config/env";
 
 const SERVICE_FEE_PERCENT = 0.015; // 1.5%
 const GAS_FEE_PER_ACCOUNT = 0.000005;
@@ -19,7 +20,7 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false, sweepProgress }
   const gasFee = GAS_FEE_PER_ACCOUNT * count;
   const serviceFee = totalSol * SERVICE_FEE_PERCENT;
   const netSol = totalSol - gasFee - serviceFee;
-  const canSweep = disclaimerAccepted && !sweeping;
+  const canSweep = disclaimerAccepted && !sweeping && !isMainnet;
 
   return (
     <AnimatePresence>
@@ -71,8 +72,9 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false, sweepProgress }
               <motion.button
                 whileHover={canSweep ? { scale: 1.03 } : undefined}
                 whileTap={canSweep ? { scale: 0.95 } : undefined}
-                onClick={onSweep}
+                onClick={canSweep ? onSweep : undefined}
                 disabled={!canSweep}
+                title={isMainnet ? "Sweep coming soon — mainnet program deploying" : undefined}
                 className="gradient-bg gradient-bg-hover flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-primary-foreground font-semibold text-sm whitespace-nowrap transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               >
                 {sweeping ? (
@@ -83,6 +85,11 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false, sweepProgress }
                       : sweepProgress
                         ? `Batch ${sweepProgress.currentBatch} of ${sweepProgress.totalBatches}...`
                         : "Processing Transaction..."}
+                  </>
+                ) : isMainnet ? (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    Sweep Coming Soon 🔒
                   </>
                 ) : (
                   <>

@@ -9,9 +9,9 @@ import type { WalletAdapter } from "@solana/wallet-adapter-base";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
-import { RPC_ENDPOINT, isDevnet, isDocsSubdomain } from "@/config/env";
+import { RPC_ENDPOINT, isDevnet, isMainnet, isDocsSubdomain } from "@/config/env";
 import { BannerProvider, useBanner } from "./components/BannerProvider";
-import DevnetBanner from "./components/DevnetBanner";
+import DevnetBanner, { MainnetBanner } from "./components/DevnetBanner";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import DocsLayout from "@/layouts/DocsLayout";
@@ -33,8 +33,9 @@ const App = () => {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="arsweep-theme">
-      <BannerProvider initialHeight={isDevnet ? 44 : 0}>
+      <BannerProvider initialHeight={isDevnet || isMainnet ? 44 : 0}>
         <DevnetBanner />
+        <MainnetBanner />
         <AppContent endpoint={endpoint} wallets={wallets} />
       </BannerProvider>
     </ThemeProvider>
