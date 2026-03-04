@@ -85,6 +85,12 @@ const Dashboard = () => {
 
   const totalSol = selectedIds.size * RENT_PER_ACCOUNT;
 
+  const handleRescan = useCallback(() => {
+    setTokenAccounts([]);
+    setSelectedIds(new Set());
+    setScanned(false);
+  }, []);
+
   const handleScan = useCallback(async () => {
     if (!publicKey || scanning || scanned) return;
 
@@ -226,15 +232,23 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col items-center justify-center min-h-[70vh] px-4"
         >
-          <div className="glass rounded-3xl p-12 max-w-md text-center">
-            <div className="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6">
+          <div className="glass rounded-3xl p-10 max-w-lg w-full text-center border border-border/50">
+            <div className="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6 shadow-lg">
               <Wallet className="w-10 h-10 text-primary-foreground" />
             </div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">Please Connect Wallet</h2>
-            <p className="text-muted-foreground text-sm mb-8">
-              Connect your Solana wallet to scan for dust token accounts and reclaim your rent deposits.
+            <h2 className="text-3xl font-extrabold text-foreground mb-2">Connect Your Wallet</h2>
+            <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto leading-relaxed">
+              Scan your Solana wallet for empty token accounts and reclaim locked SOL — takes under 5 seconds.
             </p>
+            <div className="flex flex-wrap justify-center gap-3 mb-8 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50">🔒 Read-only scan</span>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50">✅ Non-custodial</span>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50">⚡ Free to scan</span>
+            </div>
             <WalletMultiButton className="!bg-primary !text-primary-foreground !rounded-2xl !px-8 !py-4 !text-lg !font-semibold hover:!opacity-90 !transition-opacity !w-full !justify-center" />
+            <p className="text-xs text-muted-foreground mt-4">
+              Supports Phantom, Solflare, Backpack & more
+            </p>
           </div>
         </motion.div>
         <PremiumFooter />
@@ -249,7 +263,7 @@ const Dashboard = () => {
       <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
 
       <Header />
-      <Hero scanning={scanning} scanned={scanned} onScan={handleScan} sweeping={sweeping} />
+      <Hero scanning={scanning} scanned={scanned} onScan={handleScan} onRescan={handleRescan} sweeping={sweeping} accountsFound={sweepableAccounts.length} />
       <StatsBar
         totalDust={tokens.length}
         potentialRefund={totalSol}
@@ -262,6 +276,7 @@ const Dashboard = () => {
         onSelectAll={handleSelectAll}
         loading={scanning}
         disabled={sweeping}
+        scanned={scanned}
       />
       <ActionBar
         count={selectedIds.size}

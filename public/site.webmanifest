@@ -1,0 +1,22 @@
+{
+  "name": "Arsweep",
+  "short_name": "Arsweep",
+  "description": "Reclaim rent SOL from empty Solana token accounts.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080B14",
+  "theme_color": "#14F195",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

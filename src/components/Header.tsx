@@ -28,7 +28,7 @@ const Header = () => {
       <div className="flex items-center gap-3">
         <ThemeToggle />
         <a
-          href="http://localhost:8080/docs"
+          href="/docs"
           target="_blank"
           rel="noopener noreferrer"
           className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-colors duration-200 ${

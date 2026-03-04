@@ -33,9 +33,10 @@ interface TokenListProps {
   onSelectAll: () => void;
   loading?: boolean;
   disabled?: boolean;
+  scanned?: boolean;
 }
 
-const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading = false, disabled = false }: TokenListProps) => {
+const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading = false, disabled = false, scanned = false }: TokenListProps) => {
   const sweepableCount = tokenAccounts.filter((a) => a.isSweepable).length;
   const allSelected = !loading && !disabled && sweepableCount > 0 && selectedIds.size === sweepableCount;
   const isDisabled = loading || disabled;
@@ -43,11 +44,13 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
   return (
     <section className="px-4 pb-32">
       <div className="container mx-auto max-w-3xl">
-        {/* Safety Warning Banner */}
+        {/* Safety Warning Banner — only show after scan */}
+        {scanned && sweepableCount > 0 && (
         <div className="flex items-center gap-3 mb-4 px-4 py-3 rounded-xl border border-destructive/30 bg-destructive/5 text-sm text-destructive">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           <p>Warning: Closing accounts is permanent. Ensure the token balance is zero or insignificant.</p>
         </div>
+        )}
 
         <div className="glass rounded-2xl overflow-hidden">
           {/* Table header */}

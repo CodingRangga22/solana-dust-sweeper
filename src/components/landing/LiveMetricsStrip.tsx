@@ -1,23 +1,23 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, RefreshCw } from "lucide-react";
 import { isDevnet } from "@/config/env";
+import { fetchDevnetMetrics, type DevnetMetrics } from "@/lib/metrics";
 
 const LiveMetricsStrip = () => {
-  const [metrics, setMetrics] = useState({
-    totalSolReclaimed: 1240.55,
-    totalAccountsClosed: 612340,
-    totalWalletsTested: 2847,
-  });
+  const [metrics, setMetrics] = useState<DevnetMetrics | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const load = async () => {
+    setLoading(true);
+    const data = await fetchDevnetMetrics();
+    setMetrics(data);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setMetrics((prev) => ({
-        totalSolReclaimed: Math.round((prev.totalSolReclaimed + 0.002 + Math.random() * 0.03) * 100) / 100,
-        totalAccountsClosed: prev.totalAccountsClosed + Math.floor(Math.random() * 3) + 1,
-        totalWalletsTested: prev.totalWalletsTested + (Math.random() > 0.7 ? 1 : 0),
-      }));
-    }, 5000);
+    load();
+    const interval = setInterval(load, 60_000);
     return () => clearInterval(interval);
   }, []);
 
@@ -32,31 +32,35 @@ const LiveMetricsStrip = () => {
     >
       <div className="container mx-auto max-w-5xl">
         <div className="glass rounded-2xl px-6 py-5 border border-amber-500/15">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-row items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-amber-400" />
               <span className="text-xs font-bold uppercase tracking-wider text-amber-400/90">
                 Devnet Statistics
               </span>
+              {loading && (
+                <RefreshCw className="w-3 h-3 text-muted-foreground animate-spin" />
+              )}
             </div>
-            <div className="flex flex-wrap gap-8 sm:gap-12">
+            <div className="flex gap-4 sm:gap-12">
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
                   Test SOL Reclaimed
                 </p>
                 <AnimatePresence mode="wait">
                   <motion.p
-                    key={metrics.totalSolReclaimed}
+                    key={metrics?.totalSolReclaimed}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     className="text-primary font-bold tabular-nums text-lg"
                   >
-                    {metrics.totalSolReclaimed.toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}{" "}
-                    SOL
+                    {loading || !metrics
+                      ? "—"
+                      : metrics.totalSolReclaimed.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) + " SOL"}
                   </motion.p>
                 </AnimatePresence>
               </div>
@@ -66,13 +70,13 @@ const LiveMetricsStrip = () => {
                 </p>
                 <AnimatePresence mode="wait">
                   <motion.p
-                    key={metrics.totalWalletsTested}
+                    key={metrics?.totalWalletsTested}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     className="text-foreground font-bold tabular-nums text-lg"
                   >
-                    {metrics.totalWalletsTested.toLocaleString()}
+                    {loading || !metrics ? "—" : metrics.totalWalletsTested.toLocaleString()}
                   </motion.p>
                 </AnimatePresence>
               </div>
@@ -82,13 +86,13 @@ const LiveMetricsStrip = () => {
                 </p>
                 <AnimatePresence mode="wait">
                   <motion.p
-                    key={metrics.totalAccountsClosed}
+                    key={metrics?.totalAccountsClosed}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     className="text-foreground font-bold tabular-nums text-lg"
                   >
-                    {metrics.totalAccountsClosed.toLocaleString()}
+                    {loading || !metrics ? "—" : metrics.totalAccountsClosed.toLocaleString()}
                   </motion.p>
                 </AnimatePresence>
               </div>

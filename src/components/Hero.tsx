@@ -1,31 +1,31 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, RotateCcw, CheckCircle2 } from "lucide-react";
 
 interface HeroProps {
   scanning?: boolean;
   scanned?: boolean;
   onScan?: () => void;
+  onRescan?: () => void;
   sweeping?: boolean;
+  accountsFound?: number;
 }
 
-const Hero = ({ scanning = false, scanned = false, onScan, sweeping = false }: HeroProps) => {
+const Hero = ({ scanning = false, scanned = false, onScan, onRescan, sweeping = false, accountsFound = 0 }: HeroProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   const handleScan = () => {
-    if (pathname !== "/app") {
-      navigate("/app");
-      return;
-    }
-    if (onScan) {
-      onScan();
-    }
+    if (pathname !== "/app") { navigate("/app"); return; }
+    if (onScan) onScan();
+  };
+
+  const handleRescan = () => {
+    if (onRescan) onRescan();
   };
 
   return (
     <section className="relative pt-32 pb-16 px-4 text-center overflow-hidden">
-      {/* Background orbs */}
       <div className="orb w-[400px] h-[400px] bg-primary/20 -top-40 -left-40 animate-pulse-glow" />
       <div className="orb w-[300px] h-[300px] bg-secondary/20 -top-20 right-0 animate-pulse-glow" style={{ animationDelay: "2s" }} />
 
@@ -48,11 +48,7 @@ const Hero = ({ scanning = false, scanned = false, onScan, sweeping = false }: H
         </p>
 
         {scanning ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="inline-flex flex-col items-center gap-3"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="inline-flex flex-col items-center gap-3">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
             <p className="text-sm text-muted-foreground">Scanning wallet…</p>
             <div className="w-48 h-1.5 rounded-full bg-muted overflow-hidden">
@@ -64,6 +60,25 @@ const Hero = ({ scanning = false, scanned = false, onScan, sweeping = false }: H
               />
             </div>
           </motion.div>
+        ) : scanned ? (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-3">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
+              <CheckCircle2 className="w-4 h-4" />
+              {accountsFound > 0
+                ? `Found ${accountsFound} sweepable account${accountsFound > 1 ? "s" : ""}`
+                : "Scan complete — no sweepable accounts found"}
+            </div>
+            <motion.button
+              whileHover={!sweeping ? { scale: 1.03 } : undefined}
+              whileTap={!sweeping ? { scale: 0.97 } : undefined}
+              onClick={handleRescan}
+              disabled={sweeping}
+              className="flex items-center gap-2 px-5 py-2 rounded-xl glass border border-border text-sm text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Rescan Wallet
+            </motion.button>
+          </motion.div>
         ) : (
           <motion.button
             whileHover={!sweeping ? { scale: 1.03 } : undefined}
@@ -72,7 +87,7 @@ const Hero = ({ scanning = false, scanned = false, onScan, sweeping = false }: H
             disabled={sweeping}
             className="gradient-bg gradient-bg-hover px-8 py-3.5 rounded-2xl text-primary-foreground font-semibold text-base transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {scanned ? "✓ Scan Complete" : "Start Scanning"}
+            Start Scanning
           </motion.button>
         )}
       </motion.div>

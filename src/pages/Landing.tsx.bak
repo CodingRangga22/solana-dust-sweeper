@@ -261,11 +261,6 @@ const Landing = () => {
                     Open source
                   </span>
                 </div>
-                <div className="flex flex-wrap gap-x-8 gap-y-3 text-sm mt-2">
-                  <span className="flex items-center gap-2"><span className="text-primary font-bold text-xl">~0.002</span><span className="text-muted-foreground ml-1">SOL per account</span></span>
-                  <span className="flex items-center gap-2"><span className="text-primary font-bold text-xl">1.5%</span><span className="text-muted-foreground ml-1">platform fee</span></span>
-                  <span className="flex items-center gap-2"><span className="text-primary font-bold text-xl">&lt;5s</span><span className="text-muted-foreground ml-1">sweep time</span></span>
-                </div>
                 <p className="text-sm text-muted-foreground">
                   💰 Over <span className="text-primary font-semibold">0.00204 SOL</span> recovered per account
                 </p>
@@ -285,7 +280,7 @@ const Landing = () => {
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-foreground">
-                How <span className="gradient-text"><span translate="no" className="notranslate">Arsweep</span></span>{" "}Works
+                How <span className="gradient-text"><span translate="no" className="notranslate">Arsweep</span></span> Works
               </h2>
               <p className="text-muted-foreground text-lg max-w-md mx-auto mb-2">
                 Three simple steps to reclaim your SOL.
@@ -373,24 +368,17 @@ const Landing = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="container mx-auto max-w-3xl text-center glass rounded-3xl p-14 relative overflow-hidden border border-primary/20"
+          className="container mx-auto max-w-2xl text-center glass rounded-3xl p-12 relative overflow-hidden"
         >
-          <div className="orb w-64 h-64 bg-primary/15 -top-32 -left-32" />
-          <div className="orb w-48 h-48 bg-secondary/15 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+          <div className="orb w-40 h-40 bg-primary/20 -top-20 -left-20" />
           <div className="orb w-32 h-32 bg-secondary/20 -bottom-16 -right-16" />
-          <h2 className="text-4xl sm:text-5xl font-extrabold mb-5 text-foreground relative z-10">
-            Reclaim Your <span className="gradient-text">Locked SOL</span> Now
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-foreground relative z-10">
+            Ready to <span className="gradient-text">clean up</span>?
           </h2>
           <p className="text-muted-foreground mb-8 relative z-10">
-            Every empty token account costs you ~0.002 SOL. Sweep them all in one click — free, non-custodial, instant.
+            Stop leaving SOL on the table. Start reclaiming in seconds.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mb-8 relative z-10 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5">✅ Non-custodial</span>
-              <span className="flex items-center gap-1.5">⚡ Takes 5 seconds</span>
-              <span className="flex items-center gap-1.5">🔒 Keys never leave your wallet</span>
-              <span className="flex items-center gap-1.5">📖 Open source</span>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
             <motion.button
               whileHover={{
                 scale: 1.03,
@@ -400,7 +388,7 @@ const Landing = () => {
               onClick={handleLaunch}
               className="gradient-bg gradient-bg-hover px-10 py-4 rounded-2xl text-primary-foreground font-semibold text-lg transition-all duration-200 shadow-lg flex items-center justify-center gap-2"
             >
-              Sweep My Wallet →
+              Launch Arsweep
               <ArrowRight className="w-5 h-5" />
             </motion.button>
             <motion.a

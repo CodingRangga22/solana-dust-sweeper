@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#14F195"/>
+      <stop offset="100%" stop-color="#9945FF"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="32" height="32" rx="7" fill="#080B14"/>
+  <rect width="32" height="32" rx="7" fill="url(#bg)" opacity="0.15"/>
+  <!-- Border gradient -->
+  <rect x="0.5" y="0.5" width="31" height="31" rx="6.5" fill="none" stroke="url(#bg)" stroke-width="1" opacity="0.6"/>
+  <!-- Broom handle -->
+  <line x1="21" y1="7" x2="11" y2="21" stroke="url(#bg)" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Broom head -->
+  <ellipse cx="10.5" cy="22.5" rx="4.5" ry="2" fill="url(#bg)" transform="rotate(-18 10.5 22.5)"/>
+  <!-- Dust dots -->
+  <circle cx="6.5" cy="25.5" r="1.2" fill="#14F195" opacity="0.8"/>
+  <circle cx="10" cy="27.5" r="0.9" fill="#9945FF" opacity="0.7"/>
+  <circle cx="14.5" cy="26.5" r="0.7" fill="#14F195" opacity="0.5"/>
+</svg>
