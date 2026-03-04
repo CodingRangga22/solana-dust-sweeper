@@ -117,31 +117,20 @@ export async function getReferralLeaderboard(
   limit = 100
 ): Promise<ReferralLeaderboardEntry[]> {
   const { data, error } = await supabase
-    .from("referrals")
-    .select("referrer_code, referred_wallet, users!inner(wallet_address)")
-    .eq("season_id", seasonId);
+    .from("referral_leaderboard")
+    .select("*")
+    .eq("season_id", seasonId)
+    .order("referral_count", { ascending: false })
+    .limit(limit);
 
   if (error || !data) return [];
 
-  // Count per referrer
-  const counts: Record<string, { code: string; wallet: string; count: number }> = {};
-  for (const row of data as any[]) {
-    const code = row.referrer_code;
-    if (!counts[code]) {
-      counts[code] = { code, wallet: row.users?.wallet_address ?? "", count: 0 };
-    }
-    counts[code].count++;
-  }
-
-  return Object.values(counts)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, limit)
-    .map((entry, i) => ({
-      referrer_code: entry.code,
-      wallet_address: entry.wallet,
-      referral_count: entry.count,
-      rank: i + 1,
-    }));
+  return data.map((row: any, i: number) => ({
+    referrer_code: row.referrer_code,
+    wallet_address: row.wallet_address ?? "",
+    referral_count: Number(row.referral_count),
+    rank: i + 1,
+  }));
 }
 
 // ── Get sweep leaderboard ─────────────────────────────────────────────
