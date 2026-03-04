@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen } from "lucide-react";
+import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen, FlaskConical } from "lucide-react";
 import ArsweepLogo from "@/components/ArsweepLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import ChatWidget from "@/components/ChatWidget";
@@ -239,6 +239,15 @@ const Landing = () => {
                   className="glass glass-hover px-8 py-3.5 rounded-2xl text-foreground font-semibold text-base transition-all duration-200 text-center"
                 >
                   How It Works
+                </motion.a>
+                <motion.a
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  href="/simulation"
+                  className="glass glass-hover px-8 py-3.5 rounded-2xl text-foreground font-semibold text-base transition-all duration-200 text-center flex items-center justify-center gap-2 border border-yellow-400/30 text-yellow-400 hover:text-yellow-300"
+                >
+                  <FlaskConical className="w-5 h-5" />
+                  Try Simulation
                 </motion.a>
               </motion.div>
 

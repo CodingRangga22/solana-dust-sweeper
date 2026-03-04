@@ -59,7 +59,7 @@ const Leaderboard = () => {
       <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
       <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
       <Header />
-      <div className="container mx-auto max-w-3xl px-4 py-12">
+      <div className="container mx-auto max-w-3xl px-4 pt-24 pb-12">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-3">
             <Trophy className="w-7 h-7 text-yellow-400" />

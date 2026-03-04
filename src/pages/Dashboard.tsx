@@ -23,6 +23,8 @@ import { confirmTransactionWithTimeout } from "@/utils/transaction";
 import { fetchAllTokenAccounts, type TokenAccountInfo } from "@/lib/tokenAccounts";
 import { useSwapMode } from "@/hooks/useSwapMode";
 import { getSwapQuote } from "@/lib/jupiterSwap";
+import { useReferral } from "@/hooks/useReferral";
+import { updateSweepStats } from "@/lib/supabase";
 
 const RENT_PER_ACCOUNT = 0.002042; // SOL per closed account (~2,039,280 lamports)
 const TOKEN_ICONS = ["🪙", "🐶", "🌙", "💀", "🐕", "🧹", "💨", "🐱", "🦊", "🐸"];
@@ -31,6 +33,7 @@ const Dashboard = () => {
   const { connection } = useConnection();
   const { publicKey, connected, sendTransaction } = useWallet();
   const anchorWallet = useAnchorWallet();
+  const { user, season } = useReferral(publicKey?.toBase58() ?? null);
 
   const [tokenAccounts, setTokenAccounts] = useState<TokenAccountInfo[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -254,6 +257,15 @@ const Dashboard = () => {
         network: NETWORK,
       });
       setSweepHistory((prev) => [saved, ...prev]);
+
+      if (season) {
+        await updateSweepStats(
+          publicKey.toBase58(),
+          season.id,
+          count,
+          sol
+        );
+      }
 
       toast.success(`🎉 Swept ${count} accounts, reclaimed ${sol.toFixed(5)} SOL!`, {
         duration: 8000,

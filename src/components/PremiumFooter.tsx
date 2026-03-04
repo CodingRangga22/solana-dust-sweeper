@@ -142,7 +142,7 @@ const PremiumFooter = () => {
               <ul className="space-y-2.5">
                 {[
                   { label: "Dashboard", onClick: () => navigate("/app") },
-                  { label: "Simulation", onClick: () => navigate("/app") },
+                  { label: "Simulation", onClick: () => navigate("/simulation") },
                   { label: "Direct Sweep", onClick: () => navigate("/app") },
                   { label: "Documentation", onClick: () => navigate("/docs") },
                 ].map((item) => (
