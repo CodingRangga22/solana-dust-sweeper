@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { useConnection, useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction } from "@solana/web3.js";
@@ -19,6 +19,8 @@ import { EXPLORER_TX_URL } from "@/config/env";
 import { ACCOUNTS_PER_TX } from "@/config/sweep";
 import { confirmTransactionWithTimeout } from "@/utils/transaction";
 import { fetchAllTokenAccounts, type TokenAccountInfo } from "@/lib/tokenAccounts";
+import { useSwapMode } from "@/hooks/useSwapMode";
+import { getSwapQuote } from "@/lib/jupiterSwap";
 
 const RENT_PER_ACCOUNT = 0.002042; // SOL per closed account (~2,039,280 lamports)
 const TOKEN_ICONS = ["🪙", "🐶", "🌙", "💀", "🐕", "🧹", "💨", "🐱", "🦊", "🐸"];
@@ -44,6 +46,32 @@ const Dashboard = () => {
     totalSol: number;
     signature?: string;
   }>({ open: false, count: 0, totalSol: 0 });
+
+  const { tokenModes, toggleMode, resetModes } = useSwapMode();
+  const [swapQuotes, setSwapQuotes] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const fetchQuotes = async () => {
+      const swapTokens = tokenAccounts.filter(
+        (a) =>
+          a.isSweepable &&
+          a.hasLiquidityPool &&
+          a.amount > BigInt(0) &&
+          tokenModes[a.pubkey.toBase58()] === "swap",
+      );
+
+      for (const account of swapTokens) {
+        const id = account.pubkey.toBase58();
+        if (swapQuotes[id] !== undefined) continue;
+        const quote = await getSwapQuote(account.mint.toBase58(), account.amount);
+        if (quote) {
+          setSwapQuotes((prev) => ({ ...prev, [id]: quote.outAmountSol }));
+        }
+      }
+    };
+
+    fetchQuotes();
+  }, [tokenModes, tokenAccounts]);
 
   const handleToggle = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -89,7 +117,9 @@ const Dashboard = () => {
     setTokenAccounts([]);
     setSelectedIds(new Set());
     setScanned(false);
-  }, []);
+    resetModes();
+    setSwapQuotes({});
+  }, [resetModes]);
 
   const handleScan = useCallback(async () => {
     if (!publicKey || scanning || scanned) return;
@@ -277,6 +307,9 @@ const Dashboard = () => {
         loading={scanning}
         disabled={sweeping}
         scanned={scanned}
+        tokenModes={tokenModes}
+        onToggleMode={toggleMode}
+        swapQuotes={swapQuotes}
       />
       <ActionBar
         count={selectedIds.size}

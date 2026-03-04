@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ExternalLink, AlertTriangle } from "lucide-react";
 import { type TokenAccountInfo, INACTIVITY_DAYS } from "@/lib/tokenAccounts";
+import SwapModeToggle from "@/components/SwapModeToggle";
+import type { TokenMode } from "@/hooks/useSwapMode";
 
 export interface Token {
   id: string;
@@ -34,9 +36,12 @@ interface TokenListProps {
   loading?: boolean;
   disabled?: boolean;
   scanned?: boolean;
+  tokenModes?: Record<string, TokenMode>;
+  onToggleMode?: (id: string) => void;
+  swapQuotes?: Record<string, number>;
 }
 
-const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading = false, disabled = false, scanned = false }: TokenListProps) => {
+const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading = false, disabled = false, scanned = false, tokenModes = {}, onToggleMode, swapQuotes = {} }: TokenListProps) => {
   const sweepableCount = tokenAccounts.filter((a) => a.isSweepable).length;
   const allSelected = !loading && !disabled && sweepableCount > 0 && selectedIds.size === sweepableCount;
   const isDisabled = loading || disabled;
@@ -154,6 +159,15 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                               </span>
                             ))}
                           </div>
+                        )}
+                        {account.isSweepable && account.hasLiquidityPool && onToggleMode && (
+                          <SwapModeToggle
+                            mode={tokenModes[account.pubkey.toBase58()] ?? "close"}
+                            onToggle={() => onToggleMode(account.pubkey.toBase58())}
+                            hasLiquidity={account.hasLiquidityPool}
+                            disabled={disabled}
+                            estimatedSol={swapQuotes[account.pubkey.toBase58()]}
+                          />
                         )}
                       </div>
                     </div>
