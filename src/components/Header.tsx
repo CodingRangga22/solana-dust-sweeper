@@ -17,9 +17,9 @@ const Header = () => {
   >
     <div className="container mx-auto px-4 h-16 flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+        <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity" translate="no">
           <ArsweepLogo className="w-8 h-8" />
-          <span className="text-xl font-bold gradient-text">Arsweep</span>
+          <span className="text-xl font-bold gradient-text notranslate" translate="no" data-brand="Arsweep" aria-label="Arsweep"></span>
         </Link>
         <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border border-primary/30 text-primary bg-primary/5">
           Open Source
@@ -28,7 +28,7 @@ const Header = () => {
       <div className="flex items-center gap-3">
         <ThemeToggle />
         <a
-          href="/docs"
+          href="http://localhost:8080/docs"
           target="_blank"
           rel="noopener noreferrer"
           className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-colors duration-200 ${

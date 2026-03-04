@@ -4,9 +4,9 @@ import { MessageCircle, X, Send } from "lucide-react";
 import ArsweepLogo from "./ArsweepLogo";
 
 const FAQ_ITEMS = [
-  { label: "How does it work?", answer: "Connect your wallet, we scan for empty token accounts and scam airdrops, then you close them to reclaim your SOL rent deposits — all in one click! On Solana, every account costs rent; Arsweep helps you close unused accounts and get that rent back." },
-  { label: "Is it safe?", answer: "Absolutely! Arsweep only requires read-only access to scan your wallet. We never ask for private keys. The code is fully open source and community-audited. Closing accounts is a standard Solana operation — you're just reclaiming rent you've already paid." },
-  { label: "What are the fees?", answer: "You receive your gross refund (0.00204 SOL per account in rent) minus the Solana network gas fee and a 1% Arsweep service fee. The exact breakdown is shown before you confirm. Most of your reclaimed SOL goes straight back to you." },
+  { label: "How does it work?", answer: "Connect your wallet, we scan for empty token accounts and scam airdrops, then you close them to reclaim your SOL rent deposits — all in one click! On Solana, every account costs rent; Ars​weep helps you close unused accounts and get that rent back." },
+  { label: "Is it safe?", answer: "Absolutely! Ars​weep only requires read-only access to scan your wallet. We never ask for private keys. The code is fully open source and community-audited. Closing accounts is a standard Solana operation — you're just reclaiming rent you've already paid." },
+  { label: "What are the fees?", answer: "You receive your gross refund (0.00204 SOL per account in rent) minus the Solana network gas fee and a 1% Ars​weep service fee. The exact breakdown is shown before you confirm. Most of your reclaimed SOL goes straight back to you." },
 ];
 
 const FALLBACK_ANSWER = "I'm still learning! But basically, I help you get back your SOL rent deposits from empty accounts.";
@@ -14,7 +14,7 @@ const FALLBACK_ANSWER = "I'm still learning! But basically, I help you get back 
 const ChatWidget = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<{ from: "bot" | "user"; text: string }[]>([
-    { from: "bot", text: "Hi! 👋 I'm the Arsweep Assistant. How can I help you clean your wallet today?" },
+    { from: "bot", text: "Hi! 👋 I'm the Ars​weep Assistant. How can I help you clean your wallet today?" },
   ]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);

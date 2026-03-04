@@ -95,7 +95,7 @@ const PremiumFooter = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 mb-12">
             {/* Col 1: Brand & Newsletter */}
             <div className="space-y-5">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3" translate="no">
                 <motion.div
                   animate={{
                     filter: [
@@ -108,7 +108,7 @@ const PremiumFooter = () => {
                 >
                   <ArsweepLogo className="w-8 h-8" />
                 </motion.div>
-                <span className="text-lg font-bold gradient-text">Arsweep</span>
+                <span className="text-lg font-bold gradient-text" translate="no"><span translate="no"><span translate="no" className="notranslate">Arsweep</span></span></span>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 The most trusted Solana wallet cleaner. Reclaim hidden SOL from dust accounts.
@@ -193,8 +193,8 @@ const PremiumFooter = () => {
             <div className="space-y-5">
               <div className="space-y-4">
                 <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Community</p>
-                <div className="flex items-center gap-3">
-                  <MagneticIcon href="#" label="X (Twitter)"><TwitterIcon /></MagneticIcon>
+                <div className="flex items-center gap-3" translate="no">
+                  <MagneticIcon href="https://x.com/Arsweep_AI" label="X (Twitter)"><TwitterIcon /></MagneticIcon>
                   <MagneticIcon href="#" label="Discord"><DiscordIcon /></MagneticIcon>
                   <MagneticIcon href="#" label="Instagram"><InstagramIcon /></MagneticIcon>
                   <MagneticIcon href="#" label="YouTube"><YoutubeIcon /></MagneticIcon>

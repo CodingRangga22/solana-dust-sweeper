@@ -1,38 +1,60 @@
 const Overview = () => {
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">Arsweep Documentation</h1>
-
-      <p className="text-muted-foreground leading-relaxed mb-6">
-        Arsweep is a non-custodial Solana utility that enables users to reclaim
-        rent-exempt SOL locked in empty SPL token accounts.
-      </p>
-
-      <div className="bg-muted/50 border rounded-xl p-6 mb-10">
-        <p className="text-sm">
-          Quick Flow:
-          <br />
-          Connect Wallet → Scan Accounts → Select Empty Accounts → Confirm Close
-        </p>
+      <div className="mb-10">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-4">✦ Open Source · Non-Custodial · Solana Devnet</div>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight">Arsweep Documentation</h1>
+        <p className="text-muted-foreground text-lg leading-relaxed">Arsweep is a non-custodial Solana utility that automatically identifies and closes empty SPL token accounts, reclaiming rent-exempt SOL locked inside them — returned directly to your wallet.</p>
       </div>
-
+      <div className="bg-muted/50 border rounded-xl p-6 mb-10">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Quick Flow</p>
+        <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
+          {["Connect Wallet","Scan Accounts","Review Eligibility","Confirm Sweep","Receive SOL"].map((step,i,arr)=>(
+            <span key={step} className="flex items-center gap-2">
+              <span className="px-3 py-1 rounded-lg bg-background border text-foreground">{step}</span>
+              {i<arr.length-1&&<span className="text-muted-foreground">→</span>}
+            </span>
+          ))}
+        </div>
+      </div>
+      <h2 className="text-2xl font-semibold mt-10 mb-4">What is Ars​weep?</h2>
+      <p className="text-muted-foreground leading-relaxed mb-4">Every SPL token account on Solana holds a small rent-exempt deposit (~0.00203928 SOL). When you receive airdropped tokens, participate in DeFi, or trade on DEXes, these accounts accumulate in your wallet.</p>
+      <p className="text-muted-foreground leading-relaxed mb-4">Over time, wallets accumulate dozens of empty token accounts — each silently locking up SOL. Ars​weep scans your wallet, identifies accounts safe to close, and sweeps them in a single transaction.</p>
+      <div className="grid grid-cols-3 gap-4 my-8">
+        {[{value:"~0.002 SOL",label:"Per account recovered"},{value:"1.5%",label:"Platform fee"},{value:"<5s",label:"Average sweep time"}].map(({value,label})=>(
+          <div key={label} className="bg-muted/40 border rounded-xl p-4 text-center">
+            <p className="text-xl font-bold text-primary mb-1">{value}</p>
+            <p className="text-xs text-muted-foreground">{label}</p>
+          </div>
+        ))}
+      </div>
       <h2 className="text-2xl font-semibold mt-10 mb-4">Core Function</h2>
-      <p className="text-muted-foreground leading-relaxed">
-        Arsweep identifies SPL token accounts with zero balance and executes
-        the standard SPL Token Program <code>CloseAccount</code> instruction.
-        The reclaimed rent is returned directly to the connected wallet,
-        minus a transparent service fee.
-      </p>
-
+      <p className="text-muted-foreground leading-relaxed mb-4">Arsweep routes every sweep through a custom Anchor program. The program validates each account, closes it via the native SPL Token <code className="px-1.5 py-0.5 mx-1 rounded bg-muted text-foreground text-sm font-mono">CloseAccount</code> instruction, and distributes rent back to the user minus a 1.5% fee sent to a validated on-chain treasury.</p>
       <h2 className="text-2xl font-semibold mt-10 mb-4">Design Principles</h2>
-      <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
-        <li>Non-custodial architecture</li>
-        <li>Client-side transaction construction</li>
-        <li>No private key access</li>
-        <li>No backend wallet storage</li>
-      </ul>
+      <div className="space-y-3">
+        {[
+          {icon:"🔒",title:"Non-custodial",desc:"Your private keys never leave your wallet. Ars​weep only requests permission to close specific accounts you select."},
+          {icon:"⛓️",title:"On-chain validated",desc:"A custom Anchor program validates treasury address, account authority, and zero balance before executing any close."},
+          {icon:"🔍",title:"Transparent fee model",desc:"1.5% service fee deducted on-chain. Every transaction is verifiable on Solscan."},
+          {icon:"📖",title:"Open source",desc:"Full source code available on GitHub. Audit the program and frontend at any time."},
+          {icon:"⚡",title:"Batch sweep",desc:"Close multiple accounts in a single transaction to minimize network fees."},
+        ].map(({icon,title,desc})=>(
+          <div key={title} className="flex gap-4 p-4 rounded-xl border bg-muted/20">
+            <span className="text-2xl shrink-0">{icon}</span>
+            <div><p className="font-semibold mb-1">{title}</p><p className="text-sm text-muted-foreground leading-relaxed">{desc}</p></div>
+          </div>
+        ))}
+      </div>
+      <h2 className="text-2xl font-semibold mt-10 mb-4">Program Deployment</h2>
+      <div className="bg-muted/50 border rounded-xl p-5 font-mono text-sm space-y-2">
+        {[["Program ID","4cS4fZH6DoFown46UiF2EtG412PVd5BSi8m4tmefAq9o"],["Treasury","J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi"],["Network","Solana Devnet (Mainnet coming soon)"],["Framework","Anchor 0.30 · Rust 1.85"]].map(([k,v])=>(
+          <div key={k} className="flex justify-between gap-4 flex-wrap">
+            <span className="text-muted-foreground">{k}</span>
+            <span className="text-foreground break-all">{v}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
-
 export default Overview;

@@ -150,7 +150,7 @@ const Landing = () => {
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
               <ArsweepLogo className="w-8 h-8" />
-              <span className="text-xl font-bold gradient-text">Arsweep</span>
+              <span className="text-xl font-bold gradient-text"><span translate="no" className="notranslate">Arsweep</span></span>
             </Link>
           </div>
           <div className="flex items-center gap-3">
@@ -280,7 +280,7 @@ const Landing = () => {
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-foreground">
-                How <span className="gradient-text">Arsweep</span> Works
+                How <span className="gradient-text"><span translate="no" className="notranslate">Arsweep</span></span> Works
               </h2>
               <p className="text-muted-foreground text-lg max-w-md mx-auto mb-2">
                 Three simple steps to reclaim your SOL.
@@ -326,7 +326,7 @@ const Landing = () => {
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-foreground">
-                Why <span className="gradient-text">Arsweep</span>?
+                Why <span className="gradient-text"><span translate="no" className="notranslate">Arsweep</span></span>?
               </h2>
             </div>
 

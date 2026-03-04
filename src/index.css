@@ -194,3 +194,8 @@
     pointer-events: none;
   }
 }
+
+/* Brand name — prevent Google Translate */
+[data-brand]::before {
+  content: attr(data-brand);
+}

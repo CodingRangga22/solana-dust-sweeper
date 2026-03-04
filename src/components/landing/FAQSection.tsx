@@ -9,11 +9,11 @@ import {
 const faqs = [
   {
     q: "Is this safe?",
-    a: "Yes. Arsweep only closes empty token accounts (zero balance). We use the official SPL Token CloseAccount instruction. Your tokens are never touched—only empty accounts that hold rent are closed. Always verify your selection before sweeping.",
+    a: "Yes. Ars​weep only closes empty token accounts (zero balance). We use the official SPL Token CloseAccount instruction. Your tokens are never touched—only empty accounts that hold rent are closed. Always verify your selection before sweeping.",
   },
   {
     q: "Do you access my private key?",
-    a: "Never. Arsweep is non-custodial. Your wallet stays in your control. Every action requires your explicit signature via Phantom or your connected wallet. We never request, store, or transmit private keys.",
+    a: "Never. Ars​weep is non-custodial. Your wallet stays in your control. Every action requires your explicit signature via Phantom or your connected wallet. We never request, store, or transmit private keys.",
   },
   {
     q: "What network are you on?",
@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: "Will this work on Mainnet?",
-    a: "Yes. Arsweep will support Mainnet when ready. The flow is identical—connect, scan, sweep—but transactions will involve real SOL. We'll announce Mainnet launch prominently.",
+    a: "Yes. Ars​weep will support Mainnet when ready. The flow is identical—connect, scan, sweep—but transactions will involve real SOL. We'll announce Mainnet launch prominently.",
   },
   {
     q: "Is there a fee?",
@@ -29,7 +29,7 @@ const faqs = [
   },
   {
     q: "What is Solana rent?",
-    a: "Solana uses a rent mechanism to keep accounts on-chain. When you create a token account, you pay a one-time deposit (~0.002 SOL). This stays locked until you close the account. Arsweep helps you reclaim that locked SOL from empty accounts.",
+    a: "Solana uses a rent mechanism to keep accounts on-chain. When you create a token account, you pay a one-time deposit (~0.002 SOL). This stays locked until you close the account. Ars​weep helps you reclaim that locked SOL from empty accounts.",
   },
 ];
 

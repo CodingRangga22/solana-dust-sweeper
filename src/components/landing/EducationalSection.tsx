@@ -20,7 +20,7 @@ const points = [
   {
     icon: RefreshCw,
     title: "Closing Accounts Refunds SOL",
-    text: "When you close a token account, Solana returns the full rent deposit to your wallet. Arsweep helps you find and close empty accounts to reclaim that SOL.",
+    text: "When you close a token account, Solana returns the full rent deposit to your wallet. Ars​weep helps you find and close empty accounts to reclaim that SOL.",
   },
 ];
 

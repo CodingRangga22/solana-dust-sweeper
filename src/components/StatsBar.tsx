@@ -49,7 +49,7 @@ const StatsBar = ({ totalDust, potentialRefund, accountsToClose }: StatsBarProps
                       <p className="font-semibold text-foreground mb-1">Fee Breakdown</p>
                       <p>Gross Refund: 0.002042 SOL/account</p>
                       <p>− Network Gas Fee</p>
-                      <p>− 1.5% Arsweep Service Fee</p>
+                      <p>− 1.5% Ars​weep Service Fee</p>
                       <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 glass border-b border-r border-border -mt-1" />
                     </motion.div>
                   )}

@@ -36,7 +36,7 @@ const FeedbackSection = () => (
         <div className="orb w-32 h-32 bg-secondary/20 -bottom-16 -left-16" />
 
         <h2 className="text-2xl sm:text-3xl font-extrabold mb-3 text-foreground relative z-10">
-          Help Us Improve <span className="gradient-text">Arsweep</span>
+          Help Us Improve <span className="gradient-text" translate="no"><span translate="no">Arsweep</span></span>
         </h2>
         <p className="text-muted-foreground mb-8 max-w-lg mx-auto relative z-10">
           We&apos;re on Devnet and need your feedback. Join the conversation, report bugs, or suggest features.
