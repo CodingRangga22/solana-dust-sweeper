@@ -15,7 +15,9 @@ import ChatWidget from "@/components/ChatWidget";
 import PremiumFooter from "@/components/PremiumFooter";
 
 import { getProgram } from "@/lib/anchor";
-import { EXPLORER_TX_URL } from "@/config/env";
+import { EXPLORER_TX_URL, NETWORK } from "@/config/env";
+import SweepHistory from "@/components/SweepHistory";
+import { saveSweepRecord, getSweepHistory, type SweepRecord } from "@/lib/sweepHistory";
 import { ACCOUNTS_PER_TX } from "@/config/sweep";
 import { confirmTransactionWithTimeout } from "@/utils/transaction";
 import { fetchAllTokenAccounts, type TokenAccountInfo } from "@/lib/tokenAccounts";
@@ -49,6 +51,19 @@ const Dashboard = () => {
 
   const { tokenModes, toggleMode, resetModes } = useSwapMode();
   const [swapQuotes, setSwapQuotes] = useState<Record<string, number>>({});
+  const [sweepHistory, setSweepHistory] = useState<SweepRecord[]>(() => {
+    try {
+      const raw = localStorage.getItem("arsweep_history");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    if (!publicKey) return;
+    setSweepHistory(getSweepHistory(publicKey.toBase58()));
+  }, [publicKey, scanned]);
 
   useEffect(() => {
     const fetchQuotes = async () => {
@@ -230,6 +245,16 @@ const Dashboard = () => {
       );
       setSuccessModal({ open: true, count, totalSol: sol, signature: lastSignature });
 
+      const saved = saveSweepRecord({
+        walletAddress: publicKey.toBase58(),
+        timestamp: Date.now(),
+        accountsClosed: count,
+        totalSolReclaimed: sol,
+        signature: lastSignature,
+        network: NETWORK,
+      });
+      setSweepHistory((prev) => [saved, ...prev]);
+
       toast.success(`🎉 Swept ${count} accounts, reclaimed ${sol.toFixed(5)} SOL!`, {
         duration: 8000,
         action: lastSignature
@@ -311,6 +336,13 @@ const Dashboard = () => {
         onToggleMode={toggleMode}
         swapQuotes={swapQuotes}
       />
+      {publicKey && sweepHistory.length > 0 && (
+        <SweepHistory
+          walletAddress={publicKey.toBase58()}
+          initialRecords={sweepHistory}
+          onClear={() => setSweepHistory([])}
+        />
+      )}
       <ActionBar
         count={selectedIds.size}
         totalSol={totalSol}
