@@ -20,6 +20,7 @@ import Technical from "@/pages/docs/Technical";
 import Security from "@/pages/docs/Security";
 import Fees from "@/pages/docs/Fees";
 import FAQ from "@/pages/docs/FAQ";
+import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "@solana/wallet-adapter-react-ui/styles.css";
@@ -80,6 +81,7 @@ const AppContent = ({
                       </ProtectedRoute>
                     }
                   />
+                  <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="/dashboard" element={<Navigate to="/app" replace />} />
                   <Route path="/docs" element={<DocsLayout />}>
                     <Route index element={<Overview />} />

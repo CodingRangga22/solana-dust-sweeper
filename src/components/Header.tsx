@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import ArsweepLogo from "./ArsweepLogo";
-import { Github, BookOpen } from "lucide-react";
+import { Github, BookOpen, Trophy } from "lucide-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import ThemeToggle from "./ThemeToggle";
 import { useBanner } from "./BannerProvider";
@@ -27,6 +27,15 @@ const Header = () => {
       </div>
       <div className="flex items-center gap-3">
         <ThemeToggle />
+        <a
+          href="/leaderboard"
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
+            location.pathname === "/leaderboard" ? "text-primary" : "text-muted-foreground hover:text-primary glass glass-hover"
+          }`}
+        >
+          <Trophy className="w-4 h-4" />
+          <span className="hidden sm:inline text-xs">Leaderboard</span>
+        </a>
         <a
           href="/docs"
           target="_blank"
