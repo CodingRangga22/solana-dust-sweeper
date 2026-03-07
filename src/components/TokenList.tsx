@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ExternalLink, AlertTriangle } from "lucide-react";
+import { Check, AlertTriangle } from "lucide-react";
 import { type TokenAccountInfo, INACTIVITY_DAYS } from "@/lib/tokenAccounts";
 import SwapModeToggle from "@/components/SwapModeToggle";
 import type { TokenMode } from "@/hooks/useSwapMode";
@@ -39,143 +39,167 @@ interface TokenListProps {
   tokenModes?: Record<string, TokenMode>;
   onToggleMode?: (id: string) => void;
   swapQuotes?: Record<string, number>;
+  analyticsSlot?: React.ReactNode;
 }
 
-const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading = false, disabled = false, scanned = false, tokenModes = {}, onToggleMode, swapQuotes = {} }: TokenListProps) => {
+const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading = false, disabled = false, scanned = false, tokenModes = {}, onToggleMode, swapQuotes = {}, analyticsSlot }: TokenListProps) => {
   const sweepableCount = tokenAccounts.filter((a) => a.isSweepable).length;
+  const valueWarningCount = tokenAccounts.filter((a) => a.isSweepable && a.hasValueWarning).length;
   const allSelected = !loading && !disabled && sweepableCount > 0 && selectedIds.size === sweepableCount;
   const isDisabled = loading || disabled;
 
   return (
     <section className="px-4 pb-32">
       <div className="container mx-auto max-w-3xl">
-        {/* Safety Warning Banner — only show after scan */}
-        {scanned && sweepableCount > 0 && (
-        <div className="flex items-center gap-3 mb-4 px-4 py-3 rounded-xl border border-destructive/30 bg-destructive/5 text-sm text-destructive">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
-          <p>Warning: Closing accounts is permanent. Ensure the token balance is zero or insignificant.</p>
-        </div>
-        )}
+        <div className="flex gap-6 items-start">
+          <div className="flex-1 min-w-0">
+            {/* Safety Warning Banner */}
+            {scanned && sweepableCount > 0 && (
+              <div className="flex items-center gap-3 mb-4 px-4 py-3 rounded-xl border border-destructive/30 bg-destructive/5 text-sm text-destructive">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <p>Warning: Closing accounts is permanent. Ensure the token balance is zero or insignificant.</p>
+              </div>
+            )}
 
-        <div className="glass rounded-2xl overflow-hidden">
-          {/* Table header */}
-          <div className="flex items-center gap-4 px-4 py-3 border-b border-border text-xs text-muted-foreground font-medium uppercase tracking-wider">
-            <button
-              onClick={onSelectAll}
-              disabled={isDisabled || sweepableCount === 0}
-              className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 disabled:opacity-50 ${
-                allSelected ? "gradient-bg border-transparent" : "border-border hover:border-muted-foreground"
-              }`}
-            >
-              {allSelected && <Check className="w-3 h-3 text-primary-foreground" />}
-            </button>
-            <div className="flex-1">Account</div>
-            <div className="w-24 text-right">Balance</div>
-            <div className="w-28 text-right">Rent</div>
-          </div>
+            {/* Value Warning Banner */}
+            {scanned && valueWarningCount > 0 && (
+              <div className="flex items-center gap-3 mb-4 px-4 py-3 rounded-xl border border-yellow-500/30 bg-yellow-500/5 text-sm text-yellow-400">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <p>
+                  <span className="font-semibold">{valueWarningCount} token{valueWarningCount > 1 ? "s" : ""}</span> still have value under $1.00. Closing these accounts will forfeit the remaining token balance.
+                </p>
+              </div>
+            )}
 
-          {/* Rows */}
-          {loading ? (
-            Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
-          ) : tokenAccounts.length === 0 ? (
-            <div className="px-4 py-12 text-center text-muted-foreground text-sm">
-              No token accounts found. Connect and scan to see accounts.
-            </div>
-          ) : (
-            <AnimatePresence>
-              {tokenAccounts.map((account, i) => {
-                const id = account.pubkey.toBase58();
-                const selected = account.isSweepable && selectedIds.has(id);
-                return (
-                  <motion.div
-                    key={id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.04 }}
-                    onClick={() => account.isSweepable && !isDisabled && onToggle(id)}
-                    className={`flex items-center gap-4 px-4 py-3.5 transition-all duration-200 border-b border-border last:border-b-0 ${
-                      account.isSweepable ? (isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer") : "cursor-default"
-                    } ${!isDisabled && account.isSweepable && (selected ? "bg-primary/5" : "hover:bg-muted/30 hover:shadow-[inset_0_0_30px_hsla(162,93%,51%,0.04)]")}`}
-                  >
-                    <div className="w-5 h-5 shrink-0 flex items-center justify-center">
-                      {account.isSweepable ? (
-                        <div
-                          className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 ${
-                            selected ? "gradient-bg border-transparent animate-[pulse_0.4s_ease-in-out_1]" : "border-border"
-                          }`}
-                        >
-                          {selected && <Check className="w-3 h-3 text-primary-foreground" />}
+            <div className="glass rounded-2xl overflow-hidden">
+              {/* Table header */}
+              <div className="flex items-center gap-4 px-4 py-3 border-b border-border text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                <button
+                  onClick={onSelectAll}
+                  disabled={isDisabled || sweepableCount === 0}
+                  className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 disabled:opacity-50 ${
+                    allSelected ? "gradient-bg border-transparent" : "border-border hover:border-muted-foreground"
+                  }`}
+                >
+                  {allSelected && <Check className="w-3 h-3 text-primary-foreground" />}
+                </button>
+                <div className="flex-1">Account</div>
+                <div className="w-24 text-right">Balance</div>
+                <div className="w-28 text-right">Rent</div>
+              </div>
+
+              {/* Rows */}
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+              ) : tokenAccounts.length === 0 ? (
+                <div className="px-4 py-12 text-center text-muted-foreground text-sm">
+                  No token accounts found. Connect and scan to see accounts.
+                </div>
+              ) : (
+                <AnimatePresence>
+                  {tokenAccounts.map((account, i) => {
+                    const id = account.pubkey.toBase58();
+                    const selected = account.isSweepable && selectedIds.has(id);
+                    return (
+                      <motion.div
+                        key={id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.04 }}
+                        onClick={() => account.isSweepable && !isDisabled && onToggle(id)}
+                        className={`flex items-center gap-4 px-4 py-3.5 transition-all duration-200 border-b border-border last:border-b-0 ${
+                          account.isSweepable ? (isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer") : "cursor-default"
+                        } ${!isDisabled && account.isSweepable && (selected ? "bg-primary/5" : "hover:bg-muted/30 hover:shadow-[inset_0_0_30px_hsla(162,93%,51%,0.04)]")}`}
+                      >
+                        <div className="w-5 h-5 shrink-0 flex items-center justify-center">
+                          {account.isSweepable ? (
+                            <div
+                              className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 ${
+                                selected ? "gradient-bg border-transparent animate-[pulse_0.4s_ease-in-out_1]" : "border-border"
+                              }`}
+                            >
+                              {selected && <Check className="w-3 h-3 text-primary-foreground" />}
+                            </div>
+                          ) : (
+                            <div className="w-5 h-5 rounded-md border border-border bg-muted/30" />
+                          )}
                         </div>
-                      ) : (
-                        <div className="w-5 h-5 rounded-md border border-border bg-muted/30" />
-                      )}
-                    </div>
-                    <div
-                      className={`flex-1 min-w-0 flex items-center justify-between p-4 rounded-xl border transition-all ${
-                        account.isSweepable
-                          ? "bg-card border-primary/30"
-                          : "bg-card border-border opacity-40"
-                      }`}
-                    >
-                      <div>
-                        <p className="text-sm font-mono">
-                          {account.pubkey.toBase58().slice(0, 4)}...
-                          {account.pubkey.toBase58().slice(-4)}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Mint: {account.mint.toBase58().slice(0, 6)}...
-                        </p>
-                      </div>
-                      <div className="text-right flex flex-col items-end gap-1">
-                        <p className="text-sm">
-                          Balance: {account.amount.toString()}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Rent: {(account.rentLamports / 1e9).toFixed(6)} SOL
-                        </p>
-                        <span
-                          className={`text-xs px-2 py-1 rounded-full ${
+                        <div
+                          className={`flex-1 min-w-0 flex items-center justify-between p-4 rounded-xl border transition-all ${
                             account.isSweepable
-                              ? "bg-emerald-500/20 text-emerald-400"
-                              : "bg-muted text-muted-foreground"
+                              ? account.hasValueWarning
+                                ? "bg-card border-yellow-500/30"
+                                : "bg-card border-primary/30"
+                              : "bg-card border-border opacity-40"
                           }`}
                         >
-                          {account.isSweepable ? "Sweepable" : "Active"}
-                        </span>
-                        {account.isSweepable && account.eligibilityReasons.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1 justify-end">
-                            {account.eligibilityReasons.map((reason) => (
-                              <span
-                                key={reason}
-                                className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground"
-                              >
-                                {reason === "zero_balance" && "Empty"}
-                                {reason === "dust_amount" && "Dust"}
-                                {reason === "no_liquidity" && "No Pool"}
-                                {reason === "low_usd_value" && (
-                                  `$${(account.usdValueCents / 100).toFixed(2)}`
-                                )}
-                                {reason === "inactive" && `${INACTIVITY_DAYS}d inactive`}
-                              </span>
-                            ))}
+                          <div>
+                            <p className="text-sm font-mono">
+                              {account.pubkey.toBase58().slice(0, 4)}...
+                              {account.pubkey.toBase58().slice(-4)}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Mint: {account.mint.toBase58().slice(0, 6)}...
+                            </p>
                           </div>
-                        )}
-                        {account.isSweepable && account.hasLiquidityPool && onToggleMode && (
-                          <SwapModeToggle
-                            mode={tokenModes[account.pubkey.toBase58()] ?? "close"}
-                            onToggle={() => onToggleMode(account.pubkey.toBase58())}
-                            hasLiquidity={account.hasLiquidityPool}
-                            disabled={disabled}
-                            estimatedSol={swapQuotes[account.pubkey.toBase58()]}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          )}
+                          <div className="text-right flex flex-col items-end gap-1">
+                            <p className="text-sm">
+                              Balance: {account.amount.toString()}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Rent: {(account.rentLamports / 1e9).toFixed(6)} SOL
+                            </p>
+                            <div className="flex items-center gap-1.5">
+                              <span
+                                className={`text-xs px-2 py-1 rounded-full ${
+                                  account.isSweepable
+                                    ? "bg-emerald-500/20 text-emerald-400"
+                                    : "bg-muted text-muted-foreground"
+                                }`}
+                              >
+                                {account.isSweepable ? "Sweepable" : "Active"}
+                              </span>
+                              {account.hasValueWarning && (
+                                <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center gap-1">
+                                  <AlertTriangle className="w-3 h-3" />
+                                  Has Value
+                                </span>
+                              )}
+                            </div>
+                            {account.isSweepable && account.eligibilityReasons.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1 justify-end">
+                                {account.eligibilityReasons.map((reason) => (
+                                  <span
+                                    key={reason}
+                                    className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground"
+                                  >
+                                    {reason === "zero_balance" && "Empty"}
+                                    {reason === "dust_amount" && "Dust"}
+                                    {reason === "no_liquidity" && "No Pool"}
+                                    {reason === "low_usd_value" && `$${(account.usdValueCents / 100).toFixed(2)}`}
+                                    {reason === "inactive" && `${INACTIVITY_DAYS}d inactive`}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            {account.isSweepable && account.hasLiquidityPool && onToggleMode && (
+                              <SwapModeToggle
+                                mode={tokenModes[account.pubkey.toBase58()] ?? "close"}
+                                onToggle={() => onToggleMode(account.pubkey.toBase58())}
+                                hasLiquidity={account.hasLiquidityPool}
+                                disabled={disabled}
+                                estimatedSol={swapQuotes[account.pubkey.toBase58()]}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </section>

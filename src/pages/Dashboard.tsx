@@ -12,6 +12,7 @@ import TokenList, { type Token } from "@/components/TokenList";
 import ActionBar from "@/components/ActionBar";
 import SweepSuccessModal from "@/components/SweepSuccessModal";
 import ChatWidget from "@/components/ChatWidget";
+import AnalyticsPanel from "@/components/AnalyticsPanel";
 import PremiumFooter from "@/components/PremiumFooter";
 
 import { getProgram } from "@/lib/anchor";

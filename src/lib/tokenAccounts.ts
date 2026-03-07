@@ -3,7 +3,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 
 // ── Thresholds ────────────────────────────────────────────────────────
 const DUST_AMOUNT_THRESHOLD = BigInt(1_000);
-const DUST_USD_THRESHOLD_CENTS = 100;
+const DUST_USD_THRESHOLD_CENTS = 100; // $1.00
 export const INACTIVITY_DAYS = 90;
 const INACTIVITY_MS = INACTIVITY_DAYS * 86_400 * 1000;
 
@@ -20,6 +20,7 @@ export interface TokenAccountInfo {
   amount: bigint;
   rentLamports: number;
   isSweepable: boolean;
+  hasValueWarning: boolean;
   eligibilityReasons: EligibilityReason[];
   usdValueCents: number;
   hasLiquidityPool: boolean;
@@ -64,7 +65,7 @@ async function checkHasLiquidity(mint: string): Promise<boolean> {
   }
 }
 
-// ── Rate limit helper (Basic = 1 RPS) ────────────────────────────────
+// ── Rate limit helper ─────────────────────────────────────────────────
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 // ── Main fetch function ───────────────────────────────────────────────
@@ -78,14 +79,12 @@ export async function fetchAllTokenAccounts(
 
   const results: TokenAccountInfo[] = [];
 
-  // ✅ Sequential loop untuk rate limiting (1 RPS)
   for (const { pubkey, account } of accounts.value) {
     const parsed = account.data.parsed.info;
     const amount = BigInt(parsed.tokenAmount?.amount ?? 0);
     const rentLamports = account.lamports;
     const mintStr = parsed.mint as string;
 
-    // Parallel fetch price + liquidity untuk token yang sama (OK dalam 1 RPS window)
     const [usdValueCents, hasLiquidityPool] = await Promise.all([
       fetchUsdValueCents(mintStr),
       amount > BigInt(0) ? checkHasLiquidity(mintStr) : Promise.resolve(false),
@@ -105,8 +104,18 @@ export async function fetchAllTokenAccounts(
     }
 
     const criteriaMetCount = reasons.length;
+
+    // Sweepable jika zero balance ATAU USD <= $1 ATAU 2+ kriteria
     const isSweepable =
-      reasons.includes("zero_balance") || criteriaMetCount >= 2;
+      reasons.includes("zero_balance") ||
+      usdValueCents <= DUST_USD_THRESHOLD_CENTS ||
+      criteriaMetCount >= 2;
+
+    // Warning jika token masih punya balance dan nilai USD > $0
+    const hasValueWarning =
+      amount > BigInt(0) &&
+      usdValueCents > 0 &&
+      usdValueCents <= DUST_USD_THRESHOLD_CENTS;
 
     results.push({
       pubkey,
@@ -114,6 +123,7 @@ export async function fetchAllTokenAccounts(
       amount,
       rentLamports,
       isSweepable,
+      hasValueWarning,
       eligibilityReasons: reasons,
       usdValueCents,
       hasLiquidityPool,
@@ -121,7 +131,6 @@ export async function fetchAllTokenAccounts(
       criteriaMetCount,
     });
 
-    // ✅ 200ms delay antar token untuk respect 1 RPS limit
     await delay(200);
   }
 
