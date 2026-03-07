@@ -96,7 +96,7 @@ export async function fetchAllTokenAccounts(
     if (amount === BigInt(0)) reasons.push("zero_balance");
     if (amount > BigInt(0) && amount <= DUST_AMOUNT_THRESHOLD) reasons.push("dust_amount");
     if (!hasLiquidityPool) reasons.push("no_liquidity");
-    if (usdValueCents < DUST_USD_THRESHOLD_CENTS) reasons.push("low_usd_value");
+    if (usdValueCents <= DUST_USD_THRESHOLD_CENTS) reasons.push("low_usd_value");
 
     const lastActivityMs: number | null = null;
     if (lastActivityMs !== null) {
