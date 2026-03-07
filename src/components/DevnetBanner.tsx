@@ -42,7 +42,7 @@ export const MainnetBanner = () => {
       <div className="flex items-center gap-2">
         <Wrench className="w-3.5 h-3.5 shrink-0 text-blue-400" />
         <span className="text-xs sm:text-sm font-medium text-foreground/95">
-          Mainnet Beta — Wallet scanning active. Sweep feature coming soon.
+          Mainnet — Sweep is now live. Reclaim your SOL! 🚀
         </span>
       </div>
       <button onClick={() => setBannerDismissed(true)} className="absolute right-3 p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors" aria-label="Dismiss banner">

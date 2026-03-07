@@ -20,7 +20,7 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false, sweepProgress }
   const gasFee = GAS_FEE_PER_ACCOUNT * count;
   const serviceFee = totalSol * SERVICE_FEE_PERCENT;
   const netSol = totalSol - gasFee - serviceFee;
-  const canSweep = disclaimerAccepted && !sweeping && !isMainnet;
+  const canSweep = disclaimerAccepted && !sweeping;
 
   return (
     <AnimatePresence>
@@ -85,11 +85,6 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false, sweepProgress }
                       : sweepProgress
                         ? `Batch ${sweepProgress.currentBatch} of ${sweepProgress.totalBatches}...`
                         : "Processing Transaction..."}
-                  </>
-                ) : isMainnet ? (
-                  <>
-                    <Trash2 className="w-4 h-4" />
-                    Sweep Coming Soon 🔒
                   </>
                 ) : (
                   <>
