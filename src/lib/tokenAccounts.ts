@@ -116,6 +116,7 @@ export async function fetchAllTokenAccounts(
       amount > BigInt(0) &&
       usdValueCents > 0 &&
       usdValueCents <= DUST_USD_THRESHOLD_CENTS;
+      console.log(`Token ${mintStr}: amount=${amount}, usd=${usdValueCents}, liquidity=${hasLiquidityPool}, reasons=[${reasons.join(',')}], sweepable=${isSweepable}`);
 
     results.push({
       pubkey,

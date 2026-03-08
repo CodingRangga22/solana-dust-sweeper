@@ -172,25 +172,11 @@ const Dashboard = () => {
         (a) => a.isSweepable && selectedIds.has(a.pubkey.toBase58())
       );
 
-      const walletAdapter = {
-        publicKey,
-        signTransaction: async (tx: Transaction) => {
-          const signed = await sendTransaction(tx, connection);
-          return tx;
-        },
-      };
-
       const results = await executeSweepNative(
         connection,
         {
           publicKey,
-          signTransaction: async (tx: Transaction) => {
-            const { blockhash, lastValidBlockHeight } =
-              await connection.getLatestBlockhash("confirmed");
-            tx.recentBlockhash = blockhash;
-            tx.feePayer = publicKey;
-            return tx;
-          },
+          sendTransaction,
         },
         selectedAccounts.map((a) => ({
           pubkey: a.pubkey,
