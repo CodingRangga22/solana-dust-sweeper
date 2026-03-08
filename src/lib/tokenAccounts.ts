@@ -1,4 +1,4 @@
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import { Connection, PublicKey } from "@solana/web3.js";
 
 // ── Thresholds ────────────────────────────────────────────────────────
@@ -74,14 +74,23 @@ export async function fetchAllTokenAccounts(
   connection: Connection,
   owner: PublicKey
 ): Promise<TokenAccountInfo[]> {
-  const accounts = await connection.getParsedTokenAccountsByOwner(owner, {
-    programId: TOKEN_PROGRAM_ID,
-  });
+  const [splAccounts, token2022Accounts] = await Promise.all([
+    connection.getParsedTokenAccountsByOwner(owner, {
+      programId: TOKEN_PROGRAM_ID,
+    }),
+    connection.getParsedTokenAccountsByOwner(owner, {
+      programId: TOKEN_2022_PROGRAM_ID,
+    }),
+  ]);
+
+  const allAccounts = [...splAccounts.value, ...token2022Accounts.value];
 
   const results: TokenAccountInfo[] = [];
-  console.log(`[Arsweep] Total token accounts found: ${accounts.value.length}`);
+  console.log(
+    `[Arsweep] Token accounts found — SPL: ${splAccounts.value.length}, Token-2022: ${token2022Accounts.value.length}, Total: ${allAccounts.length}`
+  );
 
-  for (const { pubkey, account } of accounts.value) {
+  for (const { pubkey, account } of allAccounts) {
     const parsed = account.data.parsed.info;
     const amount = BigInt(parsed.tokenAmount?.amount ?? 0);
     const rentLamports = account.lamports;
