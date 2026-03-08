@@ -20,11 +20,17 @@ export interface TokenMetadata {
   logoURI: string | null;
 }
 
+export interface MintFlags {
+  freezeAuthority: string | null;
+  mintAuthority: string | null;
+}
+
 export interface TokenAccountInfo {
   pubkey: PublicKey;
   mint: PublicKey;
   programId: PublicKey;
   amount: bigint;
+  decimals: number;
   rentLamports: number;
   isSweepable: boolean;
   hasValueWarning: boolean;
@@ -34,6 +40,7 @@ export interface TokenAccountInfo {
   lastActivityMs: number | null;
   criteriaMetCount: number;
   metadata: TokenMetadata;
+  mintFlags: MintFlags;
 }
 
 // ── Jupiter Auth Header ───────────────────────────────────────────────
@@ -42,20 +49,29 @@ function jupiterHeaders(): Record<string, string> {
   return key ? { "x-api-key": key } : {};
 }
 
-// ── Jupiter Price API v2 ──────────────────────────────────────────────
-async function fetchUsdValueCents(mint: string): Promise<number> {
+// ── Token Price (Dexscreener) ─────────────────────────────────────────
+async function fetchTokenPriceUsd(mint: string): Promise<number> {
   try {
     const res = await fetch(
       `https://api.dexscreener.com/latest/dex/tokens/${mint}`
     );
     const json = await res.json();
-    const price: number = json?.pairs?.[0]?.priceUsd
+    return json?.pairs?.[0]?.priceUsd
       ? parseFloat(json.pairs[0].priceUsd)
       : 0;
-    return Math.floor(price * 100);
   } catch {
     return 0;
   }
+}
+
+function computeTotalUsdCents(
+  pricePerToken: number,
+  rawAmount: bigint,
+  decimals: number,
+): number {
+  if (pricePerToken === 0 || rawAmount === BigInt(0)) return 0;
+  const humanAmount = Number(rawAmount) / Math.pow(10, decimals);
+  return Math.floor(humanAmount * pricePerToken * 100);
 }
 
 // ── Jupiter Quote API (liquidity check) ──────────────────────────────
@@ -107,6 +123,25 @@ async function fetchTokenMetadata(mint: string): Promise<TokenMetadata> {
   }
 }
 
+// ── Mint Flags (freeze/mint authority) ────────────────────────────────
+async function fetchMintFlags(
+  connection: Connection,
+  mintAddress: string,
+): Promise<MintFlags> {
+  const fallback: MintFlags = { freezeAuthority: null, mintAuthority: null };
+  try {
+    const info = await connection.getParsedAccountInfo(new PublicKey(mintAddress));
+    const data = (info?.value?.data as any)?.parsed?.info;
+    if (!data) return fallback;
+    return {
+      freezeAuthority: data.freezeAuthority ?? null,
+      mintAuthority: data.mintAuthority ?? null,
+    };
+  } catch {
+    return fallback;
+  }
+}
+
 // ── Rate limit helper ─────────────────────────────────────────────────
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -136,14 +171,18 @@ export async function fetchAllTokenAccounts(
   for (const { pubkey, account, tokenProgramId } of allAccounts) {
     const parsed = account.data.parsed.info;
     const amount = BigInt(parsed.tokenAmount?.amount ?? 0);
+    const decimals: number = parsed.tokenAmount?.decimals ?? 0;
     const rentLamports = account.lamports;
     const mintStr = parsed.mint as string;
 
-    const [usdValueCents, hasLiquidityPool, metadata] = await Promise.all([
-      fetchUsdValueCents(mintStr),
+    const [pricePerToken, hasLiquidityPool, metadata, mintFlags] = await Promise.all([
+      fetchTokenPriceUsd(mintStr),
       amount > BigInt(0) ? checkHasLiquidity(mintStr) : Promise.resolve(false),
       fetchTokenMetadata(mintStr),
+      fetchMintFlags(connection, mintStr),
     ]);
+
+    const usdValueCents = computeTotalUsdCents(pricePerToken, amount, decimals);
 
     // ── Eligibility Scoring ──────────────────────────────────────────
     const reasons: EligibilityReason[] = [];
@@ -160,24 +199,31 @@ export async function fetchAllTokenAccounts(
 
     const criteriaMetCount = reasons.length;
 
-    // Sweepable jika zero balance ATAU USD <= $1 ATAU 2+ kriteria
     const isSweepable =
       reasons.includes("zero_balance") ||
       usdValueCents <= DUST_USD_THRESHOLD_CENTS ||
       criteriaMetCount >= 2;
 
-    // Warning jika token masih punya balance dan nilai USD > $0
     const hasValueWarning =
       amount > BigInt(0) &&
       usdValueCents > 0 &&
       usdValueCents <= DUST_USD_THRESHOLD_CENTS;
-      console.log(`Token ${mintStr}: amount=${amount}, usd=${usdValueCents}, liquidity=${hasLiquidityPool}, reasons=[${reasons.join(',')}], sweepable=${isSweepable}`);
+
+    const humanAmount = Number(amount) / Math.pow(10, decimals);
+    const scamFlags = [
+      mintFlags.freezeAuthority ? "FREEZABLE" : "",
+      mintFlags.mintAuthority ? "MINTABLE" : "",
+    ].filter(Boolean).join(", ");
+    console.log(
+      `[Arsweep] ${metadata.symbol} (${mintStr.slice(0,8)}...): raw=${amount}, decimals=${decimals}, human=${humanAmount.toFixed(decimals)}, price=$${pricePerToken}, totalUsd=$${(usdValueCents/100).toFixed(2)}, liquidity=${hasLiquidityPool}, sweepable=${isSweepable}${scamFlags ? `, flags=[${scamFlags}]` : ""}`
+    );
 
     results.push({
       pubkey,
       mint: new PublicKey(mintStr),
       programId: tokenProgramId,
       amount,
+      decimals,
       rentLamports,
       isSweepable,
       hasValueWarning,
@@ -187,6 +233,7 @@ export async function fetchAllTokenAccounts(
       lastActivityMs,
       criteriaMetCount,
       metadata,
+      mintFlags,
     });
 
     await delay(200);

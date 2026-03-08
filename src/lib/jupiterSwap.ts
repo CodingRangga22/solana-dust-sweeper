@@ -29,14 +29,18 @@ export async function getSwapQuote(
     const json = await res.json();
     if (json?.error || !json?.outAmount) return null;
 
+    const outAmountNum = Number(json.outAmount);
+    if (!outAmountNum || outAmountNum <= 0) return null;
+    if (!json.routePlan?.length) return null;
+
     return {
       inputMint: mintAddress,
       outputMint: SOL_MINT,
       inAmount: json.inAmount,
       outAmount: json.outAmount,
-      outAmountSol: Number(json.outAmount) / 1e9,
+      outAmountSol: outAmountNum / 1e9,
       priceImpactPct: parseFloat(json.priceImpactPct ?? "0"),
-      routePlan: json.routePlan ?? [],
+      routePlan: json.routePlan,
     };
   } catch {
     return null;

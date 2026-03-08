@@ -20,6 +20,8 @@ export interface SweepAccount {
   programId: PublicKey;
   amount: bigint;
   rentLamports: number;
+  hasLiquidityPool: boolean;
+  usdValueCents: number;
 }
 
 export interface SweepBatchResult {
@@ -34,6 +36,14 @@ export interface SweepProgress {
   confirmingSlow?: boolean;
 }
 
+/**
+ * Burns and closes token accounts that are confirmed worthless.
+ *
+ * 3-LAYER PROTECTION enforced here:
+ *   1. liquidity > 0  → BLOCK (throw)
+ *   2. price/value > 0 → BLOCK (throw)
+ *   3. Burn allowed ONLY when value == 0 AND liquidity == 0
+ */
 export async function executeSweepNative(
   connection: Connection,
   wallet: {
@@ -60,6 +70,24 @@ export async function executeSweepNative(
 
     for (const acc of batch) {
       if (acc.amount > BigInt(0)) {
+        // ── Protection 1: liquidity > 0 → BLOCK ──
+        if (acc.hasLiquidityPool) {
+          throw new Error(
+            `PROTECTION 1: ${acc.mint.toBase58()} has active liquidity pool. Cannot burn. Use swap instead.`
+          );
+        }
+
+        // ── Protection 2: value > 0 → BLOCK ──
+        if (acc.usdValueCents > 0) {
+          throw new Error(
+            `PROTECTION 2: ${acc.mint.toBase58()} has USD value ($${(acc.usdValueCents / 100).toFixed(2)}). Cannot burn. Try swap first.`
+          );
+        }
+
+        // ── Burn allowed: value == 0 AND liquidity == 0 ──
+        console.log(
+          `[Arsweep] BURN APPROVED: ${acc.mint.toBase58()} — value=$0, liquidity=none`
+        );
         tx.add(
           createBurnInstruction(
             acc.pubkey,
@@ -102,8 +130,7 @@ export async function executeSweepNative(
       );
     }
 
-    const { blockhash, lastValidBlockHeight } =
-      await connection.getLatestBlockhash("confirmed");
+    const { blockhash } = await connection.getLatestBlockhash("confirmed");
     tx.recentBlockhash = blockhash;
     tx.feePayer = wallet.publicKey;
 
@@ -132,7 +159,8 @@ export async function executeSweepNative(
           onProgress?.({ currentBatch: i + 1, totalBatches: batches.length, confirmingSlow: true });
         }
       } catch (err: any) {
-        if (err?.message?.startsWith("Transaction failed")) throw err;
+        if (err?.message?.startsWith("Transaction failed") ||
+            err?.message?.startsWith("PROTECTION")) throw err;
       }
       if (!confirmed) await new Promise((r) => setTimeout(r, 2000));
     }

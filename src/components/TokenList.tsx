@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, AlertTriangle, Copy, ExternalLink } from "lucide-react";
+import { Check, AlertTriangle, Copy, ExternalLink, ShieldAlert } from "lucide-react";
 import { type TokenAccountInfo, INACTIVITY_DAYS } from "@/lib/tokenAccounts";
 import SwapModeToggle from "@/components/SwapModeToggle";
 import type { TokenMode } from "@/hooks/useSwapMode";
@@ -225,6 +225,18 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                                 <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center gap-1 font-medium">
                                   <AlertTriangle className="w-3 h-3" />
                                   Has Value
+                                </span>
+                              )}
+                              {account.mintFlags?.freezeAuthority && (
+                                <span className="text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-400 flex items-center gap-1 font-medium" title={`Freeze Authority: ${account.mintFlags.freezeAuthority}`}>
+                                  <ShieldAlert className="w-3 h-3" />
+                                  Freezable
+                                </span>
+                              )}
+                              {account.mintFlags?.mintAuthority && (
+                                <span className="text-xs px-2 py-1 rounded-full bg-orange-500/20 text-orange-400 flex items-center gap-1 font-medium" title={`Mint Authority: ${account.mintFlags.mintAuthority}`}>
+                                  <ShieldAlert className="w-3 h-3" />
+                                  Mintable
                                 </span>
                               )}
                               {account.isSweepable && account.eligibilityReasons.length > 0 &&
