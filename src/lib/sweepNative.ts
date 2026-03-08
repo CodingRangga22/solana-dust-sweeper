@@ -5,11 +5,22 @@ import {
   TransactionInstruction,
   SystemProgram,
 } from "@solana/web3.js";
-import { createCloseAccountInstruction } from "@solana/spl-token";
+import {
+  createCloseAccountInstruction,
+  createBurnInstruction,
+} from "@solana/spl-token";
 
 export const TREASURY = new PublicKey("J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi");
 const FEE_BPS = 150;
 const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
+
+export interface SweepAccount {
+  pubkey: PublicKey;
+  mint: PublicKey;
+  programId: PublicKey;
+  amount: bigint;
+  rentLamports: number;
+}
 
 export interface SweepBatchResult {
   signature: string;
@@ -29,12 +40,12 @@ export async function executeSweepNative(
     publicKey: PublicKey;
     sendTransaction: (tx: Transaction, connection: Connection, options?: any) => Promise<string>;
   },
-  accounts: Array<{ pubkey: PublicKey; rentLamports: number; programId: PublicKey }>,
+  accounts: SweepAccount[],
   onProgress?: (progress: SweepProgress) => void,
-  batchSize = 10
+  batchSize = 7,
 ): Promise<SweepBatchResult[]> {
   const results: SweepBatchResult[] = [];
-  const batches: Array<typeof accounts> = [];
+  const batches: SweepAccount[][] = [];
 
   for (let i = 0; i < accounts.length; i += batchSize) {
     batches.push(accounts.slice(i, i + batchSize));
@@ -48,6 +59,19 @@ export async function executeSweepNative(
     let totalRent = 0;
 
     for (const acc of batch) {
+      if (acc.amount > BigInt(0)) {
+        tx.add(
+          createBurnInstruction(
+            acc.pubkey,
+            acc.mint,
+            wallet.publicKey,
+            acc.amount,
+            [],
+            acc.programId,
+          )
+        );
+      }
+
       tx.add(
         createCloseAccountInstruction(
           acc.pubkey,

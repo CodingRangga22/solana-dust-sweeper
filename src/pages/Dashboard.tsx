@@ -180,8 +180,10 @@ const Dashboard = () => {
         },
         selectedAccounts.map((a) => ({
           pubkey: a.pubkey,
-          rentLamports: a.rentLamports,
+          mint: a.mint,
           programId: a.programId,
+          amount: a.amount,
+          rentLamports: a.rentLamports,
         })),
         (progress) => setSweepProgress(progress)
       );
