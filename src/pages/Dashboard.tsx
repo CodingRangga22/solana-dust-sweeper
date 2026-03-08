@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { toast } from "sonner";
-import { useConnection, useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { motion } from "framer-motion";
 import { Wallet } from "lucide-react";
@@ -15,12 +15,10 @@ import ChatWidget from "@/components/ChatWidget";
 import AnalyticsPanel from "@/components/AnalyticsPanel";
 import PremiumFooter from "@/components/PremiumFooter";
 
-import { getProgram } from "@/lib/anchor";
+import { executeSweepNative } from "@/lib/sweepNative";
 import { EXPLORER_TX_URL, NETWORK } from "@/config/env";
 import SweepHistory from "@/components/SweepHistory";
 import { saveSweepRecord, getSweepHistory, type SweepRecord } from "@/lib/sweepHistory";
-import { ACCOUNTS_PER_TX } from "@/config/sweep";
-import { confirmTransactionWithTimeout } from "@/utils/transaction";
 import { fetchAllTokenAccounts, type TokenAccountInfo } from "@/lib/tokenAccounts";
 import { useSwapMode } from "@/hooks/useSwapMode";
 import { getSwapQuote } from "@/lib/jupiterSwap";
@@ -33,7 +31,6 @@ const TOKEN_ICONS = ["🪙", "🐶", "🌙", "💀", "🐕", "🧹", "💨", "�
 const Dashboard = () => {
   const { connection } = useConnection();
   const { publicKey, connected, sendTransaction } = useWallet();
-  const anchorWallet = useAnchorWallet();
   const { user, season } = useReferral(publicKey?.toBase58() ?? null);
 
   const [tokenAccounts, setTokenAccounts] = useState<TokenAccountInfo[]>([]);
@@ -167,82 +164,48 @@ const Dashboard = () => {
   }, [publicKey, connection, scanning, scanned]);
 
   const handleSweep = useCallback(async () => {
-    if (!publicKey || !anchorWallet || selectedIds.size === 0 || sweeping) return;
-
-    const program = getProgram(anchorWallet);
-    const TREASURY = new PublicKey("J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi");
-
+    if (!publicKey || !sendTransaction || selectedIds.size === 0 || sweeping) return;
     setSweeping(true);
     setSweepProgress(null);
-
     try {
       const selectedAccounts = tokenAccounts.filter(
         (a) => a.isSweepable && selectedIds.has(a.pubkey.toBase58())
       );
 
-      // Batch: max ACCOUNTS_PER_TX per transaction
-      const batches: typeof selectedAccounts[] = [];
-      for (let i = 0; i < selectedAccounts.length; i += ACCOUNTS_PER_TX) {
-        batches.push(selectedAccounts.slice(i, i + ACCOUNTS_PER_TX));
-      }
+      const walletAdapter = {
+        publicKey,
+        signTransaction: async (tx: Transaction) => {
+          const signed = await sendTransaction(tx, connection);
+          return tx;
+        },
+      };
 
-      setSweepProgress({ currentBatch: 0, totalBatches: batches.length });
-      let lastSignature: string | undefined;
+      const results = await executeSweepNative(
+        connection,
+        {
+          publicKey,
+          signTransaction: async (tx: Transaction) => {
+            const { blockhash, lastValidBlockHeight } =
+              await connection.getLatestBlockhash("confirmed");
+            tx.recentBlockhash = blockhash;
+            tx.feePayer = publicKey;
+            return tx;
+          },
+        },
+        selectedAccounts.map((a) => ({
+          pubkey: a.pubkey,
+          rentLamports: a.rentLamports,
+        })),
+        (progress) => setSweepProgress(progress)
+      );
 
-      for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
-        const batch = batches[batchIndex];
-        setSweepProgress({
-          currentBatch: batchIndex + 1,
-          totalBatches: batches.length,
-          confirmingSlow: false,
-        });
+      const lastSignature = results[results.length - 1]?.signature;
+      const count = results.reduce((sum, r) => sum + r.accountsClosed, 0);
+      const totalRentLamports = results.reduce((sum, r) => sum + r.rentReclaimed, 0);
+      const sol = (totalRentLamports * (1 - 150 / 10000)) / 1e9;
 
-        // Build one ix per account via Anchor program
-        // Each ix routes through on-chain fee logic (treasury validated)
-        const ixs = await Promise.all(
-          batch.map((account) =>
-            program.methods
-              .closeEmptyAccount()
-              .accounts({
-                user: publicKey,
-                tokenAccount: account.pubkey,
-                treasury: TREASURY,
-              })
-              .instruction()
-          )
-        );
-
-        const tx = new Transaction().add(...ixs);
-        const { blockhash, lastValidBlockHeight } =
-          await connection.getLatestBlockhash();
-        tx.recentBlockhash = blockhash;
-        tx.feePayer = publicKey;
-
-        const sig = await sendTransaction(tx, connection, {
-          skipPreflight: false,
-          preflightCommitment: "confirmed",
-          maxRetries: 3,
-        });
-        lastSignature = sig;
-
-        await confirmTransactionWithTimeout(
-          connection,
-          sig,
-          blockhash,
-          lastValidBlockHeight,
-          () =>
-            setSweepProgress((p) =>
-              p ? { ...p, confirmingSlow: true } : null
-            )
-        );
-      }
-
-      // Success
       setSweepProgress(null);
       const closedIds = new Set(selectedAccounts.map((a) => a.pubkey.toBase58()));
-      const count = closedIds.size;
-      const sol = selectedIds.size * RENT_PER_ACCOUNT;
-
       setSelectedIds(new Set());
       setTokenAccounts((prev) =>
         prev.filter((a) => !closedIds.has(a.pubkey.toBase58()))
@@ -260,33 +223,16 @@ const Dashboard = () => {
       setSweepHistory((prev) => [saved, ...prev]);
 
       if (season) {
-        await updateSweepStats(
-          publicKey.toBase58(),
-          season.id,
-          count,
-          sol
-        );
+        await updateSweepStats(publicKey.toBase58(), season.id, count, sol);
       }
-
-      toast.success(`🎉 Swept ${count} accounts, reclaimed ${sol.toFixed(5)} SOL!`, {
-        duration: 8000,
-        action: lastSignature
-          ? {
-              label: "View on Solscan",
-              onClick: () =>
-                window.open(EXPLORER_TX_URL(lastSignature!), "_blank"),
-            }
-          : undefined,
-      });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.error("[Arsweep] Sweep failed:", err);
-      toast.error(`Sweep failed: ${msg}`);
+    } catch (err: any) {
+      console.error("[Sweep] error:", err);
+      toast.error(err?.message ?? "Sweep failed. Please try again.");
     } finally {
       setSweeping(false);
       setSweepProgress(null);
     }
-  }, [publicKey, anchorWallet, connection, sendTransaction, tokenAccounts, selectedIds, sweeping]);
+  }, [publicKey, sendTransaction, connection, selectedIds, sweeping, tokenAccounts, season]);
 
   // Not connected
   if (!connected) {

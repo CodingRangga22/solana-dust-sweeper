@@ -14,7 +14,9 @@ export const isDevnet = NETWORK === "devnet";
 export const isMainnet = NETWORK === "mainnet";
 
 const customRpc =
-  import.meta.env.VITE_RPC_ENDPOINT ?? import.meta.env.NEXT_PUBLIC_RPC_URL ?? "";
+  import.meta.env.VITE_HELIUS_RPC_URL ??
+  import.meta.env.VITE_RPC_ENDPOINT ??
+  import.meta.env.NEXT_PUBLIC_RPC_URL ?? "";
 
 export const RPC_ENDPOINT =
   customRpc.trim() ||
