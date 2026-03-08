@@ -1,0 +1,56 @@
+[33m117f289[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Wallet Session fixed
+[33md54b036[m Session Wallet
+[33m20ccf0d[m Fix Swap and Burn Token
+[33m95012d1[m Burn Fix
+[33mfac414a[m fix malicious sol
+[33m6d1f0bb[m Name & Logo in Mint Adress
+[33m1f6f004[m True or False
+[33mf339a35[m fix: force rebuild tokenAccounts with DexScreener
+[33m3e78462[m fix: use DexScreener for token price
+[33m1a02d61[m fix: Jupiter API URLs in tokenAccounts.ts
+[33m63b6a2f[m fix: Jupiter swap v1 endpoints
+[33m7440cf2[m debug: log total token accounts found
+[33mc3b09bc[m fix: sweepNative rewrite with sendTransaction interface
+[33me98c24c[m fix: vite-plugin-node-polyfills for Buffer
+[33m676c1b7[m fix: use sendTransaction directly in sweepNative
+[33m1b1992f[m fix: vite Buffer polyfill for spl-token
+[33m0a19a62[m fix: Buffer polyfill + Jupiter API key update
+[33mc08135c[m fix: Helius RPC + Jupiter API key + native SPL sweep
+[33m14468e6[m Logic Arsweep
+[33m230680b[m feat: enable mainnet sweep, fix token threshold, add value warning
+[33ma0fb526[m feat: enable sweep on mainnet, update banner
+[33m650db77[m simulation
+[33m4a6a04a[m feat: add simulation mode with dummy data
+[33m8d045fc[m fix: use referral_leaderboard view for cleaner query
+[33m2cfb01c[m fix: add vercel SPA routing
+[33m631544d[m feat: add leaderboard + referral system with Supabase
+[33m2ad36ba[m feat: add sweep history, jupiter swap integration, mainnet banner, sweep lock
+[33mcd4b9f2[m feat: add swap mode toggle per token
+[33m64ac838[m feat: lock sweep button on mainnet until program deployed
+[33m3e6ecba[m feat: add Google Analytics G-RTK2WG82H0
+[33m284c9c5[m fix: move @import to top of index.css
+[33mba47972[m feat: switch to mainnet, fix Program ID
+[33m1f2a1ec[m FIX UI?UX
+[33mf65b012[m Fix Docs
+[33m5c5a299[m Logic Backend
+[33me4403de[m Docs
+[33m1ecbdbb[m Arsweep: sweep flow fully working on devnet
+[33m7c1725a[m fix
+[33m5962f2b[m Update: Added Docs, Dark Mode, and reverted to Devnet
+[33m059762f[m Redesigned premium footer
+[33m86b0851[m Changes
+[33mc2c7082[m Improve Arsweep MVP UX and UI
+[33m67197f4[m Changes
+[33md40daf6[m Enhance landing and dashboard UI
+[33m98bf012[m Changes
+[33mae36eff[m Enhance landing page visuals
+[33mdcfd6dc[m Changes
+[33m38fef71[m Add landing page at root
+[33mb8f9a71[m Changes
+[33m290645f[m Add confetti on sweep success
+[33m01d9702[m Changes
+[33ma5af99b[m Enhance Arsweep UI features
+[33m90dd7ab[m Changes
+[33m2ceb78b[m Add sweeping UI
+[33me553bc3[m Changes
+[33mb331aa1[m template: new_style_vite_react_shadcn_ts_testing_2026-01-08

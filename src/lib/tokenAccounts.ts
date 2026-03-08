@@ -90,7 +90,7 @@ async function checkHasLiquidity(mint: string): Promise<boolean> {
   }
 }
 
-// ── Token Metadata (Jupiter Token API) ────────────────────────────────
+// ── Token Metadata (Helius DAS API) ──────────────────────────────────
 const metadataCache = new Map<string, TokenMetadata>();
 
 async function fetchTokenMetadata(mint: string): Promise<TokenMetadata> {
@@ -104,16 +104,28 @@ async function fetchTokenMetadata(mint: string): Promise<TokenMetadata> {
   };
 
   try {
-    const res = await fetch(`https://tokens.jup.ag/token/${mint}`);
-    if (!res.ok) {
-      metadataCache.set(mint, fallback);
-      return fallback;
-    }
+    const apiKey = import.meta.env.VITE_HELIUS_RPC_URL?.split("api-key=")[1] ?? "";
+    const res = await fetch(
+      `https://mainnet.helius-rpc.com/?api-key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: "1",
+          method: "getAsset",
+          params: { id: mint },
+        }),
+      },
+    );
     const json = await res.json();
+    const result = json?.result;
+    const metadata = result?.content?.metadata;
+    const links = result?.content?.links;
     const meta: TokenMetadata = {
-      name: json?.name || fallback.name,
-      symbol: json?.symbol || fallback.symbol,
-      logoURI: json?.logoURI || null,
+      name: metadata?.name || fallback.name,
+      symbol: metadata?.symbol || fallback.symbol,
+      logoURI: links?.image || null,
     };
     metadataCache.set(mint, meta);
     return meta;
