@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { PublicKey } from "@solana/web3.js";
 import { toast } from "sonner";
 
 const STORAGE_KEY_WALLET = "arsweep_locked_wallet";
 const STORAGE_KEY_ACTIVITY = "arsweep_last_activity";
-const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
-const IDLE_CHECK_INTERVAL_MS = 30_000; // poll every 30 s
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
+const IDLE_CHECK_INTERVAL_MS = 30_000;
 
 const ACTIVITY_EVENTS = [
   "mousemove",
@@ -22,6 +23,7 @@ export interface WalletSession {
   walletMismatch: boolean;
   sendTransaction: ReturnType<typeof useWallet>["sendTransaction"];
   handleChangeWallet: () => Promise<void>;
+  handleDisconnect: () => Promise<void>;
 }
 
 export function useWalletSession(): WalletSession {
@@ -30,9 +32,10 @@ export function useWalletSession(): WalletSession {
     connected: adapterConnected,
     disconnect,
     sendTransaction,
+    select,
   } = useWallet();
+  const { setVisible } = useWalletModal();
 
-  // ── Locked wallet (persisted in localStorage) ───────────────────────
   const [lockedWallet, setLockedWallet] = useState<string | null>(() => {
     try {
       return localStorage.getItem(STORAGE_KEY_WALLET);
@@ -53,7 +56,7 @@ export function useWalletSession(): WalletSession {
       setLockedWallet(key);
       localStorage.setItem(STORAGE_KEY_WALLET, key);
       localStorage.setItem(STORAGE_KEY_ACTIVITY, Date.now().toString());
-      console.log(`[WalletSession] Wallet locked: ${key}`);
+      console.log(`[Wallet] Locked: ${key}`);
     }
   }, [adapterConnected, adapterPublicKey, lockedWallet]);
 
@@ -68,29 +71,62 @@ export function useWalletSession(): WalletSession {
   useEffect(() => {
     if (walletMismatch && !prevMismatchRef.current) {
       console.warn(
-        `[WalletSession] Account switch detected → ` +
-          `adapter=${adapterPublicKey!.toBase58()}, locked=${lockedWallet}. Ignoring.`,
+        `[Wallet] Account switch detected: adapter=${adapterPublicKey!.toBase58()}, locked=${lockedWallet}. Ignoring.`,
       );
       toast.warning(
-        "Phantom account changed — Arsweep is still using your original session. " +
-          'Click "Change Wallet" to switch.',
+        'Wallet account changed. Click "Change Wallet" to switch.',
       );
     }
     prevMismatchRef.current = walletMismatch;
   }, [walletMismatch, adapterPublicKey, lockedWallet]);
 
-  // ── Change wallet (explicit user action) ────────────────────────────
+  // ── Change Wallet ───────────────────────────────────────────────────
   const handleChangeWallet = useCallback(async () => {
-    setLockedWallet(null);
-    localStorage.removeItem(STORAGE_KEY_WALLET);
-    localStorage.removeItem(STORAGE_KEY_ACTIVITY);
     try {
+      console.log("[Wallet] Change wallet");
+
+      // 1. Disconnect wallet (calls adapter.disconnect → clears Phantom session)
       await disconnect();
-    } catch {
-      // Phantom may throw if already disconnected
+
+      // 2. Deselect wallet from adapter React state.
+      //    Without this, re-selecting Phantom skips the full select→connect
+      //    cycle and Phantom auto-reconnects to the previous account.
+      try { select(null as any); } catch {}
+
+      // 3. Clear adapter + session persistence
+      localStorage.removeItem("walletName");
+      localStorage.removeItem(STORAGE_KEY_WALLET);
+      localStorage.removeItem(STORAGE_KEY_ACTIVITY);
+
+      setLockedWallet(null);
+
+      // 4. Small delay for React state + Phantom to settle, then reopen modal
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      setVisible(true);
+    } catch (err) {
+      console.error("Change wallet error:", err);
     }
-    console.log("[WalletSession] Session cleared — ready for new wallet.");
-  }, [disconnect]);
+  }, [disconnect, select, setVisible]);
+
+  // ── Disconnect (no modal reopen) ────────────────────────────────────
+  const handleDisconnect = useCallback(async () => {
+    try {
+      console.log("[Wallet] Disconnecting...");
+
+      await disconnect();
+
+      try { select(null as any); } catch {}
+
+      localStorage.removeItem("walletName");
+      localStorage.removeItem(STORAGE_KEY_WALLET);
+      localStorage.removeItem(STORAGE_KEY_ACTIVITY);
+
+      setLockedWallet(null);
+    } catch (err) {
+      console.error("Disconnect error:", err);
+    }
+  }, [disconnect, select]);
 
   // ── Idle auto-disconnect ────────────────────────────────────────────
   const lastActivityRef = useRef(Date.now());
@@ -111,11 +147,10 @@ export function useWalletSession(): WalletSession {
     }
 
     const timer = setInterval(() => {
-      const idle = Date.now() - lastActivityRef.current;
-      if (idle >= IDLE_TIMEOUT_MS) {
-        console.warn("[WalletSession] Idle timeout (15 min). Auto-disconnecting.");
+      if (Date.now() - lastActivityRef.current >= IDLE_TIMEOUT_MS) {
+        console.warn("[Wallet] Idle timeout (15 min). Disconnecting.");
         toast.info("Session expired due to inactivity. Please reconnect.");
-        handleChangeWallet();
+        handleDisconnect();
       }
     }, IDLE_CHECK_INTERVAL_MS);
 
@@ -125,17 +160,8 @@ export function useWalletSession(): WalletSession {
       }
       clearInterval(timer);
     };
-  }, [lockedWallet, handleChangeWallet]);
+  }, [lockedWallet, handleDisconnect]);
 
-  // ── Session cleared while adapter still connected ───────────────────
-  // (e.g. user manually cleared localStorage in devtools)
-  useEffect(() => {
-    if (!lockedWallet && adapterConnected) {
-      disconnect().catch(() => {});
-    }
-  }, [lockedWallet, adapterConnected, disconnect]);
-
-  // ── Public API ──────────────────────────────────────────────────────
   const sessionActive = !!lockedWallet && adapterConnected && !walletMismatch;
 
   return {
@@ -144,5 +170,6 @@ export function useWalletSession(): WalletSession {
     walletMismatch,
     sendTransaction,
     handleChangeWallet,
+    handleDisconnect,
   };
 }

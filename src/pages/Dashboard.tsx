@@ -38,6 +38,7 @@ const Dashboard = () => {
     sessionActive: connected,
     sendTransaction,
     handleChangeWallet,
+    handleDisconnect,
     walletMismatch,
   } = useWalletSession();
   const { user, season } = useReferral(publicKey?.toBase58() ?? null);
@@ -76,6 +77,20 @@ const Dashboard = () => {
     if (!publicKey) return;
     setSweepHistory(getSweepHistory(publicKey.toBase58()));
   }, [publicKey, scanned]);
+
+  useEffect(() => {
+    if (!connected) {
+      setTokenAccounts([]);
+      setSelectedIds(new Set());
+      setScanned(false);
+      setSweeping(false);
+      setPendingTx(null);
+      sweepLockRef.current = false;
+      setSweepProgress(null);
+      resetModes();
+      setSwapQuotes({});
+    }
+  }, [connected, resetModes]);
 
   useEffect(() => {
     const fetchQuotes = async () => {
@@ -404,7 +419,7 @@ const Dashboard = () => {
       <div className="relative min-h-screen bg-background overflow-hidden">
         <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
         <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
-        <Header onChangeWallet={handleChangeWallet} walletMismatch={walletMismatch} />
+        <Header onChangeWallet={handleChangeWallet} onDisconnect={handleDisconnect} walletMismatch={walletMismatch} />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -440,7 +455,7 @@ const Dashboard = () => {
       <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
       <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
 
-      <Header onChangeWallet={handleChangeWallet} walletMismatch={walletMismatch} />
+      <Header onChangeWallet={handleChangeWallet} onDisconnect={handleDisconnect} walletMismatch={walletMismatch} />
       <Hero scanning={scanning} scanned={scanned} onScan={handleScan} onRescan={handleRescan} sweeping={sweeping} accountsFound={sweepableAccounts.length} />
       <StatsBar
         totalDust={tokens.length}
