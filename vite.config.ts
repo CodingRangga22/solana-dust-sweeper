@@ -3,7 +3,6 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   envPrefix: ["VITE_", "NEXT_PUBLIC_"],
   server: {
@@ -17,6 +16,18 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      buffer: "buffer",
+    },
+  },
+  define: {
+    "globalThis.Buffer": ["buffer", "Buffer"],
+  },
+  optimizeDeps: {
+    include: ["buffer"],
+    esbuildOptions: {
+      define: {
+        global: "globalThis",
+      },
     },
   },
 }));
