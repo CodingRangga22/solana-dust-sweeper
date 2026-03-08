@@ -78,6 +78,7 @@ export async function fetchAllTokenAccounts(
   });
 
   const results: TokenAccountInfo[] = [];
+  console.log(`[Arsweep] Total token accounts found: ${accounts.value.length}`);
 
   for (const { pubkey, account } of accounts.value) {
     const parsed = account.data.parsed.info;
