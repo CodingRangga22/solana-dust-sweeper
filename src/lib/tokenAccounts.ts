@@ -55,7 +55,7 @@ const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 async function checkHasLiquidity(mint: string): Promise<boolean> {
   try {
     const res = await fetch(
-      `https://api.jup.ag/quote?inputMint=${mint}&outputMint=${USDC_MINT}&amount=1000000&slippageBps=5000`,
+      `https://api.jup.ag/swap/v1/quote?inputMint=${mint}&outputMint=${USDC_MINT}&amount=1000000&slippageBps=5000`,
       { headers: jupiterHeaders() }
     );
     const json = await res.json();
