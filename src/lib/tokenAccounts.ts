@@ -14,6 +14,12 @@ export type EligibilityReason =
   | "inactive"
   | "low_usd_value";
 
+export interface TokenMetadata {
+  name: string;
+  symbol: string;
+  logoURI: string | null;
+}
+
 export interface TokenAccountInfo {
   pubkey: PublicKey;
   mint: PublicKey;
@@ -26,6 +32,7 @@ export interface TokenAccountInfo {
   hasLiquidityPool: boolean;
   lastActivityMs: number | null;
   criteriaMetCount: number;
+  metadata: TokenMetadata;
 }
 
 // ── Jupiter Auth Header ───────────────────────────────────────────────
@@ -66,6 +73,39 @@ async function checkHasLiquidity(mint: string): Promise<boolean> {
   }
 }
 
+// ── Token Metadata (Jupiter Token API) ────────────────────────────────
+const metadataCache = new Map<string, TokenMetadata>();
+
+async function fetchTokenMetadata(mint: string): Promise<TokenMetadata> {
+  const cached = metadataCache.get(mint);
+  if (cached) return cached;
+
+  const fallback: TokenMetadata = {
+    name: `${mint.slice(0, 4)}...${mint.slice(-4)}`,
+    symbol: mint.slice(0, 6),
+    logoURI: null,
+  };
+
+  try {
+    const res = await fetch(`https://tokens.jup.ag/token/${mint}`);
+    if (!res.ok) {
+      metadataCache.set(mint, fallback);
+      return fallback;
+    }
+    const json = await res.json();
+    const meta: TokenMetadata = {
+      name: json?.name || fallback.name,
+      symbol: json?.symbol || fallback.symbol,
+      logoURI: json?.logoURI || null,
+    };
+    metadataCache.set(mint, meta);
+    return meta;
+  } catch {
+    metadataCache.set(mint, fallback);
+    return fallback;
+  }
+}
+
 // ── Rate limit helper ─────────────────────────────────────────────────
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -96,9 +136,10 @@ export async function fetchAllTokenAccounts(
     const rentLamports = account.lamports;
     const mintStr = parsed.mint as string;
 
-    const [usdValueCents, hasLiquidityPool] = await Promise.all([
+    const [usdValueCents, hasLiquidityPool, metadata] = await Promise.all([
       fetchUsdValueCents(mintStr),
       amount > BigInt(0) ? checkHasLiquidity(mintStr) : Promise.resolve(false),
+      fetchTokenMetadata(mintStr),
     ]);
 
     // ── Eligibility Scoring ──────────────────────────────────────────
@@ -141,6 +182,7 @@ export async function fetchAllTokenAccounts(
       hasLiquidityPool,
       lastActivityMs,
       criteriaMetCount,
+      metadata,
     });
 
     await delay(200);

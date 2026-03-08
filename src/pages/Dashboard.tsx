@@ -110,13 +110,13 @@ const Dashboard = () => {
 
   const tokens: Token[] = useMemo(
     () =>
-      sweepableAccounts.map((a, i) => ({
+      sweepableAccounts.map((a) => ({
         id: a.pubkey.toBase58(),
-        name: `Token ${a.mint.toBase58().slice(0, 4)}...`,
+        name: a.metadata.name,
         mint: a.mint.toBase58(),
-        balance: "0",
+        balance: a.amount.toString(),
         rentRefundable: RENT_PER_ACCOUNT,
-        icon: TOKEN_ICONS[i % TOKEN_ICONS.length],
+        icon: a.metadata.logoURI ?? TOKEN_ICONS[0],
       })),
     [sweepableAccounts]
   );

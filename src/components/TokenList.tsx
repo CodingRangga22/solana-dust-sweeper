@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, AlertTriangle } from "lucide-react";
+import { Check, AlertTriangle, Copy, ExternalLink } from "lucide-react";
 import { type TokenAccountInfo, INACTIVITY_DAYS } from "@/lib/tokenAccounts";
 import SwapModeToggle from "@/components/SwapModeToggle";
 import type { TokenMode } from "@/hooks/useSwapMode";
@@ -16,10 +17,10 @@ export interface Token {
 const SkeletonRow = () => (
   <div className="flex items-center gap-4 p-4 animate-pulse">
     <div className="w-5 h-5 rounded bg-muted" />
-    <div className="w-10 h-10 rounded-xl bg-muted" />
+    <div className="w-10 h-10 rounded-full bg-muted" />
     <div className="flex-1 space-y-2">
-      <div className="h-4 w-24 bg-muted rounded" />
-      <div className="h-3 w-32 bg-muted rounded" />
+      <div className="h-4 w-32 bg-muted rounded" />
+      <div className="h-3 w-24 bg-muted rounded" />
     </div>
     <div className="h-4 w-20 bg-muted rounded" />
     <div className="h-4 w-24 bg-muted rounded" />
@@ -27,6 +28,27 @@ const SkeletonRow = () => (
 );
 
 const formatMint = (mint: string) => (mint.length > 12 ? `${mint.slice(0, 4)}...${mint.slice(-4)}` : mint);
+
+const TokenLogo = ({ src, symbol }: { src: string | null; symbol: string }) => {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return (
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center text-sm font-bold text-foreground/70 shrink-0 border border-border/50">
+        {symbol.slice(0, 2).toUpperCase()}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={symbol}
+      onError={() => setFailed(true)}
+      className="w-10 h-10 rounded-full object-cover shrink-0 border border-border/50 bg-muted"
+    />
+  );
+};
 
 interface TokenListProps {
   tokenAccounts: TokenAccountInfo[];
@@ -99,7 +121,10 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                 <AnimatePresence>
                   {tokenAccounts.map((account, i) => {
                     const id = account.pubkey.toBase58();
+                    const mintStr = account.mint.toBase58();
                     const selected = account.isSweepable && selectedIds.has(id);
+                    const { name, symbol, logoURI } = account.metadata;
+
                     return (
                       <motion.div
                         key={id}
@@ -107,10 +132,11 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.04 }}
                         onClick={() => account.isSweepable && !isDisabled && onToggle(id)}
-                        className={`flex items-center gap-4 px-4 py-3.5 transition-all duration-200 border-b border-border last:border-b-0 ${
+                        className={`flex items-center gap-3 px-4 py-3.5 transition-all duration-200 border-b border-border last:border-b-0 ${
                           account.isSweepable ? (isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer") : "cursor-default"
                         } ${!isDisabled && account.isSweepable && (selected ? "bg-primary/5" : "hover:bg-muted/30 hover:shadow-[inset_0_0_30px_hsla(162,93%,51%,0.04)]")}`}
                       >
+                        {/* Checkbox */}
                         <div className="w-5 h-5 shrink-0 flex items-center justify-center">
                           {account.isSweepable ? (
                             <div
@@ -124,8 +150,10 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                             <div className="w-5 h-5 rounded-md border border-border bg-muted/30" />
                           )}
                         </div>
+
+                        {/* Card */}
                         <div
-                          className={`flex-1 min-w-0 flex items-center justify-between p-4 rounded-xl border transition-all ${
+                          className={`flex-1 min-w-0 p-4 rounded-xl border transition-all ${
                             account.isSweepable
                               ? account.hasValueWarning
                                 ? "bg-card border-yellow-500/30"
@@ -133,25 +161,59 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                               : "bg-card border-border opacity-40"
                           }`}
                         >
-                          <div>
-                            <p className="text-sm font-mono">
-                              {account.pubkey.toBase58().slice(0, 4)}...
-                              {account.pubkey.toBase58().slice(-4)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Mint: {account.mint.toBase58().slice(0, 6)}...
-                            </p>
+                          {/* Top: Logo + Name + Balance */}
+                          <div className="flex items-center gap-3 mb-3">
+                            <TokenLogo src={logoURI} symbol={symbol} />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-foreground truncate">
+                                {name}
+                              </p>
+                              <p className="text-xs text-muted-foreground font-medium">
+                                {symbol}
+                              </p>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <p className="text-sm font-semibold tabular-nums">
+                                Balance: {account.amount.toLocaleString()}
+                              </p>
+                              <p className="text-xs text-muted-foreground tabular-nums">
+                                Rent: {(account.rentLamports / 1e9).toFixed(6)} SOL
+                              </p>
+                            </div>
                           </div>
-                          <div className="text-right flex flex-col items-end gap-1">
-                            <p className="text-sm">
-                              Balance: {account.amount.toString()}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Rent: {(account.rentLamports / 1e9).toFixed(6)} SOL
-                            </p>
-                            <div className="flex items-center gap-1.5">
+
+                          {/* Contract Address */}
+                          <div className="flex items-center gap-2 mb-2 px-2.5 py-1.5 rounded-lg bg-muted/30 w-fit">
+                            <span className="text-[11px] text-muted-foreground font-mono">
+                              Mint: {formatMint(mintStr)}
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(mintStr);
+                              }}
+                              className="text-muted-foreground hover:text-foreground transition-colors"
+                              title="Copy mint address"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </button>
+                            <a
+                              href={`https://solscan.io/token/${mintStr}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="text-muted-foreground hover:text-foreground transition-colors"
+                              title="View on Solscan"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+
+                          {/* Tags + Swap */}
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                               <span
-                                className={`text-xs px-2 py-1 rounded-full ${
+                                className={`text-xs px-2 py-1 rounded-full font-medium ${
                                   account.isSweepable
                                     ? "bg-emerald-500/20 text-emerald-400"
                                     : "bg-muted text-muted-foreground"
@@ -160,15 +222,13 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                                 {account.isSweepable ? "Sweepable" : "Active"}
                               </span>
                               {account.hasValueWarning && (
-                                <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center gap-1">
+                                <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center gap-1 font-medium">
                                   <AlertTriangle className="w-3 h-3" />
                                   Has Value
                                 </span>
                               )}
-                            </div>
-                            {account.isSweepable && account.eligibilityReasons.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-1 justify-end">
-                                {account.eligibilityReasons.map((reason) => (
+                              {account.isSweepable && account.eligibilityReasons.length > 0 &&
+                                account.eligibilityReasons.map((reason) => (
                                   <span
                                     key={reason}
                                     className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground"
@@ -180,8 +240,7 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                                     {reason === "inactive" && `${INACTIVITY_DAYS}d inactive`}
                                   </span>
                                 ))}
-                              </div>
-                            )}
+                            </div>
                             {account.isSweepable && account.hasLiquidityPool && onToggleMode && (
                               <SwapModeToggle
                                 mode={tokenModes[account.pubkey.toBase58()] ?? "close"}
