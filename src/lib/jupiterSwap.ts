@@ -23,7 +23,7 @@ export async function getSwapQuote(
 
   try {
     const res = await fetch(
-      `https://api.jup.ag/quote?inputMint=${mintAddress}&outputMint=${SOL_MINT}&amount=${amount.toString()}&slippageBps=100`,
+      `https://api.jup.ag/swap/v1/quote?inputMint=${mintAddress}&outputMint=${SOL_MINT}&amount=${amount.toString()}&slippageBps=100`,
       { headers: jupiterHeaders() },
     );
     const json = await res.json();
@@ -48,7 +48,7 @@ export async function getSwapTransaction(
   userPublicKey: string,
 ): Promise<string | null> {
   try {
-    const res = await fetch("https://api.jup.ag/swap", {
+    const res = await fetch("https://api.jup.ag/swap/v1/swap", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
