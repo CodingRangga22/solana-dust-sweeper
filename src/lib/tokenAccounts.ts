@@ -38,11 +38,12 @@ function jupiterHeaders(): Record<string, string> {
 async function fetchUsdValueCents(mint: string): Promise<number> {
   try {
     const res = await fetch(
-      `https://api.jup.ag/price/v2?ids=${mint}`,
-      { headers: jupiterHeaders() }
+      `https://api.dexscreener.com/latest/dex/tokens/${mint}`
     );
     const json = await res.json();
-    const price: number = json?.data?.[mint]?.price ?? 0;
+    const price: number = json?.pairs?.[0]?.priceUsd
+      ? parseFloat(json.pairs[0].priceUsd)
+      : 0;
     return Math.floor(price * 100);
   } catch {
     return 0;
