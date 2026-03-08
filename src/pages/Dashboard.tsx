@@ -181,6 +181,7 @@ const Dashboard = () => {
         selectedAccounts.map((a) => ({
           pubkey: a.pubkey,
           rentLamports: a.rentLamports,
+          programId: a.programId,
         })),
         (progress) => setSweepProgress(progress)
       );

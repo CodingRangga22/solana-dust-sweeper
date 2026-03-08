@@ -23,6 +23,7 @@ export interface TokenMetadata {
 export interface TokenAccountInfo {
   pubkey: PublicKey;
   mint: PublicKey;
+  programId: PublicKey;
   amount: bigint;
   rentLamports: number;
   isSweepable: boolean;
@@ -123,14 +124,16 @@ export async function fetchAllTokenAccounts(
     }),
   ]);
 
-  const allAccounts = [...splAccounts.value, ...token2022Accounts.value];
+  const taggedSpl = splAccounts.value.map((a) => ({ ...a, tokenProgramId: TOKEN_PROGRAM_ID }));
+  const tagged2022 = token2022Accounts.value.map((a) => ({ ...a, tokenProgramId: TOKEN_2022_PROGRAM_ID }));
+  const allAccounts = [...taggedSpl, ...tagged2022];
 
   const results: TokenAccountInfo[] = [];
   console.log(
     `[Arsweep] Token accounts found — SPL: ${splAccounts.value.length}, Token-2022: ${token2022Accounts.value.length}, Total: ${allAccounts.length}`
   );
 
-  for (const { pubkey, account } of allAccounts) {
+  for (const { pubkey, account, tokenProgramId } of allAccounts) {
     const parsed = account.data.parsed.info;
     const amount = BigInt(parsed.tokenAmount?.amount ?? 0);
     const rentLamports = account.lamports;
@@ -173,6 +176,7 @@ export async function fetchAllTokenAccounts(
     results.push({
       pubkey,
       mint: new PublicKey(mintStr),
+      programId: tokenProgramId,
       amount,
       rentLamports,
       isSweepable,

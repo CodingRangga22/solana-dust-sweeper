@@ -2,12 +2,14 @@ import {
   Connection,
   PublicKey,
   Transaction,
+  TransactionInstruction,
   SystemProgram,
 } from "@solana/web3.js";
-import { TOKEN_PROGRAM_ID, createCloseAccountInstruction } from "@solana/spl-token";
+import { createCloseAccountInstruction } from "@solana/spl-token";
 
 export const TREASURY = new PublicKey("J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi");
 const FEE_BPS = 150;
+const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
 
 export interface SweepBatchResult {
   signature: string;
@@ -27,7 +29,7 @@ export async function executeSweepNative(
     publicKey: PublicKey;
     sendTransaction: (tx: Transaction, connection: Connection, options?: any) => Promise<string>;
   },
-  accounts: Array<{ pubkey: PublicKey; rentLamports: number }>,
+  accounts: Array<{ pubkey: PublicKey; rentLamports: number; programId: PublicKey }>,
   onProgress?: (progress: SweepProgress) => void,
   batchSize = 10
 ): Promise<SweepBatchResult[]> {
@@ -52,7 +54,7 @@ export async function executeSweepNative(
           wallet.publicKey,
           wallet.publicKey,
           [],
-          TOKEN_PROGRAM_ID
+          acc.programId,
         )
       );
       totalRent += acc.rentLamports;
@@ -60,6 +62,13 @@ export async function executeSweepNative(
 
     const fee = Math.floor(totalRent * FEE_BPS / 10000);
     if (fee > 0) {
+      tx.add(
+        new TransactionInstruction({
+          keys: [],
+          programId: MEMO_PROGRAM_ID,
+          data: Buffer.from(`Arsweep service fee: ${fee} lamports (1.5%)`),
+        })
+      );
       tx.add(
         SystemProgram.transfer({
           fromPubkey: wallet.publicKey,
@@ -84,6 +93,12 @@ export async function executeSweepNative(
     while (!confirmed && Date.now() - start < 60000) {
       try {
         const status = await connection.getSignatureStatus(signature);
+        if (status?.value?.err) {
+          console.error(`[Arsweep] Batch ${i + 1} tx error:`, status.value.err);
+          throw new Error(
+            `Transaction failed on-chain: ${JSON.stringify(status.value.err)}`
+          );
+        }
         if (
           status?.value?.confirmationStatus === "confirmed" ||
           status?.value?.confirmationStatus === "finalized"
@@ -92,7 +107,9 @@ export async function executeSweepNative(
         } else if (Date.now() - start > 20000) {
           onProgress?.({ currentBatch: i + 1, totalBatches: batches.length, confirmingSlow: true });
         }
-      } catch {}
+      } catch (err: any) {
+        if (err?.message?.startsWith("Transaction failed")) throw err;
+      }
       if (!confirmed) await new Promise((r) => setTimeout(r, 2000));
     }
 

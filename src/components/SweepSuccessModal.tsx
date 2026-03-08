@@ -9,9 +9,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { isDevnet } from "@/config/env";
 
 const EXPLORER_BASE = "https://solscan.io/tx";
-const CLUSTER = "devnet";
 
 interface SweepSuccessModalProps {
   open: boolean;
@@ -61,7 +61,7 @@ const SweepSuccessModal = ({ open, onOpenChange, count, totalSol, signature }: S
         </DialogHeader>
         {signature && (
           <a
-            href={`${EXPLORER_BASE}/${signature}?cluster=${CLUSTER}`}
+            href={`${EXPLORER_BASE}/${signature}${isDevnet ? "?cluster=devnet" : ""}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl glass glass-hover text-foreground text-sm font-medium transition-colors mb-2"
