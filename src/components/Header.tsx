@@ -1,11 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import ArsweepLogo from "./ArsweepLogo";
-import { Github, BookOpen, Trophy } from "lucide-react";
+import { Github, BookOpen, Trophy, RefreshCw, AlertTriangle } from "lucide-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import ThemeToggle from "./ThemeToggle";
 import { useBanner } from "./BannerProvider";
 
-const Header = () => {
+interface HeaderProps {
+  onChangeWallet?: () => void;
+  walletMismatch?: boolean;
+}
+
+const Header = ({ onChangeWallet, walletMismatch }: HeaderProps) => {
   const location = useLocation();
   const isDocs = location.pathname === "/docs";
   const { bannerHeight } = useBanner();
@@ -57,7 +62,25 @@ const Header = () => {
           <Github className="w-4 h-4" />
           <span className="hidden sm:inline text-xs">GitHub</span>
         </a>
-        <WalletMultiButton className="!bg-primary !text-primary-foreground !rounded-xl !px-4 !py-2.5 !text-sm !font-medium hover:!opacity-90 !transition-opacity" />
+        <div className="flex items-center gap-2">
+          {walletMismatch && (
+            <span className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-yellow-500/15 text-yellow-400 border border-yellow-500/30" title="Phantom account differs from locked session">
+              <AlertTriangle className="w-3 h-3" />
+              Mismatch
+            </span>
+          )}
+          <WalletMultiButton className="!bg-primary !text-primary-foreground !rounded-xl !px-4 !py-2.5 !text-sm !font-medium hover:!opacity-90 !transition-opacity" />
+          {onChangeWallet && (
+            <button
+              onClick={onChangeWallet}
+              className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-destructive glass glass-hover transition-colors duration-200"
+              title="Disconnect and switch to a different wallet"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Change Wallet</span>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   </header>

@@ -12,15 +12,17 @@ interface ActionBarProps {
   totalSol: number;
   onSweep: () => void;
   sweeping?: boolean;
+  pendingTx?: string | null;
   sweepProgress?: { currentBatch: number; totalBatches: number; confirmingSlow?: boolean } | null;
 }
 
-const ActionBar = ({ count, totalSol, onSweep, sweeping = false, sweepProgress }: ActionBarProps) => {
+const ActionBar = ({ count, totalSol, onSweep, sweeping = false, pendingTx = null, sweepProgress }: ActionBarProps) => {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const gasFee = GAS_FEE_PER_ACCOUNT * count;
   const serviceFee = totalSol * SERVICE_FEE_PERCENT;
   const netSol = totalSol - gasFee - serviceFee;
-  const canSweep = disclaimerAccepted && !sweeping;
+  const isBusy = sweeping || !!pendingTx;
+  const canSweep = disclaimerAccepted && !isBusy;
 
   return (
     <AnimatePresence>
@@ -77,14 +79,16 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false, sweepProgress }
                 title={isMainnet ? "Sweep coming soon — mainnet program deploying" : undefined}
                 className="gradient-bg gradient-bg-hover flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-primary-foreground font-semibold text-sm whitespace-nowrap transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               >
-                {sweeping ? (
+                {isBusy ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
                     {sweepProgress?.confirmingSlow
                       ? "Still confirming on network..."
                       : sweepProgress
                         ? `Batch ${sweepProgress.currentBatch} of ${sweepProgress.totalBatches}...`
-                        : "Processing Transaction..."}
+                        : pendingTx
+                          ? "Transaction Pending..."
+                          : "Processing..."}
                   </>
                 ) : (
                   <>

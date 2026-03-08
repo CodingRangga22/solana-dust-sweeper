@@ -1,6 +1,6 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
 import { motion } from "framer-motion";
 import { Wallet } from "lucide-react";
@@ -24,6 +24,7 @@ import { useSwapMode } from "@/hooks/useSwapMode";
 import { getSwapQuote, getSwapTransaction } from "@/lib/jupiterSwap";
 import { useReferral } from "@/hooks/useReferral";
 import { updateSweepStats } from "@/lib/supabase";
+import { useWalletSession } from "@/hooks/useWalletSession";
 
 const RENT_PER_ACCOUNT = 0.002042; // SOL per closed account (~2,039,280 lamports)
 const FEE_BPS = 150;
@@ -32,7 +33,13 @@ const TOKEN_ICONS = ["🪙", "🐶", "🌙", "💀", "🐕", "🧹", "💨", "�
 
 const Dashboard = () => {
   const { connection } = useConnection();
-  const { publicKey, connected, sendTransaction } = useWallet();
+  const {
+    lockedPublicKey: publicKey,
+    sessionActive: connected,
+    sendTransaction,
+    handleChangeWallet,
+    walletMismatch,
+  } = useWalletSession();
   const { user, season } = useReferral(publicKey?.toBase58() ?? null);
 
   const [tokenAccounts, setTokenAccounts] = useState<TokenAccountInfo[]>([]);
@@ -40,6 +47,8 @@ const Dashboard = () => {
   const [scanning, setScanning] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [sweeping, setSweeping] = useState(false);
+  const [pendingTx, setPendingTx] = useState<string | null>(null);
+  const sweepLockRef = useRef(false);
   const [sweepProgress, setSweepProgress] = useState<{
     currentBatch: number;
     totalBatches: number;
@@ -176,9 +185,26 @@ const Dashboard = () => {
   }, [publicKey, connection, scanning, scanned]);
 
   const handleSweep = useCallback(async () => {
-    if (!publicKey || !sendTransaction || selectedIds.size === 0 || sweeping) return;
+    // ── Transaction Guard: triple-layer re-entrancy protection ──────
+    if (sweepLockRef.current) {
+      console.warn("[TxGuard] Sweep blocked — synchronous lock active");
+      return;
+    }
+    if (sweeping || pendingTx) {
+      console.warn("[TxGuard] Sweep blocked — already running", { sweeping, pendingTx });
+      return;
+    }
+    if (!publicKey || !sendTransaction || selectedIds.size === 0) return;
+    if (walletMismatch) {
+      toast.error("Wallet account mismatch. Switch back in Phantom or click \"Change Wallet\".");
+      return;
+    }
+
+    sweepLockRef.current = true;
     setSweeping(true);
+    setPendingTx(null);
     setSweepProgress(null);
+    console.log("[TxGuard] Sweep started — lock acquired");
 
     try {
       const selectedAccounts = tokenAccounts.filter(
@@ -206,7 +232,6 @@ const Dashboard = () => {
           continue;
         }
 
-        // Minimum swap value gate: token < $0.05 → not worth swapping
         if (acc.usdValueCents < MIN_SWAP_VALUE_CENTS) {
           console.log(
             `[Min-value] ${acc.metadata.symbol}: $${(acc.usdValueCents / 100).toFixed(2)} < $0.05 → burn queue (close-only)`,
@@ -215,24 +240,23 @@ const Dashboard = () => {
           continue;
         }
 
-        // Protection 1: liquidity > 0 → must swap
         if (acc.hasLiquidityPool) {
           console.log(`[Protection 1] ${acc.metadata.symbol}: liquidity detected → swap queue`);
           swapQueue.push(acc);
           continue;
         }
 
-        // Protection 2: value > 0 → try swap
         if (acc.usdValueCents > 0) {
           console.log(`[Protection 2] ${acc.metadata.symbol}: value $${(acc.usdValueCents / 100).toFixed(2)} → swap queue`);
           swapQueue.push(acc);
           continue;
         }
 
-        // value == 0 AND liquidity == 0 → safe to burn
         console.log(`[Burn OK] ${acc.metadata.symbol}: value=$0, liquidity=none → burn queue`);
         burnQueue.push(acc);
       }
+
+      console.log(`[TxGuard] Queues ready — swap: ${swapQueue.length}, burn: ${burnQueue.length}`);
 
       let totalClosed = 0;
       let totalRentLamports = 0;
@@ -247,7 +271,6 @@ const Dashboard = () => {
         setSweepProgress({ currentBatch: i + 1, totalBatches: totalSteps });
 
         try {
-          // Protection 3: check if Jupiter route exists AND outAmount > 0
           const quote = await getSwapQuote(acc.mint.toBase58(), acc.amount);
 
           if (!quote || Number(quote.outAmount) <= 0) {
@@ -270,20 +293,27 @@ const Dashboard = () => {
 
           const swapTxBuf = Buffer.from(swapTxBase64, "base64");
           const versionedTx = VersionedTransaction.deserialize(swapTxBuf);
+
+          console.log(`[TxGuard] Submitting swap tx for ${acc.metadata.symbol}...`);
           const sig = await sendTransaction(versionedTx as any, connection, {
             skipPreflight: false,
             preflightCommitment: "confirmed",
           });
+          setPendingTx(sig);
+          console.log(`[TxGuard] Swap tx submitted: ${sig} — awaiting confirmation`);
 
           await connection.confirmTransaction(sig, "confirmed");
-          console.log(`[Arsweep] Swap OK: ${acc.metadata.symbol} → SOL (${sig})`);
+          console.log(`[TxGuard] Swap confirmed: ${acc.metadata.symbol} → SOL (${sig})`);
+          setPendingTx(null);
+
           lastSignature = sig;
           totalClosed++;
           totalRentLamports += acc.rentLamports;
           processedIds.push(id);
         } catch (err: any) {
-          console.error(`[Arsweep] Swap failed for ${acc.metadata.symbol}:`, err);
+          console.error(`[TxGuard] Swap failed for ${acc.metadata.symbol}:`, err);
           toast.error(`Swap failed for ${acc.metadata.symbol}: ${err?.message ?? "Unknown error"}`);
+          setPendingTx(null);
         }
       }
 
@@ -294,6 +324,7 @@ const Dashboard = () => {
           totalBatches: totalSteps + (burnQueue.length > 0 ? 1 : 0),
         });
 
+        console.log(`[TxGuard] Submitting burn+close batch (${burnQueue.length} accounts)...`);
         const closeResults = await executeSweepNative(
           connection,
           { publicKey, sendTransaction },
@@ -306,18 +337,24 @@ const Dashboard = () => {
             hasLiquidityPool: a.hasLiquidityPool,
             usdValueCents: a.usdValueCents,
           })),
-          (progress) => setSweepProgress({
-            currentBatch: swapQueue.length + progress.currentBatch,
-            totalBatches: swapQueue.length + progress.totalBatches,
-            confirmingSlow: progress.confirmingSlow,
-          }),
+          (progress) => {
+            setSweepProgress({
+              currentBatch: swapQueue.length + progress.currentBatch,
+              totalBatches: swapQueue.length + progress.totalBatches,
+              confirmingSlow: progress.confirmingSlow,
+            });
+          },
         );
 
         for (const r of closeResults) {
           lastSignature = r.signature;
+          setPendingTx(r.signature);
           totalClosed += r.accountsClosed;
           totalRentLamports += r.rentReclaimed;
+          console.log(`[TxGuard] Burn batch confirmed: ${r.signature} (${r.accountsClosed} accounts)`);
         }
+        setPendingTx(null);
+
         for (const a of burnQueue) {
           processedIds.push(a.pubkey.toBase58());
         }
@@ -346,15 +383,20 @@ const Dashboard = () => {
         if (season) {
           await updateSweepStats(publicKey.toBase58(), season.id, totalClosed, sol);
         }
+
+        console.log(`[TxGuard] Sweep complete — ${totalClosed} accounts closed, ${sol.toFixed(5)} SOL reclaimed`);
       }
     } catch (err: any) {
-      console.error("[Sweep] error:", err);
+      console.error("[TxGuard] Sweep error:", err);
       toast.error(err?.message ?? "Sweep failed. Please try again.");
     } finally {
+      sweepLockRef.current = false;
       setSweeping(false);
+      setPendingTx(null);
       setSweepProgress(null);
+      console.log("[TxGuard] Sweep finished — lock released");
     }
-  }, [publicKey, sendTransaction, connection, selectedIds, sweeping, tokenAccounts, season]);
+  }, [publicKey, sendTransaction, connection, selectedIds, sweeping, pendingTx, tokenAccounts, season, walletMismatch]);
 
   // Not connected
   if (!connected) {
@@ -362,7 +404,7 @@ const Dashboard = () => {
       <div className="relative min-h-screen bg-background overflow-hidden">
         <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
         <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
-        <Header />
+        <Header onChangeWallet={handleChangeWallet} walletMismatch={walletMismatch} />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -398,7 +440,7 @@ const Dashboard = () => {
       <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
       <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
 
-      <Header />
+      <Header onChangeWallet={handleChangeWallet} walletMismatch={walletMismatch} />
       <Hero scanning={scanning} scanned={scanned} onScan={handleScan} onRescan={handleRescan} sweeping={sweeping} accountsFound={sweepableAccounts.length} />
       <StatsBar
         totalDust={tokens.length}
@@ -429,6 +471,7 @@ const Dashboard = () => {
         totalSol={totalSol}
         onSweep={handleSweep}
         sweeping={sweeping}
+        pendingTx={pendingTx}
         sweepProgress={sweepProgress}
       />
       <SweepSuccessModal
