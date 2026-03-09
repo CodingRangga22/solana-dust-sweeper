@@ -264,7 +264,7 @@ const Landing = () => {
               </motion.div>
 
               <motion.div custom={4} variants={fadeUp} className="mt-8 space-y-4">
-                <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground justify-center lg:justify-start">
                   <span className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
                     Non-custodial
@@ -282,7 +282,7 @@ const Landing = () => {
                     Open source
                   </span>
                 </div>
-                <div className="flex flex-wrap gap-x-8 gap-y-3 text-sm mt-2">
+                <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm mt-2 justify-center lg:justify-start">
                   <span className="flex items-center gap-2"><span className="text-primary font-bold text-xl">~0.002</span><span className="text-muted-foreground ml-1">SOL per account</span></span>
                   <span className="flex items-center gap-2"><span className="text-primary font-bold text-xl">1.5%</span><span className="text-muted-foreground ml-1">platform fee</span></span>
                   <span className="flex items-center gap-2"><span className="text-primary font-bold text-xl">&lt;5s</span><span className="text-muted-foreground ml-1">sweep time</span></span>
@@ -394,12 +394,12 @@ const Landing = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="container mx-auto max-w-3xl text-center glass rounded-3xl p-14 relative overflow-hidden border border-primary/20"
+          className="container mx-auto max-w-3xl text-center glass rounded-3xl p-6 sm:p-14 relative overflow-hidden border border-primary/20"
         >
           <div className="orb w-64 h-64 bg-primary/15 -top-32 -left-32" />
           <div className="orb w-48 h-48 bg-secondary/15 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
           <div className="orb w-32 h-32 bg-secondary/20 -bottom-16 -right-16" />
-          <h2 className="text-4xl sm:text-5xl font-extrabold mb-5 text-foreground relative z-10">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold mb-5 text-foreground relative z-10">
             Reclaim Your <span className="gradient-text">Locked SOL</span> Now
           </h2>
           <p className="text-muted-foreground mb-8 relative z-10">
@@ -411,7 +411,7 @@ const Landing = () => {
               <span className="flex items-center gap-1.5">🔒 Keys never leave your wallet</span>
               <span className="flex items-center gap-1.5">📖 Open source</span>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10 w-full px-4 sm:px-0">
             <motion.button
               whileHover={{
                 scale: 1.03,
