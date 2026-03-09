@@ -249,6 +249,14 @@ const Landing = () => {
                   <FlaskConical className="w-5 h-5" />
                   Try Simulation
                 </motion.a>
+                <motion.a
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  href="/demo"
+                  className="glass glass-hover px-8 py-3.5 rounded-2xl text-foreground font-semibold text-base transition-all duration-200 text-center flex items-center justify-center gap-2 border border-emerald-400/30 text-emerald-400 hover:text-emerald-300"
+                >
+                  Watch Demo
+                </motion.a>
               </motion.div>
 
               <motion.div custom={4} variants={fadeUp} className="mt-8 space-y-4">
