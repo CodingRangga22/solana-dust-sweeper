@@ -21,7 +21,18 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
     className="fixed left-0 right-0 z-50 glass border-b border-border transition-[top] duration-200"
     style={{ top: bannerHeight }}
   >
-    <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+    <div className="container mx-auto px-4 h-16 flex items-center justify-between relative">
+      {/* Center — Watch Demo */}
+      <div className="absolute left-1/2 -translate-x-1/2 hidden sm:block">
+        <Link
+          to="/demo"
+          className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium border border-emerald-400/30 text-emerald-400 hover:text-emerald-300 hover:border-emerald-400/60 hover:bg-emerald-400/5 transition-all duration-200"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          Watch Demo
+        </Link>
+      </div>
+
       <div className="flex items-center gap-3">
         <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity" translate="no">
           <ArsweepLogo className="w-8 h-8" />

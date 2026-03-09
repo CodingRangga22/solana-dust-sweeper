@@ -146,7 +146,20 @@ const Landing = () => {
         className="fixed left-0 right-0 z-50 glass border-b border-border transition-[top] duration-200"
         style={{ top: bannerHeight }}
       >
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between relative">
+          {/* Center - Watch Demo */}
+          <div className="absolute left-1/2 -translate-x-1/2">
+            <Link
+              to="/demo"
+              className="group flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-400/40 text-emerald-300 hover:from-emerald-500/20 hover:to-cyan-500/20 hover:border-emerald-400/70 hover:text-emerald-200 hover:shadow-[0_0_20px_rgba(52,211,153,0.2)] transition-all duration-300"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+              </span>
+              ▶ Watch Demo
+            </Link>
+          </div>
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
               <ArsweepLogo className="w-8 h-8" />
@@ -248,14 +261,6 @@ const Landing = () => {
                 >
                   <FlaskConical className="w-5 h-5" />
                   Try Simulation
-                </motion.a>
-                <motion.a
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  href="/demo"
-                  className="glass glass-hover px-8 py-3.5 rounded-2xl text-foreground font-semibold text-base transition-all duration-200 text-center flex items-center justify-center gap-2 border border-emerald-400/30 text-emerald-400 hover:text-emerald-300"
-                >
-                  Watch Demo
                 </motion.a>
               </motion.div>
 
