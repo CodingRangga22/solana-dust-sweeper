@@ -51,13 +51,28 @@ const StatsBar = ({ totalDust, potentialRefund, accountsToClose }: StatsBarProps
                     <motion.div
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 glass rounded-xl p-3 text-xs text-muted-foreground shadow-xl z-50 border border-border"
+                      className="absolute bottom-full right-0 mb-2 w-64 glass rounded-xl p-3 text-xs text-muted-foreground shadow-xl z-50 border border-border"
                     >
-                      <p className="font-semibold text-foreground mb-1">Fee Breakdown</p>
-                      <p>Gross Refund: 0.002042 SOL/account</p>
-                      <p>− Network Gas Fee</p>
-                      <p>− 1.5% Ars​weep Service Fee</p>
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 glass border-b border-r border-border -mt-1" />
+                      <p className="font-semibold text-foreground mb-2">Fee Breakdown</p>
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between gap-4">
+                          <span>Gross Refund</span>
+                          <span className="text-foreground">{potentialRefund.toFixed(5)} SOL</span>
+                        </div>
+                        <div className="flex justify-between gap-4 text-red-400">
+                          <span>− Network Gas</span>
+                          <span>~{gasFee.toFixed(5)} SOL</span>
+                        </div>
+                        <div className="flex justify-between gap-4 text-red-400">
+                          <span>− Service Fee (1.5%)</span>
+                          <span>{serviceFee.toFixed(5)} SOL</span>
+                        </div>
+                        <div className="border-t border-border pt-1.5 flex justify-between gap-4 font-semibold text-emerald-400">
+                          <span>You Receive</span>
+                          <span>{netRefund.toFixed(5)} SOL</span>
+                        </div>
+                      </div>
+                      <div className="absolute top-full right-4 w-2 h-2 rotate-45 glass border-b border-r border-border -mt-1" />
                     </motion.div>
                   )}
                 </div>

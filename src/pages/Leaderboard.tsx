@@ -5,7 +5,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Header from "@/components/Header";
 import PremiumFooter from "@/components/PremiumFooter";
-import { getReferralLeaderboard, getSweepLeaderboard, getActiveSeason, getTokenReward, type ReferralLeaderboardEntry, type SweepLeaderboardEntry, type Season } from "@/lib/supabase";
+import { getReferralLeaderboard, getSweepLeaderboard, getActiveSeason, type ReferralLeaderboardEntry, type SweepLeaderboardEntry, type Season } from "@/lib/supabase";
 import { useReferral } from "@/hooks/useReferral";
 
 const RANK_COLORS = ["text-yellow-400", "text-gray-300", "text-amber-600"];
@@ -52,8 +52,6 @@ const Leaderboard = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const daysLeft = activeSeason ? Math.max(0, Math.ceil((new Date(activeSeason.end_date).getTime() - Date.now()) / 86400000)) : 0;
-
   return (
     <div className="relative min-h-screen bg-background overflow-hidden">
       <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
@@ -68,20 +66,8 @@ const Leaderboard = () => {
           {activeSeason && (
             <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
               <span className="px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">{activeSeason.name}</span>
-              <span>⏳ {daysLeft} days left</span>
             </div>
           )}
-        </motion.div>
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass rounded-2xl p-4 mb-6 border border-border/50">
-          <p className="text-center text-sm text-muted-foreground mb-3 font-medium">🏆 $SWEEP Token Rewards per Season</p>
-          <div className="flex flex-wrap justify-center gap-2 text-xs">
-            {[{ label: "#1", reward: "10,000" }, { label: "#2", reward: "5,000" }, { label: "#3", reward: "2,500" }, { label: "#4-10", reward: "500" }, { label: "#11-50", reward: "100" }, { label: "#51-100", reward: "10" }, { label: "#101+", reward: "1" }].map((r) => (
-              <div key={r.label} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-muted/40 border border-border/40">
-                <span className="text-muted-foreground">{r.label}</span>
-                <span className="text-primary font-bold">{r.reward} $SWEEP</span>
-              </div>
-            ))}
-          </div>
         </motion.div>
         {publicKey && user && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass rounded-2xl p-4 mb-6 border border-primary/20">
@@ -120,9 +106,9 @@ const Leaderboard = () => {
             <div className="w-8">Rank</div>
             <div className="flex-1">Wallet</div>
             {tab === "referral" ? (
-              <><div className="w-20 text-right">Referrals</div><div className="w-24 text-right">Reward</div></>
+              <><div className="w-20 text-right">Referrals</div></>
             ) : (
-              <><div className="w-20 text-right">Accounts</div><div className="w-24 text-right">SOL</div><div className="w-24 text-right">Reward</div></>
+              <><div className="w-20 text-right">Accounts</div><div className="w-24 text-right">SOL</div></>
             )}
           </div>
           {loading ? (
@@ -145,7 +131,6 @@ const Leaderboard = () => {
                     </p>
                   </div>
                   <div className="w-20 text-right text-sm font-semibold">{entry.referral_count}</div>
-                  <div className="w-24 text-right text-xs font-bold text-primary">{getTokenReward(entry.rank).toLocaleString()} $SWEEP</div>
                 </motion.div>
               ))
             )
@@ -164,7 +149,6 @@ const Leaderboard = () => {
                   </div>
                   <div className="w-20 text-right text-sm font-semibold">{entry.total_accounts_swept}</div>
                   <div className="w-24 text-right text-sm">{Number(entry.total_sol_reclaimed).toFixed(4)} SOL</div>
-                  <div className="w-24 text-right text-xs font-bold text-primary">{getTokenReward(entry.rank).toLocaleString()} $SWEEP</div>
                 </motion.div>
               ))
             )
