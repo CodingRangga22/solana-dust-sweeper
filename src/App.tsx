@@ -23,6 +23,8 @@ import FAQ from "@/pages/docs/FAQ";
 import Leaderboard from "./pages/Leaderboard";
 import Simulation from "./pages/Simulation";
 import Demo from "./pages/Demo";
+import Sidebar from "./components/Sidebar";
+import { SidebarProvider } from "./components/SidebarContext";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "@solana/wallet-adapter-react-ui/styles.css";
@@ -63,6 +65,7 @@ const AppContent = ({
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
+                <SidebarProvider>
                 <BrowserRouter>
                 <Routes>
                   <Route
@@ -96,7 +99,9 @@ const AppContent = ({
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                <Sidebar />
                 </BrowserRouter>
+                </SidebarProvider>
               </TooltipProvider>
             </QueryClientProvider>
           </WalletModalProvider>

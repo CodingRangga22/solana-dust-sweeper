@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen, FlaskConical } from "lucide-react";
 import ArsweepLogo from "@/components/ArsweepLogo";
-import ThemeToggle from "@/components/ThemeToggle";
 import ChatWidget from "@/components/ChatWidget";
 import PremiumFooter from "@/components/PremiumFooter";
 import { useBanner } from "@/components/BannerProvider";
@@ -157,7 +156,7 @@ const Landing = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
               </span>
-              ▶ Watch Demo
+              <span className="hidden sm:inline">▶ Watch Demo</span><span className="sm:hidden">▶ Demo</span>
             </Link>
           </div>
           <div className="flex items-center gap-3">
@@ -167,10 +166,9 @@ const Landing = () => {
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
             <Link
               to="/docs"
-              className="glass glass-hover flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              className="hidden sm:flex glass glass-hover items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               <BookOpen className="w-4 h-4" />
               Docs
@@ -184,7 +182,8 @@ const Landing = () => {
               onClick={handleLaunch}
               className="gradient-bg gradient-bg-hover px-5 py-2 rounded-xl text-primary-foreground text-sm font-semibold transition-all duration-200 flex items-center gap-2"
             >
-              Launch App
+              <span className="hidden sm:inline">Launch App</span>
+              <span className="sm:hidden">Launch</span>
               <ArrowRight className="w-4 h-4" />
             </motion.button>
           </div>
@@ -232,7 +231,7 @@ const Landing = () => {
                 Close unused Solana token accounts and instantly recover rent deposits — fully non-custodial and on-chain.
               </motion.p>
 
-              <motion.div custom={3} variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <motion.div custom={3} variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start w-full sm:w-auto">
                 <motion.button
                   whileHover={{
                     scale: 1.03,
@@ -294,7 +293,7 @@ const Landing = () => {
               </motion.div>
             </motion.div>
 
-            <div className="lg:pl-16 xl:pl-24">
+            <div className="hidden lg:block lg:pl-16 xl:pl-24">
               <HeroDemo />
             </div>
           </div>

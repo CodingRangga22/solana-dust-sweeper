@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import ArsweepLogo from "./ArsweepLogo";
-import { Github, BookOpen, Trophy } from "lucide-react";
-import ThemeToggle from "./ThemeToggle";
+import { Menu } from "lucide-react";
+import { useSidebar } from "./SidebarContext";
 import { useBanner } from "./BannerProvider";
 import WalletMenu from "./WalletMenu";
 
@@ -15,6 +15,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
   const location = useLocation();
   const isDocs = location.pathname === "/docs";
   const { bannerHeight } = useBanner();
+  const { setOpen } = useSidebar();
 
   return (
   <header
@@ -34,6 +35,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
       </div>
 
       <div className="flex items-center gap-3">
+        <button onClick={() => setOpen(true)} className="p-2 rounded-xl hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors" aria-label="Open menu"><Menu className="w-5 h-5" /></button>
         <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity" translate="no">
           <ArsweepLogo className="w-8 h-8" />
           <span className="text-xl font-bold gradient-text notranslate" translate="no" data-brand="Arsweep" aria-label="Arsweep"></span>
@@ -43,37 +45,6 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
         </span>
       </div>
       <div className="flex items-center gap-3">
-        <ThemeToggle />
-        <a
-          href="/leaderboard"
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
-            location.pathname === "/leaderboard" ? "text-primary" : "text-muted-foreground hover:text-primary glass glass-hover"
-          }`}
-        >
-          <Trophy className="w-4 h-4" />
-          <span className="hidden sm:inline text-xs">Leaderboard</span>
-        </a>
-        <a
-          href="/docs"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-colors duration-200 ${
-            isDocs ? "text-primary" : "text-muted-foreground hover:text-primary glass glass-hover"
-          }`}
-        >
-          <BookOpen className="w-4 h-4" />
-          <span className="hidden sm:inline text-xs">Docs</span>
-        </a>
-        <a
-          href="https://github.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="glass glass-hover flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
-          aria-label="GitHub"
-        >
-          <Github className="w-4 h-4" />
-          <span className="hidden sm:inline text-xs">GitHub</span>
-        </a>
         {onChangeWallet && onDisconnect ? (
           <WalletMenu
             onChangeWallet={onChangeWallet}
