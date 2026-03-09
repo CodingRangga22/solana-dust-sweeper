@@ -108,6 +108,13 @@ export function useWalletSession(): WalletSession {
         }
       });
       await new Promise((resolve) => setTimeout(resolve, 800));
+      // Force Phantom account selector
+      try {
+        const phantom = (window as any)?.phantom?.solana || (window as any)?.solana;
+        if (phantom?.connect) {
+          await phantom.connect({ onlyIfTrusted: false });
+        }
+      } catch {}
       setVisible(true);
     } catch (err) {
       console.error("Change wallet error:", err);
