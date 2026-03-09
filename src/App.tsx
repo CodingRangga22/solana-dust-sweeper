@@ -57,7 +57,7 @@ const AppContent = ({
   return (
     <div style={{ paddingTop: bannerHeight }} className="min-h-screen transition-[padding] duration-200">
       <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider wallets={wallets} autoConnect>
+       <WalletProvider wallets={wallets} autoConnect={false}>
           <WalletModalProvider>
             <QueryClientProvider client={queryClient}>
               <TooltipProvider>

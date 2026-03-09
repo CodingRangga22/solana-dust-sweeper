@@ -101,11 +101,17 @@ export function useWalletSession(): WalletSession {
       setLockedWallet(null);
 
       // 4. Small delay for React state + Phantom to settle, then reopen modal
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
+      // Clear Phantom storage
+      Object.keys(localStorage).forEach(key => {
+        if (key.includes("phantom") || key.includes("wallet") || key.includes("solana")) {
+          localStorage.removeItem(key);
+        }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 800));
       setVisible(true);
     } catch (err) {
       console.error("Change wallet error:", err);
+      setVisible(true);
     }
   }, [disconnect, select, setVisible]);
 
