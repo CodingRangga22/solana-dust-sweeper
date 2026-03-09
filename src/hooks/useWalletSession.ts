@@ -22,9 +22,21 @@ export interface WalletSession {
   sessionActive: boolean;
   walletMismatch: boolean;
   sendTransaction: ReturnType<typeof useWallet>["sendTransaction"];
-  handleChangeWallet: () => Promise<void>;
+  handleChangeWallet: () => void;
   handleDisconnect: () => Promise<void>;
+  /** Disconnect fully and open wallet modal (for "Disconnect" in change-wallet instruction modal) */
+  handleDisconnectAndReconnect: () => Promise<void>;
+  showChangeWalletModal: boolean;
+  setShowChangeWalletModal: (show: boolean) => void;
 }
+
+/** localStorage keys used by @solana/wallet-adapter and Phantom to persist wallet choice */
+const ADAPTER_STORAGE_KEYS = [
+  "walletName",
+  "walletAdapter",
+  "walletConnected",
+  "wallet-standard:wallet",
+] as const;
 
 export function useWalletSession(): WalletSession {
   const {
@@ -33,6 +45,7 @@ export function useWalletSession(): WalletSession {
     disconnect,
     sendTransaction,
     select,
+    wallet,
   } = useWallet();
   const { setVisible } = useWalletModal();
 
@@ -43,6 +56,7 @@ export function useWalletSession(): WalletSession {
       return null;
     }
   });
+  const [showChangeWalletModal, setShowChangeWalletModal] = useState(false);
 
   const lockedPublicKey = useMemo(
     () => (lockedWallet ? new PublicKey(lockedWallet) : null),
@@ -80,66 +94,59 @@ export function useWalletSession(): WalletSession {
     prevMismatchRef.current = walletMismatch;
   }, [walletMismatch, adapterPublicKey, lockedWallet]);
 
-  // ── Change Wallet ───────────────────────────────────────────────────
-  const handleChangeWallet = useCallback(async () => {
+  // ── Change Wallet: show instruction modal (Phantom blocks in-page account selector) ──
+  const handleChangeWallet = useCallback(() => {
+    setShowChangeWalletModal(true);
+  }, []);
+
+  // ── Disconnect and open wallet modal (for "Disconnect" in change-wallet instruction modal) ──
+  const handleDisconnectAndReconnect = useCallback(async () => {
+    setShowChangeWalletModal(false);
     try {
-      console.log("[Wallet] Change wallet");
-
-      // 1. Disconnect wallet (calls adapter.disconnect → clears Phantom session)
-      await disconnect();
-
-      // 2. Deselect wallet from adapter React state.
-      //    Without this, re-selecting Phantom skips the full select→connect
-      //    cycle and Phantom auto-reconnects to the previous account.
-      try { select(null as any); } catch {}
-
-      // 3. Clear adapter + session persistence
-      localStorage.removeItem("walletName");
+      setLockedWallet(null);
       localStorage.removeItem(STORAGE_KEY_WALLET);
       localStorage.removeItem(STORAGE_KEY_ACTIVITY);
-
-      setLockedWallet(null);
-
-      // 4. Small delay for React state + Phantom to settle, then reopen modal
-      // Clear Phantom storage
-      Object.keys(localStorage).forEach(key => {
-        if (key.includes("phantom") || key.includes("wallet") || key.includes("solana")) {
-          localStorage.removeItem(key);
-        }
-      });
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      // Force Phantom account selector
       try {
-        const phantom = (window as any)?.phantom?.solana || (window as any)?.solana;
-        if (phantom?.connect) {
-          await phantom.connect({ onlyIfTrusted: false });
-        }
-      } catch {}
+        if (wallet?.adapter?.connected) await wallet.adapter.disconnect();
+      } catch (_) {}
+      try {
+        await disconnect();
+      } catch (_) {}
+      try {
+        select(null as any);
+      } catch (_) {}
+      ADAPTER_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       setVisible(true);
     } catch (err) {
-      console.error("Change wallet error:", err);
-      setVisible(true);
+      console.error("Disconnect and reconnect error:", err);
     }
-  }, [disconnect, select, setVisible]);
+  }, [disconnect, select, setVisible, wallet, setShowChangeWalletModal]);
 
   // ── Disconnect (no modal reopen) ────────────────────────────────────
   const handleDisconnect = useCallback(async () => {
     try {
       console.log("[Wallet] Disconnecting...");
 
-      await disconnect();
-
-      try { select(null as any); } catch {}
-
-      localStorage.removeItem("walletName");
+      setLockedWallet(null);
       localStorage.removeItem(STORAGE_KEY_WALLET);
       localStorage.removeItem(STORAGE_KEY_ACTIVITY);
 
-      setLockedWallet(null);
+      try {
+        if (wallet?.adapter?.connected) await wallet.adapter.disconnect();
+      } catch (_) {}
+      try {
+        await disconnect();
+      } catch (_) {}
+      try {
+        select(null as any);
+      } catch (_) {}
+
+      ADAPTER_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
     } catch (err) {
       console.error("Disconnect error:", err);
     }
-  }, [disconnect, select]);
+  }, [disconnect, select, wallet]);
 
   // ── Idle auto-disconnect ────────────────────────────────────────────
   const lastActivityRef = useRef(Date.now());
@@ -184,5 +191,8 @@ export function useWalletSession(): WalletSession {
     sendTransaction,
     handleChangeWallet,
     handleDisconnect,
+    handleDisconnectAndReconnect,
+    showChangeWalletModal,
+    setShowChangeWalletModal,
   };
 }
