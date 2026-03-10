@@ -6,7 +6,8 @@ const feedbackActions = [
     icon: MessageCircle,
     label: "Join Discord",
     description: "Chat with the team and community",
-    href: "#",
+    href: "https://discord.gg/D2rtvK3fBs",
+    target: "_blank",
   },
   {
     icon: Bug,
@@ -47,6 +48,8 @@ const FeedbackSection = () => (
             <motion.a
               key={action.label}
               href={action.href}
+              target={action.target || "_self"}
+              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
