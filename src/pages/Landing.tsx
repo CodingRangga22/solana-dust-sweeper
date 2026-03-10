@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen, FlaskConical } from "lucide-react";
+import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen, FlaskConical, Menu } from "lucide-react";
+import { useSidebar } from "@/components/SidebarContext";
 import ArsweepLogo from "@/components/ArsweepLogo";
 import ChatWidget from "@/components/ChatWidget";
 import PremiumFooter from "@/components/PremiumFooter";
@@ -129,6 +130,7 @@ const DustAnimation = () => (
 const Landing = () => {
   const navigate = useNavigate();
   const { bannerHeight } = useBanner();
+  const { setOpen } = useSidebar();
 
   const handleLaunch = () => {
     navigate("/app");
@@ -160,6 +162,7 @@ const Landing = () => {
             </Link>
           </div>
           <div className="flex items-center gap-3">
+            <button onClick={() => setOpen(true)} className="sm:hidden p-2 rounded-xl hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors" aria-label="Open menu"><Menu className="w-5 h-5" /></button>
             <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
               <ArsweepLogo className="w-8 h-8" />
               <span className="text-xl font-bold gradient-text"><span translate="no" className="notranslate">Arsweep</span></span>

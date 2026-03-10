@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Github, BookOpen, Trophy, X } from "lucide-react";
+import { Github, BookOpen, Trophy, X, FlaskConical } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useSidebar } from "./SidebarContext";
 
 const Sidebar = () => {
   const { open, setOpen } = useSidebar();
   const location = useLocation();
+  if (location.pathname.startsWith("/docs") || location.pathname.startsWith("/app")) return null;
 
   return (
     <>
@@ -23,6 +24,14 @@ const Sidebar = () => {
           <Link to="/leaderboard" onClick={() => setOpen(false)} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${location.pathname === "/leaderboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}>
             <Trophy className="w-4 h-4" />
             Leaderboard
+          </Link>
+          <Link
+            to="/simulation"
+            onClick={() => setOpen(false)}
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${location.pathname === "/simulation" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}
+          >
+            <FlaskConical className="w-4 h-4" />
+            Simulation
           </Link>
           <a href="/docs" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
             <BookOpen className="w-4 h-4" />
