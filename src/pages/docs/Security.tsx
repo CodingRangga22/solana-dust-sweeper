@@ -13,7 +13,7 @@ export default function Security() {
           {icon:"✅",title:"On-chain authority validation",desc:"The Anchor program validates token authority on every account before closing. A malicious client cannot sweep accounts owned by other wallets."},
           {icon:"🏦",title:"Treasury address hardcoded on-chain",desc:"The treasury address is validated using an address constraint in the program. Even if the frontend is compromised, fees cannot be redirected."},
           {icon:"🔢",title:"Overflow-safe arithmetic",desc:"All fee calculations use Rust checked_mul and checked_div. Overflow causes the transaction to fail safely."},
-          {icon:"📖",title:"Open source and auditable",desc:"Full Anchor program and frontend source code are publicly available on GitHub. Anyone can audit or verify the implementation."},
+          {icon:"📖",title:"Open source and auditable",desc:"Smart contract logic is fully on-chain and verifiable. Anyone can audit transactions via Solana Explorer."},
         ].map(({icon,title,desc})=>(
           <div key={title} className="flex gap-4 p-4 rounded-xl border bg-muted/20">
             <span className="text-2xl shrink-0">{icon}</span>

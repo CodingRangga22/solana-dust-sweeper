@@ -29,7 +29,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
         </div>
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity" translate="no">
-            <ArsweepLogo className="w-12 h-12" />
+            <ArsweepLogo className="w-8 h-8" />
             <span className="text-xl font-bold gradient-text notranslate" translate="no" data-brand="Arsweep" aria-label="Arsweep"></span>
           </Link>
           <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border border-primary/30 text-primary bg-primary/5">
@@ -46,9 +46,9 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
             <BookOpen className="w-4 h-4" />
             <span className="hidden sm:inline text-xs">Docs</span>
           </a>
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="glass glass-hover flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://discord.gg/D2rtvK3fBs" target="_blank" rel="noopener noreferrer" className="glass glass-hover flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-primary transition-colors">
             <Github className="w-4 h-4" />
-            <span className="hidden sm:inline text-xs">GitHub</span>
+            <span className="hidden sm:inline text-xs">Discord</span>
           </a>
           {onChangeWallet && onDisconnect ? (
             <WalletMenu onChangeWallet={onChangeWallet} onDisconnect={onDisconnect} walletMismatch={walletMismatch} />

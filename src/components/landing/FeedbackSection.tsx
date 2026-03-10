@@ -13,13 +13,15 @@ const feedbackActions = [
     icon: Bug,
     label: "Report Bug",
     description: "Help us fix issues on Devnet",
-    href: "#",
+    href: "https://discord.gg/D2rtvK3fBs",
+    target: "_blank",
   },
   {
     icon: Lightbulb,
     label: "Suggest Feature",
     description: "Share ideas for improvement",
-    href: "#",
+    href: "https://discord.gg/D2rtvK3fBs",
+    target: "_blank",
   },
 ];
 

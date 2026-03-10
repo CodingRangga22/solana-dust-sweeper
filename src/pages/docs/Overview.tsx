@@ -2,7 +2,7 @@ const Overview = () => {
   return (
     <div className="max-w-3xl">
       <div className="mb-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-4">✦ Open Source · Non-Custodial · Solana Devnet</div>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-4">✦ Non-Custodial · On-Chain · Solana</div>
         <h1 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight">Arsweep Documentation</h1>
         <p className="text-muted-foreground text-lg leading-relaxed">Arsweep is a non-custodial Solana utility that automatically identifies and closes empty SPL token accounts, reclaiming rent-exempt SOL locked inside them — returned directly to your wallet.</p>
       </div>
@@ -36,7 +36,7 @@ const Overview = () => {
           {icon:"🔒",title:"Non-custodial",desc:"Your private keys never leave your wallet. Ars​weep only requests permission to close specific accounts you select."},
           {icon:"⛓️",title:"On-chain validated",desc:"A custom Anchor program validates treasury address, account authority, and zero balance before executing any close."},
           {icon:"🔍",title:"Transparent fee model",desc:"1.5% service fee deducted on-chain. Every transaction is verifiable on Solscan."},
-          {icon:"📖",title:"Open source",desc:"Full source code available on GitHub. Audit the program and frontend at any time."},
+          {icon:"🔍",title:"Verifiable",desc:"All transactions are on-chain and verifiable via Solana Explorer at any time."},
           {icon:"⚡",title:"Batch sweep",desc:"Close multiple accounts in a single transaction to minimize network fees."},
         ].map(({icon,title,desc})=>(
           <div key={title} className="flex gap-4 p-4 rounded-xl border bg-muted/20">

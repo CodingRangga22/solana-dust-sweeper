@@ -167,10 +167,10 @@ const PremiumFooter = () => {
               <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Legal & Resources</p>
               <ul className="space-y-2.5">
                 {[
-                  { label: "Privacy Policy", href: "#" },
-                  { label: "Terms of Service", href: "#" },
+                  { label: "Privacy Policy", href: "/privacy" },
+                  { label: "Terms of Service", href: "/terms" },
                   { label: "Contact", href: "mailto:contact@arsweep.io" },
-                  { label: "GitHub (Open Source)", href: "https://github.com", icon: Github },
+                  { label: "Discord Community", href: "https://discord.gg/D2rtvK3fBs", icon: Github },
                   { label: "Solana Explorer", href: isDevnet ? "https://explorer.solana.com/?cluster=devnet" : "https://explorer.solana.com" },
                 ].map((item) => (
                   <li key={item.label}>
@@ -195,7 +195,7 @@ const PremiumFooter = () => {
                 <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Community</p>
                 <div className="flex items-center gap-3" translate="no">
                   <MagneticIcon href="https://x.com/Arsweep_AI" label="X (Twitter)"><TwitterIcon /></MagneticIcon>
-                  <MagneticIcon href="#" label="Discord"><DiscordIcon /></MagneticIcon>
+                  <MagneticIcon href="https://discord.gg/D2rtvK3fBs" label="Discord"><DiscordIcon /></MagneticIcon>
                   <MagneticIcon href="#" label="Instagram"><InstagramIcon /></MagneticIcon>
                   <MagneticIcon href="#" label="YouTube"><YoutubeIcon /></MagneticIcon>
                 </div>

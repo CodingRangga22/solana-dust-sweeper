@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Shield, Eye, Github } from "lucide-react";
+import { Shield, Eye, ExternalLink } from "lucide-react";
 
 const items = [
   {
@@ -18,10 +18,10 @@ const items = [
     description: "Scanning uses public blockchain data only.",
   },
   {
-    icon: Github,
-    title: "Open Source Logic",
-    description: "Core logic available on GitHub for transparency.",
-    href: "https://github.com",
+    icon: ExternalLink,
+    title: "On-Chain Verifiable",
+    description: "All transactions are verifiable on-chain via Solana Explorer.",
+    href: "https://solscan.io",
   },
 ];
 
@@ -65,8 +65,8 @@ const SecurityTransparencySection = () => (
                 rel="noopener noreferrer"
                 className="mt-3 inline-flex items-center gap-1.5 text-sm text-primary hover:underline font-medium"
               >
-                View on GitHub
-                <Github className="w-3.5 h-3.5" />
+                View on Solscan
+                <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
           </motion.div>

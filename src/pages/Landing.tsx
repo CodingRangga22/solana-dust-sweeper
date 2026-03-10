@@ -59,7 +59,7 @@ const steps = [
 ];
 
 const trustItems = [
-  { icon: Github, title: "Open Source", description: "Fully transparent and community-audited codebase." },
+  { icon: Github, title: "Non-Custodial", description: "No private key access. Fully on-chain and verifiable." },
   { icon: Shield, title: "Secure", description: "No private keys needed. Read-only wallet scanning." },
   { icon: Users, title: "Built for Solana", description: "Designed by and for the Solana community." },
 ];
@@ -428,14 +428,14 @@ const Landing = () => {
               <ArrowRight className="w-5 h-5" />
             </motion.button>
             <motion.a
-              href="https://github.com"
+              href="https://discord.gg/D2rtvK3fBs"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               className="glass glass-hover px-10 py-4 rounded-2xl text-foreground font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2 border border-border"
             >
-              View GitHub
+              Join Discord
               <Github className="w-5 h-5" />
             </motion.a>
           </div>

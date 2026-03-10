@@ -178,8 +178,8 @@ const RoadmapSection = () => (
       <div className="text-center mt-10">
         <p className="text-xs text-muted-foreground">
           Last updated: March 2026 &nbsp;·&nbsp;
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-            View on GitHub
+          <a href="https://discord.gg/D2rtvK3fBs" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+            Join Discord
           </a>
         </p>
       </div>
