@@ -1,3 +1,5 @@
+import { ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Trophy, Users, Zap, Copy, Check, Crown, Sparkles } from "lucide-react";
@@ -87,6 +89,12 @@ const Leaderboard = () => {
       <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
       <Header />
       <div className="container mx-auto max-w-3xl px-4 pt-24 pb-12">
+        <div className="mb-6">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Link>
+        </div>
 
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
