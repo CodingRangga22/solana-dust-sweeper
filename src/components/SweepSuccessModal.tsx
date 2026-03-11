@@ -35,7 +35,7 @@ const SweepSuccessModal = ({ open, onOpenChange, count, totalSol, signature }: S
   }, [open]);
 
   const shareText = encodeURIComponent(
-    `🧹 Just swept ${count} dust accounts and reclaimed ${totalSol.toFixed(5)} SOL with @Arsweep! Clean wallet, happy life. #Solana #Arsweep`
+    `🧹 Just reclaimed ${totalSol.toFixed(4)} SOL from ${count} ghost accounts in my Solana wallet — rent I did not even know was locked!\n\nTook 5 seconds. No seed phrase needed.\n\nIf you have ever used Solana, you probably have hidden SOL too 👇\n\narsweep.fun\n\n#Solana #Web3 @Arsweep_AI`
   );
   const shareUrl = `https://x.com/intent/tweet?text=${shareText}`;
 
