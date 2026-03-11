@@ -149,7 +149,7 @@ const Landing = () => {
       >
         <div className="container mx-auto px-4 h-16 flex items-center justify-between relative">
           {/* Center - Watch Demo */}
-          <div className="absolute left-1/2 -translate-x-1/2">
+          <div className="absolute left-1/2 -translate-x-1/2 hidden md:block">
             <Link
               to="/demo"
               className="group flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-400/40 text-emerald-300 hover:from-emerald-500/20 hover:to-cyan-500/20 hover:border-emerald-400/70 hover:text-emerald-200 hover:shadow-[0_0_20px_rgba(52,211,153,0.2)] transition-all duration-300"

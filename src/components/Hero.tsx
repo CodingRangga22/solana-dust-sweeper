@@ -25,7 +25,7 @@ const Hero = ({ scanning = false, scanned = false, onScan, onRescan, sweeping = 
   };
 
   return (
-    <section className="relative pt-32 pb-16 px-4 text-center overflow-hidden">
+    <section className="relative pt-20 sm:pt-32 pb-16 px-4 text-center overflow-hidden">
       <div className="orb w-[400px] h-[400px] bg-primary/20 -top-40 -left-40 animate-pulse-glow" />
       <div className="orb w-[300px] h-[300px] bg-secondary/20 -top-20 right-0 animate-pulse-glow" style={{ animationDelay: "2s" }} />
 

@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
+import { useSidebar } from "./SidebarContext";
 import ArsweepLogo from "./ArsweepLogo";
-import { Github, BookOpen, Trophy } from "lucide-react";
+import { Github, BookOpen, Trophy, Menu } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useBanner } from "./BannerProvider";
 import WalletMenu from "./WalletMenu";
@@ -14,6 +15,7 @@ interface HeaderProps {
 const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) => {
   const location = useLocation();
   const { bannerHeight } = useBanner();
+  const { setOpen } = useSidebar();
 
   return (
     <header
@@ -21,13 +23,14 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
       style={{ top: bannerHeight }}
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between relative">
-        <div className="absolute left-1/2 -translate-x-1/2 hidden sm:block">
+        <div className="absolute left-1/2 -translate-x-1/2 hidden md:block">
           <Link to="/demo" className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium border border-emerald-400/30 text-emerald-400 hover:text-emerald-300 hover:border-emerald-400/60 hover:bg-emerald-400/5 transition-all duration-200">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             Watch Demo
           </Link>
         </div>
         <div className="flex items-center gap-3">
+          <button onClick={() => setOpen(true)} className="sm:hidden p-2 rounded-xl hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors" aria-label="Open menu"><Menu className="w-5 h-5" /></button>
           <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity" translate="no">
             <ArsweepLogo className="w-8 h-8" />
             <span className="text-xl font-bold gradient-text notranslate" translate="no" data-brand="Arsweep" aria-label="Arsweep"></span>
@@ -37,16 +40,16 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <a href="/leaderboard" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary glass glass-hover transition-all">
+          <div className="hidden sm:block"><ThemeToggle /></div>
+          <a href="/leaderboard" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary glass glass-hover transition-all">
             <Trophy className="w-4 h-4" />
             <span className="hidden sm:inline text-xs">Leaderboard</span>
           </a>
-          <a href="/docs" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-primary glass glass-hover transition-colors">
+          <a href="/docs" target="_blank" rel="noopener noreferrer" className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-primary glass glass-hover transition-colors">
             <BookOpen className="w-4 h-4" />
             <span className="hidden sm:inline text-xs">Docs</span>
           </a>
-          <a href="https://discord.gg/D2rtvK3fBs" target="_blank" rel="noopener noreferrer" className="glass glass-hover flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://discord.gg/D2rtvK3fBs" target="_blank" rel="noopener noreferrer" className="glass glass-hover hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-primary transition-colors">
             <Github className="w-4 h-4" />
             <span className="hidden sm:inline text-xs">Discord</span>
           </a>
