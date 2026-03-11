@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import ThemeToggle from "@/components/ThemeToggle";
 import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen, FlaskConical, Menu } from "lucide-react";
 import { useSidebar } from "@/components/SidebarContext";
 import ArsweepLogo from "@/components/ArsweepLogo";
@@ -169,6 +170,7 @@ const Landing = () => {
             </Link>
           </div>
           <div className="flex items-center gap-3">
+            <div className="hidden sm:block"><ThemeToggle /></div>
             <Link
               to="/docs"
               className="hidden sm:flex glass glass-hover items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
