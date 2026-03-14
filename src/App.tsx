@@ -13,6 +13,7 @@ import { RPC_ENDPOINT, isDevnet, isMainnet, isDocsSubdomain } from "@/config/env
 import { BannerProvider, useBanner } from "./components/BannerProvider";
 import DevnetBanner, { MainnetBanner } from "./components/DevnetBanner";
 import { TwaBanner } from "./components/TwaBanner";
+import { TwaWalletGuide } from "./components/TwaWalletGuide";
 import { useTelegramWebApp } from "./hooks/useTelegramWebApp";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
@@ -74,6 +75,7 @@ const AppContent = ({
     <div style={{ paddingTop: bannerHeight }} className="min-h-screen transition-[padding] duration-200">
       {/* TWA Banner — hanya muncul kalau dibuka dari Telegram */}
       <TwaBanner />
+      <TwaWalletGuide />
 
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect={true}>
