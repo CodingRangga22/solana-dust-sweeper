@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -12,6 +12,8 @@ import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adap
 import { RPC_ENDPOINT, isDevnet, isMainnet, isDocsSubdomain } from "@/config/env";
 import { BannerProvider, useBanner } from "./components/BannerProvider";
 import DevnetBanner, { MainnetBanner } from "./components/DevnetBanner";
+import { TwaBanner } from "./components/TwaBanner";
+import { useTelegramWebApp } from "./hooks/useTelegramWebApp";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import DocsLayout from "@/layouts/DocsLayout";
@@ -32,7 +34,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 const queryClient = new QueryClient();
-
 const wallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
 
 const App = () => {
@@ -57,54 +58,76 @@ const AppContent = ({
   wallets: WalletAdapter[];
 }) => {
   const { bannerHeight } = useBanner();
+  const { isInTelegram, walletFromTwa, actionFromTwa, expand } = useTelegramWebApp();
+
+  // Kalau dibuka dari Telegram, expand ke fullscreen dan redirect ke /app
+  useEffect(() => {
+    if (!isInTelegram) return;
+    expand();
+    // Kalau ada action=sweep dari bot, redirect langsung ke dashboard
+    if (actionFromTwa === "sweep" && window.location.pathname === "/") {
+      window.location.replace("/app");
+    }
+  }, [isInTelegram, actionFromTwa]);
 
   return (
     <div style={{ paddingTop: bannerHeight }} className="min-h-screen transition-[padding] duration-200">
+      {/* TWA Banner — hanya muncul kalau dibuka dari Telegram */}
+      <TwaBanner />
+
       <ConnectionProvider endpoint={endpoint}>
-       <WalletProvider wallets={wallets} autoConnect={true}>
+        <WalletProvider wallets={wallets} autoConnect={true}>
           <WalletModalProvider>
             <QueryClientProvider client={queryClient}>
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
                 <SidebarProvider>
-                <BrowserRouter>
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      isDocsSubdomain() ? (
-                        <Navigate to="/docs" replace />
-                      ) : (
-                        <Landing />
-                      )
-                    }
-                  />
-                  <Route
-                    path="/app"
-                    element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="/leaderboard" element={<Leaderboard />} />
-                  <Route path="/simulation" element={<Simulation />} />
-                  <Route path="/demo" element={<Demo />} />
-                  <Route path="/dashboard" element={<Navigate to="/app" replace />} />
-                  <Route path="/docs" element={<DocsLayout />}>
-                    <Route index element={<Overview />} />
-                    <Route path="technical" element={<Technical />} />
-                    <Route path="security" element={<Security />} />
-                    <Route path="fees" element={<Fees />} />
-                    <Route path="faq" element={<FAQ />} />
-                  </Route>
-                  <Route path="/privacy" element={<PrivacyPolicy />} />
-                  <Route path="/terms" element={<TermsOfService />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <Sidebar />
-                </BrowserRouter>
+                  <BrowserRouter>
+                    <Routes>
+                      <Route
+                        path="/"
+                        element={
+                          isDocsSubdomain() ? (
+                            <Navigate to="/docs" replace />
+                          ) : isInTelegram ? (
+                            // Kalau dari Telegram, langsung ke app
+                            <Navigate to="/app" replace />
+                          ) : (
+                            <Landing />
+                          )
+                        }
+                      />
+                      <Route
+                        path="/app"
+                        element={
+                          isInTelegram ? (
+                            // Skip ProtectedRoute kalau dari Telegram
+                            <Dashboard />
+                          ) : (
+                            <ProtectedRoute>
+                              <Dashboard />
+                            </ProtectedRoute>
+                          )
+                        }
+                      />
+                      <Route path="/leaderboard" element={<Leaderboard />} />
+                      <Route path="/simulation" element={<Simulation />} />
+                      <Route path="/demo" element={<Demo />} />
+                      <Route path="/dashboard" element={<Navigate to="/app" replace />} />
+                      <Route path="/docs" element={<DocsLayout />}>
+                        <Route index element={<Overview />} />
+                        <Route path="technical" element={<Technical />} />
+                        <Route path="security" element={<Security />} />
+                        <Route path="fees" element={<Fees />} />
+                        <Route path="faq" element={<FAQ />} />
+                      </Route>
+                      <Route path="/privacy" element={<PrivacyPolicy />} />
+                      <Route path="/terms" element={<TermsOfService />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                    <Sidebar />
+                  </BrowserRouter>
                 </SidebarProvider>
               </TooltipProvider>
             </QueryClientProvider>

@@ -26,6 +26,8 @@ import { getSwapQuote, getSwapTransaction } from "@/lib/jupiterSwap";
 import { useReferral } from "@/hooks/useReferral";
 import { updateSweepStats } from "@/lib/supabase";
 import { useWalletSession } from "@/hooks/useWalletSession";
+import { useTelegramWebApp } from "@/hooks/useTelegramWebApp";
+import { useTwaSweepCallback } from "@/components/TwaBanner";
 
 const RENT_PER_ACCOUNT = 0.002042; // SOL per closed account (~2,039,280 lamports)
 const FEE_BPS = 150;
@@ -46,6 +48,8 @@ const Dashboard = () => {
     walletMismatch,
   } = useWalletSession();
   const { user, season } = useReferral(publicKey?.toBase58() ?? null);
+  const { isInTelegram, walletFromTwa, setMainButton, hideMainButton, showConfirm } = useTelegramWebApp();
+  const { notifySweepComplete } = useTwaSweepCallback();
 
   const [tokenAccounts, setTokenAccounts] = useState<TokenAccountInfo[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -95,6 +99,30 @@ const Dashboard = () => {
       setSwapQuotes({});
     }
   }, [connected, resetModes]);
+
+  // TWA: auto-scan wallet dari bot + Main Button
+  useEffect(() => {
+    if (!isInTelegram) return;
+    if (!walletFromTwa || !connected || !publicKey) return;
+    if (publicKey.toBase58() === walletFromTwa && !scanned) {
+      handleScan();
+    }
+  }, [isInTelegram, walletFromTwa, connected, publicKey, scanned]);
+
+  // TWA: update Main Button saat token dipilih
+  useEffect(() => {
+    if (!isInTelegram) return;
+    if (selectedIds.size > 0 && !sweeping) {
+      setMainButton(`Sweep ${selectedIds.size} Token`, () => {
+        showConfirm(
+          `Sweep ${selectedIds.size} token dan recover SOL?`,
+          (confirmed) => { if (confirmed) handleSweep(); }
+        );
+      });
+    } else {
+      hideMainButton();
+    }
+  }, [isInTelegram, selectedIds, sweeping]);
 
   useEffect(() => {
     const fetchQuotes = async () => {
