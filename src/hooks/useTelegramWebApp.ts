@@ -33,7 +33,9 @@ export function useTelegramWebApp(): TelegramWebAppHook {
     const tg = (window as any).Telegram?.WebApp;
     if (!tg) return;
 
-    setIsInTelegram(true);
+    // Only true if actually inside Telegram WebApp (has initData)
+    const hasInitData = Boolean(tg.initData && tg.initData.length > 0);
+    setIsInTelegram(hasInitData);
     tg.ready();
     tg.expand();
 
