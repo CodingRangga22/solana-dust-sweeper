@@ -173,6 +173,12 @@ const Landing = () => {
           <div className="flex items-center gap-3">
             <div className="hidden sm:block"><ThemeToggle /></div>
             <Link
+              to="/token"
+              className="hidden sm:flex glass glass-hover items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-yellow-400 hover:text-yellow-300 border border-yellow-400/20 hover:border-yellow-400/40 transition-colors"
+            >
+              $ARSWP
+            </Link>
+            <Link
               to="/docs"
               className="hidden sm:flex glass glass-hover items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >

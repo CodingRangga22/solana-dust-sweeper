@@ -92,9 +92,9 @@ const PremiumFooter = () => {
 
         <div className="container mx-auto max-w-6xl relative z-10">
           {/* 4-Column Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 mb-12 overflow-hidden">
             {/* Col 1: Brand & Newsletter */}
-            <div className="space-y-5">
+            <div className="space-y-5 min-w-0">
               <div className="flex items-center gap-3" translate="no">
                 <motion.div
                   animate={{
@@ -113,22 +113,22 @@ const PremiumFooter = () => {
               <p className="text-sm text-muted-foreground leading-relaxed">
                 The most trusted Solana wallet cleaner. Reclaim hidden SOL from dust accounts.
               </p>
-              <form onSubmit={handleSubscribe} className="space-y-2">
+              <form onSubmit={handleSubscribe} className="space-y-2 relative z-10">
                 <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Join Newsletter</p>
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full max-w-[240px]">
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="flex-1 bg-muted/30 border border-border rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 transition-colors"
+                    className="min-w-0 flex-1 bg-muted/30 border border-border rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 transition-colors"
                     required
                   />
                   <motion.button
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     type="submit"
-                    className="gradient-bg gradient-bg-hover px-4 py-2 rounded-xl text-primary-foreground text-xs font-semibold whitespace-nowrap"
+                    className="gradient-bg gradient-bg-hover px-3 py-2 rounded-xl text-primary-foreground text-xs font-semibold whitespace-nowrap shrink-0"
                   >
                     {subscribed ? "✓" : "Subscribe"}
                   </motion.button>
@@ -137,10 +137,11 @@ const PremiumFooter = () => {
             </div>
 
             {/* Col 2: Product */}
-            <div className="space-y-4">
+            <div className="space-y-4 min-w-0">
               <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Product</p>
               <ul className="space-y-2.5">
                 {[
+                  { label: "ARSWP Token", onClick: () => navigate("/token") },
                   { label: "Dashboard", onClick: () => navigate("/app") },
                   { label: "Simulation", onClick: () => navigate("/simulation") },
                   { label: "Direct Sweep", onClick: () => navigate("/app") },
@@ -163,7 +164,7 @@ const PremiumFooter = () => {
             </div>
 
             {/* Col 3: Legal & Ecosystem */}
-            <div className="space-y-4">
+            <div className="space-y-4 min-w-0">
               <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Legal & Resources</p>
               <ul className="space-y-2.5">
                 {[
@@ -190,7 +191,7 @@ const PremiumFooter = () => {
             </div>
 
             {/* Col 4: Community & Status */}
-            <div className="space-y-5">
+            <div className="space-y-5 min-w-0">
               <div className="space-y-4">
                 <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Community</p>
                 <div className="flex items-center gap-3" translate="no">

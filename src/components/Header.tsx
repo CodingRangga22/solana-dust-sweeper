@@ -41,6 +41,9 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
         </div>
         <div className="flex items-center gap-2">
           <div className="hidden sm:block"><ThemeToggle /></div>
+          <a href="/token" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium text-yellow-400 hover:text-yellow-300 glass border border-yellow-400/20 hover:border-yellow-400/40 transition-all">
+            <span className="hidden sm:inline text-xs font-bold">$ARSWP</span>
+          </a>
           <a href="/leaderboard" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary glass glass-hover transition-all">
             <Trophy className="w-4 h-4" />
             <span className="hidden sm:inline text-xs">Leaderboard</span>

@@ -32,6 +32,7 @@ import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import ProtectedRoute from "./components/ProtectedRoute";
+import TokenPage from "./pages/Token";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 const queryClient = new QueryClient();
@@ -124,6 +125,7 @@ const AppContent = ({
                         <Route path="fees" element={<Fees />} />
                         <Route path="faq" element={<FAQ />} />
                       </Route>
+                      <Route path="/token" element={<TokenPage />} />
                       <Route path="/privacy" element={<PrivacyPolicy />} />
                       <Route path="/terms" element={<TermsOfService />} />
                       <Route path="*" element={<NotFound />} />
