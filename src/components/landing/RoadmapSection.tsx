@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Rocket, Zap, Code2, Globe, Shield, Bot, ArrowLeftRight, Landmark, TrendingUp } from "lucide-react";
+import { Check, Rocket, Zap, Code2, Globe, Shield, Bot, ArrowLeftRight, Landmark, TrendingUp, Users, Coins } from "lucide-react";
 
 const milestones = [
   {
@@ -23,14 +23,24 @@ const milestones = [
     ring: "ring-emerald-400/20",
   },
   {
-    label: "Smart Contract Audit",
+    label: "Community Building",
     status: "current",
     desc: "In Progress",
-    detail: "Third-party security audit underway. Results to be published publicly for full transparency.",
-    icon: Shield,
+    detail: "Growing Discord and X community. Building awareness before token launch. Target: 500+ members.",
+    icon: Users,
     color: "text-primary",
     bg: "bg-primary/10",
     ring: "ring-primary/30",
+  },
+  {
+    label: "$ARSWP Token Launch",
+    status: "upcoming",
+    desc: "Coming Soon",
+    detail: "Launching $ARSWP token on Pump.fun. Community members get early access and rewards.",
+    icon: Coins,
+    color: "text-yellow-400",
+    bg: "bg-yellow-400/10",
+    ring: "",
   },
   {
     label: "AI Wallet Hygiene Agent",
@@ -119,10 +129,10 @@ const RoadmapSection = () => (
       <div className="mb-12 glass rounded-2xl p-6 border border-border/50">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-semibold text-foreground">Overall Progress</span>
-          <span className="text-sm font-bold text-primary">2 / 9 Milestones</span>
+          <span className="text-sm font-bold text-primary">2 / 10 Milestones</span>
         </div>
         <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-emerald-400 to-primary rounded-full" style={{ width: "22%" }} />
+          <div className="h-full bg-gradient-to-r from-emerald-400 to-primary rounded-full" style={{ width: "20%" }} />
         </div>
         <div className="flex justify-between mt-2 text-xs text-muted-foreground">
           <span>Devnet Testing</span>

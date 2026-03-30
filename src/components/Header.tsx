@@ -44,10 +44,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
           <a href="/token" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium text-yellow-400 hover:text-yellow-300 glass border border-yellow-400/20 hover:border-yellow-400/40 transition-all">
             <span className="hidden sm:inline text-xs font-bold">$ARSWP</span>
           </a>
-          <a href="/leaderboard" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary glass glass-hover transition-all">
-            <Trophy className="w-4 h-4" />
-            <span className="hidden sm:inline text-xs">Leaderboard</span>
-          </a>
+
           <a href="/docs" target="_blank" rel="noopener noreferrer" className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-primary glass glass-hover transition-colors">
             <BookOpen className="w-4 h-4" />
             <span className="hidden sm:inline text-xs">Docs</span>

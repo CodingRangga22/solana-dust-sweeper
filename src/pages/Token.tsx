@@ -7,11 +7,11 @@ import ChatWidget from "@/components/ChatWidget";
 import { useBanner } from "@/components/BannerProvider";
 
 const tokenomics = [
-  { label: "Community & Airdrop", percent: 40, color: "from-emerald-400 to-cyan-400" },
-  { label: "Liquidity Pool", percent: 25, color: "from-cyan-400 to-blue-400" },
+  { label: "Liquidity Pool (Primary)", percent: 50, color: "from-emerald-400 to-cyan-400" },
+  { label: "Ecosystem & Rewards", percent: 25, color: "from-cyan-400 to-blue-400" },
   { label: "Team & Dev", percent: 15, color: "from-violet-400 to-purple-400" },
-  { label: "Ecosystem & Rewards", percent: 15, color: "from-pink-400 to-rose-400" },
-  { label: "Reserve", percent: 5, color: "from-yellow-400 to-orange-400" },
+  { label: "Reserve", percent: 10, color: "from-pink-400 to-rose-400" },
+  
 ];
 
 const utilities = [
@@ -67,7 +67,7 @@ const TokenPage = () => {
               The native token of the Arsweep ecosystem. Earn it by sweeping. Use it for discounts. Vote with it on governance.
             </p>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-sm font-semibold mb-10">
-              🚀 Token launching this week on Pump.fun
+              🔜 Coming Soon — Join the waitlist on Discord
             </div>
             <div className="flex flex-wrap justify-center gap-4">
               <motion.button

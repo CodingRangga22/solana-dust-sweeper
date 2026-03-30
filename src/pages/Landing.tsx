@@ -202,8 +202,17 @@ const Landing = () => {
         </div>
       </header>
 
+      {/* Token Launch Banner */}
+      <div className="fixed left-0 right-0 z-40 bg-gradient-to-r from-yellow-500/10 via-amber-500/15 to-yellow-500/10 border-b border-yellow-500/20 py-2 px-4 text-center" style={{ top: "calc(var(--banner-height, 44px) + 64px)" }}>
+        <p className="text-xs sm:text-sm font-semibold text-yellow-300 flex items-center justify-center gap-2 flex-wrap">
+          <span className="animate-pulse">🚀</span>
+          <span>$ARSWP Token is coming soon — join the waitlist</span>
+          <a href="/token" className="underline underline-offset-2 hover:text-yellow-200 transition-colors font-bold ml-1">Learn more →</a>
+        </p>
+      </div>
+
       {/* Hero */}
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+      <section className="relative pt-44 pb-20 px-4 overflow-hidden">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div

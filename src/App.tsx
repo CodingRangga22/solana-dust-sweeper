@@ -114,7 +114,7 @@ const AppContent = ({
                           )
                         }
                       />
-                      <Route path="/leaderboard" element={<Leaderboard />} />
+                      <Route path="/leaderboard" element={<Navigate to="/" replace />} />
                       <Route path="/simulation" element={<Simulation />} />
                       <Route path="/demo" element={<Demo />} />
                       <Route path="/dashboard" element={<Navigate to="/app" replace />} />
