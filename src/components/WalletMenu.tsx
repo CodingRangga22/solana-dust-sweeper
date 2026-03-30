@@ -39,7 +39,7 @@ const WalletMenu = ({
 
   if (!connected || !publicKey) {
     return (
-      <WalletMultiButton className="!bg-primary !text-primary-foreground !rounded-xl !px-4 !py-2.5 !text-sm !font-medium hover:!opacity-90 !transition-opacity" />
+      <WalletMultiButton className="!bg-transparent !bg-none !rounded-xl !px-5 !py-2.5 !text-sm !font-semibold !text-white !transition-all !duration-200 !border-0 !shadow-none" style={{ background: "linear-gradient(135deg, hsl(162,93%,51%), hsl(271,100%,63%))" }} />
     );
   }
 
