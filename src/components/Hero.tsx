@@ -78,6 +78,38 @@ const Hero = ({ scanning = false, scanned = false, onScan, onRescan, sweeping = 
               <RotateCcw className="w-4 h-4" />
               Rescan Wallet
             </motion.button>
+            {accountsFound === 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-col items-center gap-3 mt-2"
+              >
+                <p className="text-xs text-muted-foreground">Your wallet is clean! Share it with your friends 🧹</p>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <motion.a
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("Just cleaned my Solana wallet with @Arsweep_AI — 0 dust accounts found! 🧹✨\n\nReclaim your locked SOL for free:\nhttps://arsweep.fun")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-black border border-white/10 text-white hover:bg-white/10 transition-all duration-200"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4l11.733 16h4.267l-11.733-16zm0 16l6.768-6.768M20 4l-6.768 6.768"/></svg>
+                    Share on X
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                    href="/app?tab=referral"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold glass border border-primary/30 text-primary hover:border-primary/60 transition-all duration-200"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Invite Friends & Earn
+                  </motion.a>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
         ) : (
           <motion.button

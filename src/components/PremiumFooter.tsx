@@ -220,7 +220,7 @@ const PremiumFooter = () => {
           {/* Bottom bar */}
           <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
-              © 2024 Arsweep. All rights reserved.
+              © 2026 Arsweep. All rights reserved.
             </p>
             <p className="text-xs text-muted-foreground">
               Built with ❤️ by Arsweep Team. <span className="text-primary">Secure</span> & <span className="text-primary">Open Source</span>.

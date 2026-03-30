@@ -24,7 +24,7 @@ const ScrollSection = ({ children, className = "" }: { children: React.ReactNode
   <motion.div
     initial={{ opacity: 0, y: 40, scale: 0.95 }}
     whileInView={{ opacity: 1, y: 0, scale: 1 }}
-    viewport={{ once: false, amount: 0.15 }}
+    viewport={{ once: true, amount: 0.15 }}
     transition={{ duration: 0.7, ease: "easeOut" }}
     className={className}
   >
@@ -327,7 +327,7 @@ const Landing = () => {
                   key={step.title}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, amount: 0.3 }}
+                  viewport={{ once: true, amount: 0.3 }}
                   transition={{ delay: i * 0.15, duration: 0.5 }}
                   className="glass rounded-2xl p-8 text-center relative group hover:glow-primary transition-shadow duration-300"
                 >
@@ -367,7 +367,7 @@ const Landing = () => {
                   key={item.title}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, amount: 0.3 }}
+                  viewport={{ once: true, amount: 0.3 }}
                   transition={{ delay: i * 0.15, duration: 0.5 }}
                   className="glass rounded-2xl p-8 text-center"
                 >
