@@ -16,6 +16,7 @@ import FAQSection from "@/components/landing/FAQSection";
 import { isDevnet } from "@/config/env";
 import FeedbackSection from "@/components/landing/FeedbackSection";
 import HeroDemo from "@/components/HeroDemo";
+import GlobalStatsStrip from "@/components/landing/GlobalStatsStrip";
 
 
 
@@ -304,6 +305,10 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      <ScrollSection>
+        <GlobalStatsStrip />
+      </ScrollSection>
 
       {/* How It Works */}
       <ScrollSection>
