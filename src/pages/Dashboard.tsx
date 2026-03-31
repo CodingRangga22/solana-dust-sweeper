@@ -532,6 +532,7 @@ const Dashboard = () => {
         count={successModal.count}
         totalSol={successModal.totalSol}
         signature={successModal.signature}
+        walletAddress={publicKey?.toBase58()}
       />
       <ChangeWalletInstructionModal
         open={showChangeWalletModal}

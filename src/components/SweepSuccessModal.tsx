@@ -13,15 +13,132 @@ import { isDevnet } from "@/config/env";
 
 const EXPLORER_BASE = "https://solscan.io/tx";
 
+const sendDiscordSweepReport = async (
+  walletAddress: string,
+  count: number,
+  totalSol: number,
+  signature: string
+) => {
+  const webhookUrl = import.meta.env.VITE_DISCORD_SWEEP_WEBHOOK;
+  if (!webhookUrl) return;
+
+  const solscanUrl = `https://solscan.io/tx/${signature}`;
+  const solscanWalletUrl = `https://solscan.io/account/${walletAddress}`;
+  const usdValue = (totalSol * 130).toFixed(2); // approximate SOL price
+
+  const embed = {
+    title: "🧹 New Sweep Completed!",
+    color: 0x1D9E75,
+    fields: [
+      {
+        name: "👛 Wallet",
+        value: `[${walletAddress.slice(0,4)}...${walletAddress.slice(-4)}](${solscanWalletUrl})`,
+        inline: true,
+      },
+      {
+        name: "📦 Accounts Closed",
+        value: `${count} accounts`,
+        inline: true,
+      },
+      {
+        name: "💰 SOL Reclaimed",
+        value: `${totalSol.toFixed(5)} SOL (~$${usdValue})`,
+        inline: true,
+      },
+      {
+        name: "🔗 Transaction",
+        value: `[View on Solscan](${solscanUrl})`,
+        inline: false,
+      },
+    ],
+    footer: {
+      text: "Arsweep — Solana Wallet Cleaner • arsweep.fun",
+    },
+    timestamp: new Date().toISOString(),
+  };
+
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+  } catch (e) {
+    console.error("Discord webhook error:", e);
+  }
+};
+
+const sendDiscordSweepReport = async (
+  walletAddress: string,
+  count: number,
+  totalSol: number,
+  signature: string
+) => {
+  const webhookUrl = import.meta.env.VITE_DISCORD_SWEEP_WEBHOOK;
+  if (!webhookUrl) return;
+
+  const solscanUrl = `https://solscan.io/tx/${signature}`;
+  const solscanWalletUrl = `https://solscan.io/account/${walletAddress}`;
+  const usdValue = (totalSol * 130).toFixed(2); // approximate SOL price
+
+  const embed = {
+    title: "🧹 New Sweep Completed!",
+    color: 0x1D9E75,
+    fields: [
+      {
+        name: "👛 Wallet",
+        value: `[${walletAddress.slice(0,4)}...${walletAddress.slice(-4)}](${solscanWalletUrl})`,
+        inline: true,
+      },
+      {
+        name: "📦 Accounts Closed",
+        value: `${count} accounts`,
+        inline: true,
+      },
+      {
+        name: "💰 SOL Reclaimed",
+        value: `${totalSol.toFixed(5)} SOL (~$${usdValue})`,
+        inline: true,
+      },
+      {
+        name: "🔗 Transaction",
+        value: `[View on Solscan](${solscanUrl})`,
+        inline: false,
+      },
+    ],
+    footer: {
+      text: "Arsweep — Solana Wallet Cleaner • arsweep.fun",
+    },
+    timestamp: new Date().toISOString(),
+  };
+
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+  } catch (e) {
+    console.error("Discord webhook error:", e);
+  }
+};
+
 interface SweepSuccessModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   count: number;
   totalSol: number;
   signature?: string;
+  walletAddress?: string;
 }
 
-const SweepSuccessModal = ({ open, onOpenChange, count, totalSol, signature }: SweepSuccessModalProps) => {
+const SweepSuccessModal = ({ open, onOpenChange, count, totalSol, signature, walletAddress }: SweepSuccessModalProps) => {
+  useEffect(() => {
+    if (open && signature && walletAddress) {
+      sendDiscordSweepReport(walletAddress, count, totalSol, signature);
+    }
+  }, [open, signature, walletAddress]);
+
   useEffect(() => {
     if (open) {
       const end = Date.now() + 800;
