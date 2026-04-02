@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
-import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen, FlaskConical, Menu } from "lucide-react";
+import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen, FlaskConical, Menu 
+} from "lucide-react";
 import { useSidebar } from "@/components/SidebarContext";
 import ArsweepLogo from "@/components/ArsweepLogo";
 import ChatWidget from "@/components/ChatWidget";
@@ -17,6 +18,7 @@ import { isDevnet } from "@/config/env";
 import FeedbackSection from "@/components/landing/FeedbackSection";
 import HeroDemo from "@/components/HeroDemo";
 import GlobalStatsStrip from "@/components/landing/GlobalStatsStrip";
+import { AIAgentButton } from "@/components/ai-agent/AIAgentButton";
 
 
 
@@ -46,7 +48,7 @@ const steps = [
   {
     icon: Wallet,
     title: "Connect Wallet",
-    description: "Connect for a read-only scan first. We identify your token accounts without moving any funds.",
+    description: "Connect for a read-only scan first. We identify your token accounts without moving any funds.",    
   },
   {
     icon: Search,
@@ -56,12 +58,12 @@ const steps = [
   {
     icon: CheckCircle2,
     title: "Close Accounts & Reclaim SOL",
-    description: "Approve the transaction to close selected accounts. Rent is refunded directly to your wallet.",
+    description: "Approve the transaction to close selected accounts. Rent is refunded directly to your wallet.",    
   },
 ];
 
 const trustItems = [
-  { icon: Github, title: "Non-Custodial", description: "No private key access. Fully on-chain and verifiable." },
+  { icon: Github, title: "Non-Custodial", description: "No private key access. Fully on-chain and verifiable." },    
   { icon: Shield, title: "Secure", description: "No private keys needed. Read-only wallet scanning." },
   { icon: Users, title: "Built for Solana", description: "Designed by and for the Solana community." },
 ];
@@ -154,17 +156,18 @@ const Landing = () => {
           <div className="absolute left-1/2 -translate-x-1/2 hidden md:block">
             <Link
               to="/demo"
-              className="group flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-400/40 text-emerald-300 hover:from-emerald-500/20 hover:to-cyan-500/20 hover:border-emerald-400/70 hover:text-emerald-200 hover:shadow-[0_0_20px_rgba(52,211,153,0.2)] transition-all duration-300"
+              className="group flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold bg-gradient-to-r 
+from-emerald-500/10 to-cyan-500/10 border border-emerald-400/40 text-emerald-300 hover:from-emerald-500/20 hover:to-cyan-500/20 hover:border-emerald-400/70 hover:text-emerald-200 hover:shadow-[0_0_20px_rgba(52,211,153,0.2)] transition-all duration-300"
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
               </span>
-              <span className="hidden sm:inline">▶ Watch Demo</span><span className="sm:hidden">▶ Demo</span>
+              <span className="hidden sm:inline">▶ Watch Demo</span><span className="sm:hidden">▶ Demo</span>        
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => setOpen(true)} className="sm:hidden p-2 rounded-xl hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors" aria-label="Open menu"><Menu className="w-5 h-5" /></button>
+            <button onClick={() => setOpen(true)} className="sm:hidden p-2 rounded-xl hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors" aria-label="Open menu"><Menu className="w-5 h-5" /></button>       
             <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
               <ArsweepLogo className="w-8 h-8" />
               <span className="text-xl font-bold gradient-text"><span translate="no" className="notranslate">Arsweep</span></span>
@@ -174,13 +177,13 @@ const Landing = () => {
             <div className="hidden sm:block"><ThemeToggle /></div>
             <Link
               to="/token"
-              className="hidden sm:flex glass glass-hover items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-yellow-400 hover:text-yellow-300 border border-yellow-400/20 hover:border-yellow-400/40 transition-colors"
+              className="hidden sm:flex glass glass-hover items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-yellow-400 hover:text-yellow-300 border border-yellow-400/20 hover:border-yellow-400/40 transition-colors"     
             >
               $ARSWP
             </Link>
             <Link
               to="/docs"
-              className="hidden sm:flex glass glass-hover items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              className="hidden md:flex glass glass-hover items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               <BookOpen className="w-4 h-4" />
               Docs
@@ -203,11 +206,12 @@ const Landing = () => {
       </header>
 
       {/* Token Launch Banner */}
-      <div className="fixed left-0 right-0 z-40 bg-gradient-to-r from-yellow-500/10 via-amber-500/15 to-yellow-500/10 border-b border-yellow-500/20 py-2 px-4 text-center" style={{ top: "calc(var(--banner-height, 44px) + 64px)" }}>
+      <div className="fixed left-0 right-0 z-40 bg-gradient-to-r from-yellow-500/10 via-amber-500/15 to-yellow-500/10 border-b border-yellow-500/20 py-2 px-4 text-center" style={{ top: "calc(var(--banner-height, 44px) + 64px)" }}>    
         <p className="text-xs sm:text-sm font-semibold text-yellow-300 flex items-center justify-center gap-2 flex-wrap">
           <span className="animate-pulse">🚀</span>
           <span>$ARSWP Token is coming soon — join the waitlist</span>
-          <a href="/token" className="underline underline-offset-2 hover:text-yellow-200 transition-colors font-bold ml-1">Learn more →</a>
+          <a href="/token" className="underline underline-offset-2 hover:text-yellow-200 transition-colors font-bold 
+ml-1">Learn more →</a>
         </p>
       </div>
 
@@ -238,7 +242,7 @@ const Landing = () => {
               <motion.h1
                 custom={1}
                 variants={fadeUp}
-                className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-5 text-foreground"
+                className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-5 text-foreground"      
               >
                 Reclaim Locked SOL from{" "}
                 <span className="gradient-text">Empty Token Accounts</span>
@@ -265,6 +269,10 @@ const Landing = () => {
                   Start Reclaiming
                   <ChevronRight className="w-5 h-5" />
                 </motion.button>
+                
+                {/* AI Agent Button - Hero Variant */}
+                <AIAgentButton variant="hero" className="px-8 py-3.5 text-base" />
+                
                 <motion.a
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
@@ -272,15 +280,6 @@ const Landing = () => {
                   className="glass glass-hover px-8 py-3.5 rounded-2xl text-foreground font-semibold text-base transition-all duration-200 text-center"
                 >
                   How It Works
-                </motion.a>
-                <motion.a
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  href="/simulation"
-                  className="glass glass-hover px-8 py-3.5 rounded-2xl text-foreground font-semibold text-base transition-all duration-200 text-center flex items-center justify-center gap-2 border border-yellow-400/30 text-yellow-400 hover:text-yellow-300"
-                >
-                  <FlaskConical className="w-5 h-5" />
-                  Try Simulation
                 </motion.a>
               </motion.div>
 
@@ -303,13 +302,13 @@ const Landing = () => {
                     Open source
                   </span>
                 </div>
-                <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm mt-2 justify-center lg:justify-start">
+                <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm mt-2 justify-center lg:justify-start">        
                   <span className="flex items-center gap-2"><span className="text-primary font-bold text-xl">~0.002</span><span className="text-muted-foreground ml-1">SOL per account</span></span>
                   <span className="flex items-center gap-2"><span className="text-primary font-bold text-xl">1.5%</span><span className="text-muted-foreground ml-1">platform fee</span></span>
                   <span className="flex items-center gap-2"><span className="text-primary font-bold text-xl">&lt;5s</span><span className="text-muted-foreground ml-1">sweep time</span></span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  💰 Over <span className="text-primary font-semibold">0.00204 SOL</span> recovered per account
+                  💰 Over <span className="text-primary font-semibold">0.00204 SOL</span> recovered per account      
                 </p>
               </motion.div>
             </motion.div>
@@ -351,7 +350,7 @@ const Landing = () => {
                   transition={{ delay: i * 0.15, duration: 0.5 }}
                   className="glass rounded-2xl p-8 text-center relative group hover:glow-primary transition-shadow duration-300"
                 >
-                  <div className="w-14 h-14 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-5">
+                  <div className="w-14 h-14 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-5">  
                     <step.icon className="w-7 h-7 text-primary-foreground" />
                   </div>
                   <div className="text-xs font-bold text-primary mb-2">STEP {i + 1}</div>
@@ -422,21 +421,21 @@ const Landing = () => {
           className="container mx-auto max-w-3xl text-center glass rounded-3xl p-6 sm:p-14 relative overflow-hidden border border-primary/20"
         >
           <div className="orb w-64 h-64 bg-primary/15 -top-32 -left-32" />
-          <div className="orb w-48 h-48 bg-secondary/15 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+          <div className="orb w-48 h-48 bg-secondary/15 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />       
           <div className="orb w-32 h-32 bg-secondary/20 -bottom-16 -right-16" />
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold mb-5 text-foreground relative z-10">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold mb-5 text-foreground relative z-10">        
             Reclaim Your <span className="gradient-text">Locked SOL</span> Now
           </h2>
           <p className="text-muted-foreground mb-8 relative z-10">
             Every empty token account costs you ~0.002 SOL. Sweep them all in one click — free, non-custodial, instant.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mb-8 relative z-10 text-xs text-muted-foreground">
+          <div className="flex flex-wrap justify-center gap-4 mb-8 relative z-10 text-xs text-muted-foreground">     
               <span className="flex items-center gap-1.5">✅ Non-custodial</span>
               <span className="flex items-center gap-1.5">⚡ Takes 5 seconds</span>
               <span className="flex items-center gap-1.5">🔒 Keys never leave your wallet</span>
               <span className="flex items-center gap-1.5">📖 Open source</span>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10 w-full px-4 sm:px-0">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10 w-full px-4 sm:px-0">       
             <motion.button
               whileHover={{
                 scale: 1.03,

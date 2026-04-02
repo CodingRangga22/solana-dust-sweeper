@@ -1,5 +1,6 @@
-const API_BASE_URL = "https://api.arsweep.fun/v1";
+const API_BASE_URL = 'https://api.arsweep.fun/v1';
 
+// ─── Types ───────────────────────────────────────────────────────────────
 export interface ChatRequest {
   userId: string;
   message: string;
@@ -9,15 +10,80 @@ export interface ChatRequest {
 export interface ChatResponse {
   text: string;
   toolsUsed: string[];
+  platform: string;
+  userId: string;
 }
 
+export interface X402AnalyzeRequest {
+  walletAddress: string;
+}
+
+export interface X402ReportRequest {
+  walletAddress: string;
+}
+
+export interface X402HealthResponse {
+  status: string;
+  service: string;
+  version: string;
+  endpoints: Array<{
+    path: string;
+    price: string;
+    description: string;
+  }>;
+  treasury: string;
+  network: string;
+  paymentProtocol: string;
+}
+
+// ─── API Client ──────────────────────────────────────────────────────────
 export const arsweepApi = {
+  // FREE: Chat with AI Agent
   chat: async (data: ChatRequest): Promise<ChatResponse> => {
     const res = await fetch(`${API_BASE_URL}/agent/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || 'Chat failed');
+    }
+    return res.json();
+  },
+
+  // x402 Health Check
+  x402Health: async (): Promise<X402HealthResponse> => {
+    const res = await fetch(`${API_BASE_URL}/x402/health`);
+    if (!res.ok) throw new Error('Health check failed');
+    return res.json();
+  },
+
+  // PAID: x402 Wallet Analysis ($0.10 USDC)
+  x402Analyze: async (data: X402AnalyzeRequest) => {
+    const res = await fetch(`${API_BASE_URL}/x402/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || 'Analysis failed');
+    }
+    return res.json();
+  },
+
+  // PAID: x402 Sweep Report ($0.05 USDC)
+  x402Report: async (data: X402ReportRequest) => {
+    const res = await fetch(`${API_BASE_URL}/x402/report`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || 'Report failed');
+    }
     return res.json();
   },
 };
