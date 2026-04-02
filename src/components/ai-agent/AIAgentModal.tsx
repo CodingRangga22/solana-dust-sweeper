@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useArsweepChat } from '@/hooks/useArsweepChat';
 import { NotificationSettings } from './NotificationSettings';
+import { X402PaymentModal } from './X402PaymentModal';
 
 interface AIAgentModalProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export function AIAgentModal({ isOpen, onClose }: AIAgentModalProps) {
   
   const [input, setInput] = useState('');
   const [activeTab, setActiveTab] = useState('chat');
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentType, setPaymentType] = useState<'analyze' | 'report'>('analyze');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -100,6 +103,29 @@ export function AIAgentModal({ isOpen, onClose }: AIAgentModalProps) {
           <TabsContent value="chat" className="flex-1 flex flex-col m-0 data-[state=inactive]:hidden">
             <ScrollArea className="flex-1 p-5 bg-muted/30" ref={scrollRef}>
               <div className="space-y-4">
+                
+                {messages.length === 0 && (
+                  <div className="space-y-2 mb-4">
+                    <p className="text-xs font-medium text-muted-foreground px-1">Premium Features</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        onClick={() => { setPaymentType('analyze'); setShowPayment(true); }}
+                        className="h-auto py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex-col gap-1"
+                      >
+                        <span className="text-sm font-semibold">AI Analysis</span>
+                        <span className="text-xs opacity-90">$0.10 USDC</span>
+                      </Button>
+                      <Button
+                        onClick={() => { setPaymentType('report'); setShowPayment(true); }}
+                        className="h-auto py-3 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 flex-col gap-1"
+                      >
+                        <span className="text-sm font-semibold">Sweep Report</span>
+                        <span className="text-xs opacity-90">$0.05 USDC</span>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 {messages.length === 0 && (
                   <div className="flex gap-3">
                     <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
@@ -158,6 +184,29 @@ export function AIAgentModal({ isOpen, onClose }: AIAgentModalProps) {
                   </div>
                 )}
 
+                
+                {messages.length === 0 && (
+                  <div className="space-y-2 mb-4">
+                    <p className="text-xs font-medium text-muted-foreground px-1">Premium Features</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        onClick={() => { setPaymentType('analyze'); setShowPayment(true); }}
+                        className="h-auto py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex-col gap-1"
+                      >
+                        <span className="text-sm font-semibold">AI Analysis</span>
+                        <span className="text-xs opacity-90">$0.10 USDC</span>
+                      </Button>
+                      <Button
+                        onClick={() => { setPaymentType('report'); setShowPayment(true); }}
+                        className="h-auto py-3 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 flex-col gap-1"
+                      >
+                        <span className="text-sm font-semibold">Sweep Report</span>
+                        <span className="text-xs opacity-90">$0.05 USDC</span>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 {messages.length === 0 && (
                   <div className="space-y-2 mt-2">
                     <p className="text-xs font-medium text-muted-foreground px-1">Quick actions</p>
@@ -209,6 +258,12 @@ export function AIAgentModal({ isOpen, onClose }: AIAgentModalProps) {
           </TabsContent>
         </Tabs>
       </DialogContent>
+      
+      <X402PaymentModal
+        isOpen={showPayment}
+        onClose={() => setShowPayment(false)}
+        serviceType={paymentType}
+      />
     </Dialog>
   );
 }

@@ -6,6 +6,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  walletScan?: WalletScanResult;
 }
 
 export const useArsweepChat = (userId: string) => {
@@ -51,5 +52,8 @@ export const useArsweepChat = (userId: string) => {
     setError(null);
   };
 
-  return { messages, isLoading, error, sendMessage, clearChat };
+  const updateMessage = (id: string, updates: Partial<Message>) => {
+    setMessages(prev => prev.map(msg => msg.id === id ? { ...msg, ...updates } : msg));
+  };
+  return { messages, isLoading, error, sendMessage, clearChat, updateMessage, setMessages };
 };
