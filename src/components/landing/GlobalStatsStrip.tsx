@@ -46,17 +46,17 @@ const GlobalStatsStrip = () => {
     {
       icon: Zap,
       label: "SOL Reclaimed",
-      value: loading ? "..." : `${stats.totalSolReclaimed.toFixed(4)} SOL`,
+      value: loading ? "..." : stats.totalSolReclaimed > 0 ? `${stats.totalSolReclaimed.toFixed(4)} SOL` : "Growing...",
     },
     {
       icon: Wallet,
       label: "Accounts Closed",
-      value: loading ? "..." : stats.totalAccountsSwept.toLocaleString(),
+      value: loading ? "..." : stats.totalAccountsSwept > 0 ? stats.totalAccountsSwept.toLocaleString() : "Growing...",
     },
     {
       icon: Users,
       label: "Wallets Cleaned",
-      value: loading ? "..." : stats.totalWallets.toLocaleString(),
+      value: loading ? "..." : stats.totalWallets > 0 ? stats.totalWallets.toLocaleString() : "Growing...",
     },
   ];
 

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
-import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen, FlaskConical, Menu 
+import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen, Menu, MessageCircle } from "lucide-react";
 } from "lucide-react";
 import { useSidebar } from "@/components/SidebarContext";
 import ArsweepLogo from "@/components/ArsweepLogo";
@@ -206,7 +206,7 @@ from-emerald-500/10 to-cyan-500/10 border border-emerald-400/40 text-emerald-300
       </header>
 
       {/* Token Launch Banner */}
-      <div className="fixed left-0 right-0 z-40 bg-gradient-to-r from-yellow-500/10 via-amber-500/15 to-yellow-500/10 border-b border-yellow-500/20 py-2 px-4 text-center" style={{ top: "calc(var(--banner-height, 44px) + 64px)" }}>    
+      <div className="fixed left-0 right-0 z-40 bg-gradient-to-r from-yellow-500/10 via-amber-500/15 to-yellow-500/10 border-b border-yellow-500/20 py-2 px-4 text-center" style={{ top: `calc(${bannerHeight}px + 64px)` }}>    
         <p className="text-xs sm:text-sm font-semibold text-yellow-300 flex items-center justify-center gap-2 flex-wrap">
           <span className="animate-pulse">🚀</span>
           <span>$ARSWP Token is coming soon — join the waitlist</span>
@@ -457,7 +457,7 @@ ml-1">Learn more →</a>
               className="glass glass-hover px-10 py-4 rounded-2xl text-foreground font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2 border border-border"
             >
               Join Discord
-              <Github className="w-5 h-5" />
+              <MessageCircle className="w-5 h-5" />
             </motion.a>
           </div>
         </motion.div>

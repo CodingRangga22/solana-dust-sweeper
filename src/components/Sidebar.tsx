@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Video, BookOpen, Trophy, X, FlaskConical, MessageCircle } from "lucide-react";
+import { Video, BookOpen, X, FlaskConical, MessageCircle } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useSidebar } from "./SidebarContext";
 
@@ -25,10 +25,7 @@ const Sidebar = () => {
             <Video className="w-4 h-4" />
             Watch Demo
           </Link>
-          <Link to="/leaderboard" onClick={() => setOpen(false)} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${location.pathname === "/leaderboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}>
-            <Trophy className="w-4 h-4" />
-            Leaderboard
-          </Link>
+
           <Link
             to="/simulation"
             onClick={() => setOpen(false)}

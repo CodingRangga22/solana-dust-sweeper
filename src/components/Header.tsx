@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useSidebar } from "./SidebarContext";
 import ArsweepLogo from "./ArsweepLogo";
-import { Github, BookOpen, Trophy, Menu } from "lucide-react";
+import { BookOpen, Menu, MessageCircle } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useBanner } from "./BannerProvider";
 import WalletMenu from "./WalletMenu";
@@ -50,7 +50,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
             <span className="hidden sm:inline text-xs">Docs</span>
           </a>
           <a href="https://discord.gg/D2rtvK3fBs" target="_blank" rel="noopener noreferrer" className="glass glass-hover hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-primary transition-colors">
-            <Github className="w-4 h-4" />
+            <MessageCircle className="w-4 h-4" />
             <span className="hidden sm:inline text-xs">Discord</span>
           </a>
           {onChangeWallet && onDisconnect ? (
