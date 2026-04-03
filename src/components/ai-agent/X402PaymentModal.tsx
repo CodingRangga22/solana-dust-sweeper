@@ -73,8 +73,8 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
       setPaymentStatus('verifying');
 
       const data = serviceType === 'analyze'
-        ? await requestAnalysis(publicKey.toString(), paymentResult.signature)
-        : await requestReport(publicKey.toString(), paymentResult.signature);
+        ? await requestAnalysis(publicKey.toString(), wallet)
+        : await requestReport(publicKey.toString(), wallet);
       
       setResult(data);
       setPaymentStatus('success');
