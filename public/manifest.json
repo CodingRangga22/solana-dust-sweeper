@@ -1,0 +1,11 @@
+{
+  "name": "Arsweep",
+  "short_name": "Arsweep",
+  "description": "Non-custodial Solana wallet cleaner. Reclaim locked SOL from empty token accounts.",
+  "url": "https://arsweep.fun",
+  "icons": ["/favicon.ico"],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#14F195"
+}
