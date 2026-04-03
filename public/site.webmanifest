@@ -1,26 +1,22 @@
 {
   "name": "Arsweep",
   "short_name": "Arsweep",
-  "description": "Non-custodial Solana wallet cleaner. Reclaim locked SOL from empty token accounts.",
+  "description": "Reclaim rent SOL from empty Solana token accounts.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
+  "background_color": "#080B14",
   "theme_color": "#14F195",
   "icons": [
     {
-      "src": "/favicon-64.png",
-      "sizes": "64x64",
-      "type": "image/png"
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
-      "src": "/favicon-256.png",
-      "sizes": "256x256",
-      "type": "image/png"
-    },
-    {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png"
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
     }
   ]
 }

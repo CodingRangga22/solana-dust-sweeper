@@ -26,7 +26,7 @@ const sendDiscordSweepReport = async (
 
   const solscanUrl = `https://solscan.io/tx/${signature}`;
   const solscanWalletUrl = `https://solscan.io/account/${walletAddress}`;
-  const usdValue = (totalSol * 150).toFixed(2); // approximate SOL price (~$150)
+  const usdValue = (totalSol * 130).toFixed(2); // approximate SOL price
 
   const embed = {
     title: "🧹 New Sweep Completed!",
