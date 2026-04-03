@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, FlaskConical, Zap } from "lucide-react";
+import { LayoutDashboard, FlaskConical } from "lucide-react";
 import ArsweepLogo from "./ArsweepLogo";
 import ThemeToggle from "./ThemeToggle";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -14,7 +14,6 @@ const SidebarContent = () => {
   const navItems = [
     { to: "/app", label: "Dashboard", icon: LayoutDashboard },
     { to: "/simulation", label: "Simulation", icon: FlaskConical },
-    { to: "/app", label: "Direct Sweep", icon: Zap },
   ];
 
   return (
