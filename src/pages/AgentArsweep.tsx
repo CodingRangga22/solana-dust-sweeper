@@ -126,7 +126,7 @@ export default function AgentArsweep() {
   
   const [input, setInput] = useState('');
   const [showPayment, setShowPayment] = useState(false);
-  const [paymentType, setPaymentType] = useState<'analyze' | 'report'>('analyze');
+  const [paymentType, setPaymentType] = useState<'analyze' | 'report' | 'roast' | 'rugcheck' | 'planner'>('analyze');
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -253,6 +253,48 @@ export default function AgentArsweep() {
                 <p className="text-sm font-semibold">Sweep Report</p>
                 <p className="text-xs text-muted-foreground">Quick dust check</p>
                 <p className="text-xs font-semibold text-green-500 mt-1">$0.05 USDC</p>
+              </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => { setPaymentType('roast'); setShowPayment(true); }}
+            className="w-full p-3 rounded-lg border border-orange-600/30 bg-orange-600/5 hover:bg-orange-600/10 transition-all text-left group"
+          >
+            <div className="flex items-start gap-2">
+              <span className="text-base mt-0.5">🔥</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold">Wallet Roast</p>
+                <p className="text-xs text-muted-foreground">Score + AI roast</p>
+                <p className="text-xs font-semibold text-orange-500 mt-1">$0.05 USDC</p>
+              </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => { setPaymentType('rugcheck'); setShowPayment(true); }}
+            className="w-full p-3 rounded-lg border border-red-600/30 bg-red-600/5 hover:bg-red-600/10 transition-all text-left group"
+          >
+            <div className="flex items-start gap-2">
+              <span className="text-base mt-0.5">🕵️</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold">Rug Detector</p>
+                <p className="text-xs text-muted-foreground">Find dangerous tokens</p>
+                <p className="text-xs font-semibold text-red-500 mt-1">$0.10 USDC</p>
+              </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => { setPaymentType('planner'); setShowPayment(true); }}
+            className="w-full p-3 rounded-lg border border-cyan-600/30 bg-cyan-600/5 hover:bg-cyan-600/10 transition-all text-left group"
+          >
+            <div className="flex items-start gap-2">
+              <span className="text-base mt-0.5">🤖</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold">Sweep Planner</p>
+                <p className="text-xs text-muted-foreground">Optimal sweep plan</p>
+                <p className="text-xs font-semibold text-cyan-500 mt-1">$0.05 USDC</p>
               </div>
             </div>
           </button>

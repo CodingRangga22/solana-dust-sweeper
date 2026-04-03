@@ -63,11 +63,12 @@ export const useX402Payment = () => {
     return result.json();
   };
 
-  const requestAnalysis = async (walletAddress: string, wallet: any) => {
+  const requestAnalysis = async (walletAddress: string, wallet: any, endpoint: string = '/x402/analyze') => {
     setIsProcessing(true);
     setError(null);
     try {
-      return await makeX402Payment(wallet, '/x402/analyze', 0.10);
+      const amount = endpoint === '/x402/analyze' || endpoint === '/x402/rugcheck' ? 0.10 : 0.05;
+      return await makeX402Payment(wallet, endpoint, amount);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Analysis failed';
       setError(msg);

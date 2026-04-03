@@ -9,7 +9,7 @@ import { sendUSDCPayment, getSolanaConnection, checkUSDCBalance } from '@/lib/so
 interface X402PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  serviceType: 'analyze' | 'report';
+  serviceType: 'analyze' | 'report' | 'roast' | 'rugcheck' | 'planner';
 }
 
 export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentModalProps) {
@@ -23,12 +23,19 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
   const [hasUsdcAccount, setHasUsdcAccount] = useState<boolean>(false);
   const [checkingBalance, setCheckingBalance] = useState(false);
 
-  const price = serviceType === 'analyze' ? 0.10 : 0.05;
-  const priceDisplay = serviceType === 'analyze' ? '$0.10 USDC' : '$0.05 USDC';
-  const title = serviceType === 'analyze' ? 'AI Wallet Analysis' : 'Quick Sweep Report';
-  const description = serviceType === 'analyze' 
+  const price = serviceType === 'analyze' || serviceType === 'rugcheck' ? 0.10 : 0.05;
+  const priceDisplay = serviceType === 'analyze' || serviceType === 'rugcheck' ? '$0.10 USDC' : '$0.05 USDC';
+  const title = serviceType === 'analyze' ? 'AI Wallet Analysis' 
+    : serviceType === 'report' ? 'Quick Sweep Report'
+    : serviceType === 'roast' ? 'Wallet Roast 🔥'
+    : serviceType === 'rugcheck' ? 'Rug Pull Detector 🕵️'
+    : 'Auto-Sweep Planner 🤖';
+  const description = serviceType === 'analyze'
     ? 'Deep AI-powered analysis of your wallet holdings, risk assessment, and personalized recommendations'
-    : 'Fast report showing all dust tokens that can be swept to reclaim SOL rent';
+    : serviceType === 'report' ? 'Fast report showing all dust tokens that can be swept to reclaim SOL rent'
+    : serviceType === 'roast' ? 'Get a brutal AI roast of your wallet + a score from 0-100. Share it on X!'
+    : serviceType === 'rugcheck' ? 'AI scans all your tokens against rugcheck.xyz to detect dangerous or suspicious tokens'
+    : 'AI creates the optimal sweep plan — which accounts to close first for maximum SOL recovery';
 
   // Check USDC balance when modal opens
   useEffect(() => {
@@ -72,9 +79,12 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
 
       setPaymentStatus('verifying');
 
-      const data = serviceType === 'analyze'
-        ? await requestAnalysis(publicKey.toString(), wallet)
-        : await requestReport(publicKey.toString(), wallet);
+      const endpoint = serviceType === 'analyze' ? '/x402/analyze'
+        : serviceType === 'report' ? '/x402/report'
+        : serviceType === 'roast' ? '/x402/roast'
+        : serviceType === 'rugcheck' ? '/x402/rugcheck'
+        : '/x402/planner';
+      const data = await requestAnalysis(publicKey.toString(), wallet, endpoint);
       
       setResult(data);
       setPaymentStatus('success');
