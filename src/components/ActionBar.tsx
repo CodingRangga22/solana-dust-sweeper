@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, Loader2 } from "lucide-react";
@@ -18,24 +18,30 @@ interface ActionBarProps {
 
 const ActionBar = ({ count, totalSol, onSweep, sweeping = false, pendingTx = null, sweepProgress }: ActionBarProps) => {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [open, setOpen] = useState(true);
   const gasFee = GAS_FEE_PER_ACCOUNT * count;
   const serviceFee = totalSol * SERVICE_FEE_PERCENT;
   const netSol = totalSol - gasFee - serviceFee;
   const isBusy = sweeping || !!pendingTx;
   const canSweep = disclaimerAccepted && !isBusy;
 
+  // Reset open state when new tokens selected
+  useEffect(() => { if (count > 0) setOpen(true); }, [count]);
+
   return (
     <AnimatePresence>
-      {count > 0 && (
+      {count > 0 && open && (
+        <>
+        <div className="fixed inset-0 bg-black/60 sm:hidden z-[49]" onClick={() => setOpen(false)} />
         <motion.div
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-xl"
+          className="fixed bottom-0 left-0 right-0 sm:inset-auto sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 z-[50] sm:w-[calc(100%-2rem)] sm:max-w-xl flex items-end sm:items-stretch"
         >
-          <div className="glass rounded-2xl p-4 shadow-2xl border border-border">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="glass rounded-t-2xl sm:rounded-2xl p-4 shadow-2xl border border-border w-full">
+            <div className="flex flex-col gap-3">
               <div className="text-sm text-foreground space-y-2 flex-1">
                 <p>
                   Selected: <span className="font-bold text-primary">{count} tokens</span>
@@ -100,6 +106,7 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false, pendingTx = nul
             </div>
           </div>
         </motion.div>
+      </>
       )}
     </AnimatePresence>
   );
