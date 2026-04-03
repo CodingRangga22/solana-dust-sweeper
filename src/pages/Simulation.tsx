@@ -30,7 +30,7 @@ const Simulation = () => {
   const [currentWallet, setCurrentWallet] = useState<string>("");
   const [progress, setProgress] = useState(0);
   const totalRent = tokens.filter(t => selected.has(t.pubkey)).reduce((acc, t) => acc + t.rentExempt, 0);
-  const netRefund = totalRent * 0.85;
+  const netRefund = totalRent * 0.985; // 1.5% platform fee
 
   const handleScan = async () => {
     setStep("scanning");

@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Coins, Users, Zap, Shield, Trophy, ExternalLink } from "lucide-react";
+import { ArrowRight, Coins, Users, Zap, Shield, Trophy, ExternalLink, Menu } from "lucide-react";
 import ArsweepLogo from "@/components/ArsweepLogo";
 import PremiumFooter from "@/components/PremiumFooter";
 import ChatWidget from "@/components/ChatWidget";
 import { useBanner } from "@/components/BannerProvider";
+import { useSidebar } from "@/components/SidebarContext";
 
 const tokenomics = [
   { label: "Liquidity Pool (Primary)", percent: 50, color: "from-emerald-400 to-cyan-400" },
@@ -24,6 +25,7 @@ const utilities = [
 const TokenPage = () => {
   const navigate = useNavigate();
   const { bannerHeight } = useBanner();
+  const { setOpen } = useSidebar();
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden">
@@ -33,10 +35,13 @@ const TokenPage = () => {
       {/* Header */}
       <header className="fixed left-0 right-0 z-50 glass border-b border-border" style={{ top: bannerHeight }}>
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <button onClick={() => navigate("/")} className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setOpen(true)} className="sm:hidden p-2 rounded-xl hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors" aria-label="Open menu"><Menu className="w-5 h-5" /></button>
+            <button onClick={() => navigate("/")} className="flex items-center gap-3 hover:opacity-90 transition-opacity">
             <ArsweepLogo className="w-8 h-8" />
-            <span className="text-xl font-bold gradient-text">Arsweep</span>
-          </button>
+              <span className="text-xl font-bold gradient-text">Arsweep</span>
+            </button>
+          </div>
           <div className="flex items-center gap-3">
             <button onClick={() => navigate("/")} className="text-sm text-muted-foreground hover:text-primary transition-colors">← Back to Home</button>
             <motion.button

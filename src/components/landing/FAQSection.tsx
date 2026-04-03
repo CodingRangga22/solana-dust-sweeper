@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     q: "What network are you on?",
-    a: "We're currently on Solana Devnet for testing. No real funds are involved. You can get free Devnet SOL from the Solana faucet. Mainnet support is coming after audit completion.",
+    a: "We're live on Solana Mainnet. Real SOL is involved in all transactions. You can also try our Simulation mode first — no wallet needed.",
   },
   {
     q: "Will this work on Mainnet?",

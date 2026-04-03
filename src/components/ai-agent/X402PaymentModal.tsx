@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Sparkles, Loader2, CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useX402Payment } from '@/hooks/useX402Payment';
@@ -98,6 +98,7 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
+        <DialogTitle className="sr-only">Payment Modal</DialogTitle>
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">

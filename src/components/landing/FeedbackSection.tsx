@@ -12,7 +12,7 @@ const feedbackActions = [
   {
     icon: Bug,
     label: "Report Bug",
-    description: "Help us fix issues on Devnet",
+    description: "Help us fix issues on Mainnet",
     href: "https://discord.gg/D2rtvK3fBs",
     target: "_blank",
   },
@@ -42,7 +42,7 @@ const FeedbackSection = () => (
           Help Us Improve <span className="gradient-text" translate="no"><span translate="no">Arsweep</span></span>
         </h2>
         <p className="text-muted-foreground mb-8 max-w-lg mx-auto relative z-10">
-          We&apos;re on Devnet and need your feedback. Join the conversation, report bugs, or suggest features.
+          We&apos;re live on Mainnet and always improving. Join the conversation, report bugs, or suggest features.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">

@@ -15,7 +15,7 @@ import { X402PaymentModal } from '@/components/ai-agent/X402PaymentModal';
 
 // Inline Wallet Scanner (to avoid module issues)
 const detectWalletAddress = (text: string): string | null => {
-  const walletPattern = /[1-9A-HJ-NP-Za-km-z]{32,44}/g;
+  const walletPattern = /[1-9A-HJ-NP-Za-km-z]{32,44}/g;
   const matches = text.match(walletPattern);
   if (matches && matches.length > 0) {
     for (const match of matches) {
@@ -144,6 +144,10 @@ export default function AgentArsweep() {
     console.log("🔍 Input value:", message);
     let detectedWallet = detectWalletAddress(message);
     if (!detectedWallet && message.length >= 32 && message.length <= 44) detectedWallet = message;
+    // Fallback: kalau user bilang "analyze my wallet" dll, pakai connected wallet
+    if (!detectedWallet && publicKey && /my wallet|analyze|scan|check|sweep/i.test(message)) {
+      detectedWallet = publicKey.toString();
+    }
     console.log("🔍 Detected wallet:", detectedWallet);
     setInput('');
     if (textareaRef.current) {

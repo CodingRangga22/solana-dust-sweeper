@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
-import { Github, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ArsweepLogo from "./ArsweepLogo";
 import { isDevnet } from "@/config/env";
@@ -171,7 +171,7 @@ const PremiumFooter = () => {
                   { label: "Privacy Policy", href: "/privacy" },
                   { label: "Terms of Service", href: "/terms" },
                   { label: "Contact", href: "mailto:contact@arsweep.io" },
-                  { label: "Discord Community", href: "https://discord.gg/D2rtvK3fBs", icon: Github },
+                  { label: "Discord Community", href: "https://discord.gg/D2rtvK3fBs" },
                   { label: "Solana Explorer", href: isDevnet ? "https://explorer.solana.com/?cluster=devnet" : "https://explorer.solana.com" },
                 ].map((item) => (
                   <li key={item.label}>

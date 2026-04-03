@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Shield, Github, Users, Wallet, Search, CheckCircle2, ArrowRight, ChevronRight, BookOpen, Menu, MessageCircle } from "lucide-react";
-} from "lucide-react";
 import { useSidebar } from "@/components/SidebarContext";
 import ArsweepLogo from "@/components/ArsweepLogo";
 import ChatWidget from "@/components/ChatWidget";
