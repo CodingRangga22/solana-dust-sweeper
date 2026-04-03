@@ -1,0 +1,16 @@
+[33mcommit 5e8c55cdd54b030887d306c66e20ff332937daa4[m
+Author: CodingRangga22 <rsptr492@gmail.com>
+Date:   Fri Apr 3 18:47:19 2026 +0700
+
+    fix: wallet detection fallback, regex pattern, DialogTitle, fee text, mainnet text
+
+src/components/ChatWidget.tsx
+src/components/PremiumFooter.tsx
+src/components/ai-agent/X402PaymentModal.tsx
+src/components/landing/FAQSection.tsx
+src/components/landing/FeedbackSection.tsx
+src/components/landing/RoadmapSection.tsx
+src/pages/AgentArsweep.tsx
+src/pages/Landing.tsx
+src/pages/Simulation.tsx
+src/pages/Token.tsx

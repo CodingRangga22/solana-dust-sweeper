@@ -1,14 +1,7 @@
-import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { getAssociatedTokenAddress, createTransferInstruction, TOKEN_PROGRAM_ID, getAccount } from '@solana/spl-token';
 
-// USDC Mainnet address
-const USDC_MINT = new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v');
-
-// Treasury wallet dari x402 health endpoint
-const TREASURY_WALLET = new PublicKey('9wVfWxbWLpHwyxVVkBJkzjeabHkdfZG6zyraVoLLB7jv');
-
-// RPC endpoint
-const RPC_URL = 'https://api.mainnet-beta.solana.com';
+const API_BASE = 'https://api.arsweep.fun/v1';
 
 interface PaymentResult {
   signature: string;
@@ -22,31 +15,26 @@ interface USDCBalance {
   formatted: string;
 }
 
+// Fetch treasury info dari backend — tidak ada hardcoded address di frontend
+async function getPaymentInfo() {
+  const res = await fetch(`${API_BASE}/payment/info`);
+  if (!res.ok) throw new Error('Failed to fetch payment info');
+  return res.json() as Promise<{ treasury: string; usdcMint: string; network: string }>;
+}
+
 export async function checkUSDCBalance(
   connection: Connection,
   walletAddress: PublicKey
 ): Promise<USDCBalance> {
   try {
-    const tokenAccount = await getAssociatedTokenAddress(
-      USDC_MINT,
-      walletAddress
-    );
-
+    const { usdcMint } = await getPaymentInfo();
+    const USDC_MINT = new PublicKey(usdcMint);
+    const tokenAccount = await getAssociatedTokenAddress(USDC_MINT, walletAddress);
     const accountInfo = await getAccount(connection, tokenAccount);
-    const balance = Number(accountInfo.amount) / 1_000_000; // USDC has 6 decimals
-
-    return {
-      balance,
-      hasAccount: true,
-      formatted: `$${balance.toFixed(2)} USDC`,
-    };
-  } catch (error) {
-    // Account doesn't exist
-    return {
-      balance: 0,
-      hasAccount: false,
-      formatted: '$0.00 USDC',
-    };
+    const balance = Number(accountInfo.amount) / 1_000_000;
+    return { balance, hasAccount: true, formatted: `$${balance.toFixed(2)} USDC` };
+  } catch {
+    return { balance: 0, hasAccount: false, formatted: '$0.00 USDC' };
   }
 }
 
@@ -56,76 +44,54 @@ export async function sendUSDCPayment(
   amountUSDC: number
 ): Promise<PaymentResult> {
   try {
-    if (!wallet.publicKey) {
-      throw new Error('Wallet not connected');
-    }
+    if (!wallet.publicKey) throw new Error('Wallet not connected');
 
-    // Check balance first
+    const { treasury, usdcMint } = await getPaymentInfo();
+    const USDC_MINT = new PublicKey(usdcMint);
+    const TREASURY = new PublicKey(treasury);
+
     const balanceInfo = await checkUSDCBalance(connection, wallet.publicKey);
-    
-    if (!balanceInfo.hasAccount) {
-      throw new Error('No USDC account found. Please add USDC to your wallet first.');
-    }
+    if (!balanceInfo.hasAccount) throw new Error('No USDC account found.');
+    if (balanceInfo.balance < amountUSDC) throw new Error(`Insufficient USDC. Have ${balanceInfo.formatted}, need $${amountUSDC.toFixed(2)}`);
 
-    if (balanceInfo.balance < amountUSDC) {
-      throw new Error(`Insufficient USDC. You have ${balanceInfo.formatted}, need $${amountUSDC.toFixed(2)} USDC`);
-    }
+    const amountAtomic = Math.floor(amountUSDC * 1_000_000);
+    const fromATA = await getAssociatedTokenAddress(USDC_MINT, wallet.publicKey);
+    const toATA = await getAssociatedTokenAddress(USDC_MINT, TREASURY);
 
-    // USDC has 6 decimals
-    const amountLamports = Math.floor(amountUSDC * 1_000_000);
-
-    // Get associated token accounts
-    const fromTokenAccount = await getAssociatedTokenAddress(
-      USDC_MINT,
-      wallet.publicKey
+    const tx = new Transaction().add(
+      createTransferInstruction(fromATA, toATA, wallet.publicKey, amountAtomic, [], TOKEN_PROGRAM_ID)
     );
 
-    const toTokenAccount = await getAssociatedTokenAddress(
-      USDC_MINT,
-      TREASURY_WALLET
-    );
-
-    // Create transfer instruction
-    const transferInstruction = createTransferInstruction(
-      fromTokenAccount,
-      toTokenAccount,
-      wallet.publicKey,
-      amountLamports,
-      [],
-      TOKEN_PROGRAM_ID
-    );
-
-    // Create transaction
-    const transaction = new Transaction().add(transferInstruction);
-
-    // Get recent blockhash
     const { blockhash } = await connection.getLatestBlockhash();
-    transaction.recentBlockhash = blockhash;
-    transaction.feePayer = wallet.publicKey;
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = wallet.publicKey;
 
-    // Sign and send transaction
-    const signed = await wallet.signTransaction(transaction);
-    const signature = await connection.sendRawTransaction(signed.serialize());
+    // Sign di client
+    const signed = await wallet.signTransaction(tx);
+    const signedBase64 = Buffer.from(signed.serialize()).toString('base64');
 
-    // Confirm transaction
-    await connection.confirmTransaction(signature, 'confirmed');
+    // Send via backend — tidak expose treasury di frontend
+    const res = await fetch(`${API_BASE}/payment/usdc`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fromWallet: wallet.publicKey.toString(),
+        amountUSDC,
+        signedTx: signedBase64,
+      }),
+    });
 
-    return {
-      signature,
-      success: true,
-    };
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Payment failed');
+
+    return { signature: data.signature, success: true };
   } catch (error) {
-    console.error('Payment error:', error);
-    return {
-      signature: '',
-      success: false,
-      error: error instanceof Error ? error.message : 'Payment failed',
-    };
+    return { signature: '', success: false, error: error instanceof Error ? error.message : 'Payment failed' };
   }
 }
 
 export function getSolanaConnection(): Connection {
-  return new Connection(RPC_URL, 'confirmed');
+  return new Connection(import.meta.env.VITE_HELIUS_RPC_URL || 'https://api.mainnet-beta.solana.com', 'confirmed');
 }
 
 export function formatUSDC(amount: number): string {

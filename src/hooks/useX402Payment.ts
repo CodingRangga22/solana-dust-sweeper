@@ -3,38 +3,30 @@ import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { createTransferInstruction, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 const API_BASE = 'https://api.arsweep.fun/v1';
-const USDC_MINT = new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v');
-const RPC_URL = 'https://api.mainnet-beta.solana.com';
 
 export const useX402Payment = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const makeX402Payment = async (
-    wallet: any,
-    endpoint: string,
-    amountUSDC: number
-  ) => {
+  const makeX402Payment = async (wallet: any, endpoint: string, amountUSDC: number) => {
     if (!wallet?.publicKey) throw new Error('Wallet not connected');
 
-    const connection = new Connection(RPC_URL, 'confirmed');
+    // Fetch treasury dari backend — tidak hardcode di frontend
+    const infoRes = await fetch(`${API_BASE}/payment/info`);
+    const { treasury, usdcMint } = await infoRes.json();
+
+    const connection = new Connection(
+      import.meta.env.VITE_HELIUS_RPC_URL || 'https://api.mainnet-beta.solana.com',
+      'confirmed'
+    );
+
+    const USDC_MINT = new PublicKey(usdcMint);
+    const TREASURY = new PublicKey(treasury);
     const amountAtomic = Math.floor(amountUSDC * 1_000_000);
 
-    // Step 1: Get 402 requirements
-    const req402 = await fetch(`${API_BASE}${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ walletAddress: wallet.publicKey.toString() }),
-    });
-    const data402 = await req402.json();
-    if (!data402.accepts) throw new Error('Invalid 402 response');
-
-    const paymentReq = data402.accepts[0];
-    const treasury = new PublicKey(paymentReq.payTo);
-
-    // Step 2: Build USDC transfer
+    // Build USDC transfer
     const fromATA = await getAssociatedTokenAddress(USDC_MINT, wallet.publicKey);
-    const toATA = await getAssociatedTokenAddress(USDC_MINT, treasury);
+    const toATA = await getAssociatedTokenAddress(USDC_MINT, TREASURY);
 
     const tx = new Transaction().add(
       createTransferInstruction(fromATA, toATA, wallet.publicKey, amountAtomic, [], TOKEN_PROGRAM_ID)
@@ -44,22 +36,35 @@ export const useX402Payment = () => {
     tx.recentBlockhash = blockhash;
     tx.feePayer = wallet.publicKey;
 
-    // Step 3: Sign & send
+    // Sign di client
     const signed = await wallet.signTransaction(tx);
-    const signature = await connection.sendRawTransaction(signed.serialize());
-    await connection.confirmTransaction(signature, 'confirmed');
+    const signedBase64 = Buffer.from(signed.serialize()).toString('base64');
 
-    // Step 4: Call endpoint with payment proof
+    // Send via backend proxy
+    const payRes = await fetch(`${API_BASE}/payment/usdc`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fromWallet: wallet.publicKey.toString(),
+        amountUSDC,
+        signedTx: signedBase64,
+      }),
+    });
+
+    const payData = await payRes.json();
+    if (!payData.success) throw new Error(payData.error || 'Payment failed');
+
+    // Call x402 endpoint with payment proof
     const result = await fetch(`${API_BASE}${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Payment': JSON.stringify({ signature, network: 'solana', amount: amountAtomic }),
+        'X-Payment': JSON.stringify({ signature: payData.signature, network: 'solana', amount: amountAtomic }),
       },
       body: JSON.stringify({ walletAddress: wallet.publicKey.toString() }),
     });
 
-    if (!result.ok) throw new Error('Payment verification failed');
+    if (!result.ok) throw new Error('Service request failed');
     return result.json();
   };
 
@@ -70,7 +75,7 @@ export const useX402Payment = () => {
       const amount = endpoint === '/x402/analyze' || endpoint === '/x402/rugcheck' ? 0.10 : 0.05;
       return await makeX402Payment(wallet, endpoint, amount);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Analysis failed';
+      const msg = err instanceof Error ? err.message : 'Failed';
       setError(msg);
       throw err;
     } finally {
@@ -79,17 +84,7 @@ export const useX402Payment = () => {
   };
 
   const requestReport = async (walletAddress: string, wallet: any) => {
-    setIsProcessing(true);
-    setError(null);
-    try {
-      return await makeX402Payment(wallet, '/x402/report', 0.05);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Report failed';
-      setError(msg);
-      throw err;
-    } finally {
-      setIsProcessing(false);
-    }
+    return requestAnalysis(walletAddress, wallet, '/x402/report');
   };
 
   return { isProcessing, error, requestAnalysis, requestReport };
