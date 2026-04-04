@@ -1,161 +1,168 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import ArsweepLogo from "@/components/ArsweepLogo";
 
-type Phase = "scan" | "detect" | "sweep" | "confirm" | "complete";
+const SIZE = 480;
+const CX = SIZE / 2;
+const CY = SIZE / 2;
 
-const accounts = [
-  "9sk3...LpQz",
-  "4Gh2...Xk92",
-  "8Ls1...TqP3",
-  "2Kd9...AsL1",
-  "7Zp3...QwL9",
+const RINGS = [68, 108, 152, 192, 224];
+
+const DOTS = [
+  { r: 108, speed: 1.1, offset: 0,   opacity: 0.40, size: 5 },
+  { r: 108, speed: 1.1, offset: 180, opacity: 0.22, size: 4 },
+  { r: 152, speed: -0.7, offset: 60,  opacity: 0.35, size: 5 },
+  { r: 152, speed: -0.7, offset: 240, opacity: 0.18, size: 3 },
+  { r: 192, speed: 0.45, offset: 130, opacity: 0.28, size: 5 },
+  { r: 224, speed: -0.28,offset: 80,  opacity: 0.15, size: 4 },
+];
+
+const TICK_COUNT = 32;
+const TICK_R = 152;
+
+const LABELS: { text: string; x: number; y: number }[] = [
+  { text: "Non-Custodial", x: CX + 148, y: CY - 178 },
+  { text: "On-Chain",      x: CX - 208, y: CY + 155 },
+  { text: "Open Source",   x: CX + 120, y: CY + 185 },
 ];
 
 export default function HeroDemo() {
-  const [phase, setPhase] = useState<Phase>("scan");
-  const [index, setIndex] = useState(-1);
-  const [closed, setClosed] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [logs, setLogs] = useState<string[]>([]);
-
-  const rent = 0.00203928;
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    const id = setInterval(() => setTick((t) => t + 1), 50);
+    return () => clearInterval(id);
+  }, []);
 
-    switch (phase) {
-      case "scan":
-        setLogs(["Connecting to RPC…"]);
-        timer = setTimeout(() => {
-          setLogs((l) => [...l, "Scanning wallet token accounts…"]);
-          setPhase("detect");
-        }, 1000);
-        break;
+  // angle in degrees, increasing every 50ms
+  const deg = tick * 1;
 
-      case "detect":
-        if (index < accounts.length - 1) {
-          timer = setTimeout(() => {
-            setIndex((i) => i + 1);
-            setLogs((l) => [...l, `Empty account detected: ${accounts[index + 1]}`]);
-          }, 600);
-        } else {
-          timer = setTimeout(() => setPhase("sweep"), 800);
-        }
-        break;
-
-      case "sweep":
-        if (closed < accounts.length) {
-          timer = setTimeout(() => {
-            setClosed((c) => c + 1);
-            setTotal((t) => t + rent);
-            setLogs((l) => [...l, `Closing account ${accounts[closed]}…`]);
-          }, 700);
-        } else {
-          timer = setTimeout(() => setPhase("confirm"), 1000);
-        }
-        break;
-
-      case "confirm":
-        setLogs((l) => [...l, "Transaction submitted to Solana network…"]);
-        timer = setTimeout(() => setPhase("complete"), 1500);
-        break;
-
-      case "complete":
-        setLogs((l) => [...l, "Sweep successful ✓ Rent reclaimed."]);
-        timer = setTimeout(() => {
-          setPhase("scan");
-          setIndex(-1);
-          setClosed(0);
-          setTotal(0);
-          setLogs([]);
-        }, 5000);
-        break;
-    }
-
-    return () => clearTimeout(timer);
-  }, [phase, index, closed]);
+  // pulsing effect: slow sine wave on the innermost ring
+  const pulseR = 44 + Math.sin(tick * 0.06) * 6;
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="rounded-2xl bg-black/70 backdrop-blur-2xl border border-white/10 shadow-[0_0_60px_rgba(0,255,200,0.08)] p-6">
+    <div
+      className="select-none"
+      style={{ position: "relative", width: SIZE, height: SIZE }}
+    >
+      <svg
+        width={SIZE}
+        height={SIZE}
+        viewBox={`0 0 ${SIZE} ${SIZE}`}
+        style={{ position: "absolute", top: 0, left: 0, overflow: "visible" }}
+      >
+        {/* Static rings */}
+        {RINGS.map((r, i) => (
+          <circle
+            key={`ring-${i}`}
+            cx={CX}
+            cy={CY}
+            r={r}
+            fill="none"
+            stroke={`rgba(255,255,255,${i % 2 === 0 ? 0.04 : 0.06})`}
+            strokeWidth="1"
+          />
+        ))}
 
-        {/* Header */}
-        <div className="flex justify-between mb-6">
-          <div>
-            <div className="text-xs text-white/40">Wallet</div>
-            <div className="text-sm text-emerald-400">7Gh3...X9kL</div>
-          </div>
+        {/* Pulsing inner ring */}
+        <circle
+          cx={CX}
+          cy={CY}
+          r={pulseR}
+          fill="none"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth="1"
+        />
 
-          <motion.div
-            key={total}
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            className="text-xl font-bold text-emerald-400"
-          >
-            +{total.toFixed(5)} SOL
-          </motion.div>
-        </div>
+        {/* Tick marks rotating on ring 3 */}
+        {Array.from({ length: TICK_COUNT }).map((_, i) => {
+          const a =
+            (i / TICK_COUNT) * Math.PI * 2 +
+            ((deg * 0.25 * Math.PI) / 180);
+          const cos = Math.cos(a);
+          const sin = Math.sin(a);
+          const x1 = CX + (TICK_R - 6) * cos;
+          const y1 = CY + (TICK_R - 6) * sin;
+          const x2 = CX + (TICK_R + 6) * cos;
+          const y2 = CY + (TICK_R + 6) * sin;
+          return (
+            <line
+              key={`tick-${i}`}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke="rgba(255,255,255,0.08)"
+              strokeWidth="1"
+            />
+          );
+        })}
 
-        {/* Accounts */}
-        <div className="space-y-2 mb-6">
-          {accounts.map((acc, i) => {
-            const detected = i <= index;
-            const closedAcc = i < closed;
+        {/* Orbiting dots */}
+        {DOTS.map((dot, i) => {
+          const a = ((deg * dot.speed + dot.offset) * Math.PI) / 180;
+          const x = CX + dot.r * Math.cos(a);
+          const y = CY + dot.r * Math.sin(a);
+          return (
+            <circle
+              key={`dot-${i}`}
+              cx={x}
+              cy={y}
+              r={dot.size / 2}
+              fill={`rgba(255,255,255,${dot.opacity})`}
+            />
+          );
+        })}
 
-            return (
-              <div
-                key={i}
-                className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10"
+        {/* Floating labels */}
+        {LABELS.map((label, i) => {
+          const w = label.text.length * 7.5 + 24;
+          const h = 26;
+          return (
+            <g key={`label-${i}`}>
+              <rect
+                x={label.x - w / 2}
+                y={label.y - h / 2}
+                width={w}
+                height={h}
+                rx="6"
+                fill="rgba(11,15,20,0.85)"
+                stroke="rgba(255,255,255,0.06)"
+                strokeWidth="1"
+              />
+              <text
+                x={label.x}
+                y={label.y + 4.5}
+                textAnchor="middle"
+                fontFamily="'IBM Plex Mono', monospace"
+                fontSize="10"
+                fill="rgba(255,255,255,0.30)"
+                letterSpacing="0.06em"
               >
-                <span className="text-sm text-white">{acc}</span>
+                {label.text}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
 
-                {closedAcc && (
-                  <span className="text-xs text-black bg-emerald-400 px-3 py-1 rounded-full">
-                    Closed
-                  </span>
-                )}
-
-                {!closedAcc && detected && (
-                  <span className="text-xs text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
-                    Closing…
-                  </span>
-                )}
-
-                {!detected && (
-                  <span className="text-xs text-white/30 bg-white/10 px-3 py-1 rounded-full">
-                    Pending
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* RPC Log Feed */}
-        <div className="bg-black/60 rounded-xl p-4 h-40 overflow-hidden border border-white/10">
-          <div className="text-xs text-white/40 mb-2">Execution Log</div>
-          <div className="space-y-1 text-xs font-mono text-white/70">
-            {logs.slice(-6).map((log, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                {log}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {phase === "complete" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-4 text-center text-emerald-400 font-semibold"
-          >
-            Sweep Completed ✓
-          </motion.div>
-        )}
+      {/* Center: ArsweepLogo */}
+      <div
+        style={{
+          position: "absolute",
+          width: 100,
+          height: 100,
+          top: CY - 50,
+          left: CX - 50,
+          background: "rgba(11,15,20,0.95)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: 24,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 0 32px rgba(0,0,0,0.6)",
+        }}
+      >
+        <ArsweepLogo className="w-14 h-14" />
       </div>
     </div>
   );
