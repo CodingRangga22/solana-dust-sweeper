@@ -162,7 +162,7 @@ const Landing = () => {
             </div>
           </div>
           <div className="hidden sm:flex" style={{position:"absolute",left:"50%",transform:"translateX(-50%)",alignItems:"center",gap:28}}>
-{[["Docs","/docs"],["Agent","/agent"]].map(([l,p])=>(
+{[["Docs","/docs"],["$ASWP","/token"],["Agent","/agent"]].map(([l,p])=>(
               <span key={p} onClick={()=>navigate(p)} style={{fontSize:14,color:"rgba(255,255,255,0.5)",cursor:"pointer",transition:"color 0.2s"}}
                 onMouseEnter={e=>(e.currentTarget.style.color="#FFFFFF")}
                 onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.5)")}
@@ -173,7 +173,7 @@ const Landing = () => {
         </div>
         {menuOpen && (
           <div className="sm:hidden" style={{background:"rgba(11,15,20,0.98)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(255,255,255,0.08)",padding:"8px 16px 16px"}}>
-            {[["Agent","/agent"],["Watch Demo","/demo"],["Simulation","/simulation"],["Docs","/docs"],["Discord","https://discord.gg/D2rtvK3fBs"]].map(([l,p])=>(
+            {[["Agent","/agent"],["$ASWP","/token"],["Watch Demo","/demo"],["Simulation","/simulation"],["Docs","/docs"],["Discord","https://discord.gg/D2rtvK3fBs"]].map(([l,p])=>(
               <span key={p} onClick={()=>{p.startsWith("http")?window.open(p,"_blank"):navigate(p);setMenuOpen(false);}}
                 style={{fontSize:14,color:"rgba(255,255,255,0.7)",cursor:"pointer",padding:"12px 8px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"block"}}
               >{l}</span>
@@ -421,6 +421,7 @@ const Landing = () => {
               {s:"LIVE NOW",sc:"var(--ar-teal)",sb:"rgba(29,184,142,0.1)",bc:"rgba(29,184,142,0.25)",t:"Mainnet Launch",d:"Full mainnet deployment complete. Real SOL sweeping live. Treasury accumulating fees."},
               {s:"IN PROGRESS",sc:"rgba(255,255,255,0.6)",sb:"rgba(255,255,255,0.05)",bc:"rgba(255,255,255,0.15)",t:"Community Building",d:"Growing Discord and X community. Building awareness before token launch. Target: 500+ members."},
               
+              {s:"COMING SOON",sc:"rgba(255,255,255,0.4)",sb:"rgba(255,255,255,0.03)",bc:"rgba(255,255,255,0.08)",t:"$ASWP Token Launch",d:"Launching $ASWP token on Pump.fun. Community members get early access and rewards."},
               {s:"Q2 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"AI Wallet Hygiene Agent",d:"AI-powered agent that analyzes your wallet, detects dust and spam tokens automatically."},
               {s:"Q3 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"Cross-Chain Swap",d:"Seamlessly swap tokens across multiple chains directly from Arsweep."},
               {s:"Q3 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"Vault & Earn",d:"Put your reclaimed SOL to work. Deposit into vaults and earn yield automatically."},
