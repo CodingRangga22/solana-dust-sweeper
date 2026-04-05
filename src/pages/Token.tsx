@@ -70,9 +70,27 @@ const TokenPage = () => {
           The native token of the Arsweep ecosystem. Earn it by sweeping. Use it for discounts. Vote with it on governance.
         </p>
 
-        <div style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", borderRadius: 999, padding: "6px 18px", display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 44 }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(255,255,255,0.4)", display: "inline-block" }} />
-          Coming Soon — Join the waitlist on Discord
+        <div style={{ ...M, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, marginBottom: 44 }}>
+          <div
+            onClick={() => { navigator.clipboard.writeText("dTMaF2F97BWo6s416JqsDrpzdwa1uarKngSwf25pump"); }}
+            title="Click to copy CA"
+            style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.07)", borderRadius: 999, padding: "10px 24px", display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer", letterSpacing: "0.04em", transition: "all 0.2s", fontFamily: "monospace", boxShadow: "0 0 0 1px rgba(29,184,142,0.15)" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.35)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.07)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; }}
+          >
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#1DB88E", display: "inline-block", flexShrink: 0, boxShadow: "0 0 6px #1DB88E" }} />
+            CA: dTMaF2F97BWo6s416JqsDrpzdwa1uarKngSwf25pump
+          </div>
+          <a
+            href="https://pump.fun/coin/dTMaF2F97BWo6s416JqsDrpzdwa1uarKngSwf25pump"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, transition: "color 0.2s", letterSpacing: "0.03em" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
+          >
+            View on Pump.fun →
+          </a>
         </div>
 
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
