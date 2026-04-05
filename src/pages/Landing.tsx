@@ -7,7 +7,25 @@ import ChatWidget from "@/components/ChatWidget";
 import { useBanner } from "@/components/BannerProvider";
 import HeroDemo from "@/components/HeroDemo";
 import LiveStatsSection from "@/components/LiveStatsSection";
+import FAQSection from "@/components/landing/FAQSection";
 
+
+const YellowReveal = ({ children }: { children: React.ReactNode }) => {
+  const ref = React.useRef<HTMLSpanElement>(null);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        el.style.color = entry.isIntersecting ? "var(--ar-yellow)" : "#FFFFFF";
+      },
+      { threshold: 0.5, rootMargin: "0px 0px -80px 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return <span ref={ref} style={{color:"#FFFFFF", transition:"color 0.6s ease"}}>{children}</span>;
+};
 
 const SOL_PER = 0.00203928;
 const MAX_T = 200;
@@ -170,7 +188,7 @@ const Landing = () => {
             Mainnet is live — sweep your wallet now
           </div>
           <h1 style={{fontSize:"clamp(32px,4.5vw,58px)",fontWeight:800,lineHeight:1.04,letterSpacing:"-0.03em",marginBottom:28}}>
-            <span style={{color:"#FFFFFF",display:"block"}}>Reclaim <span style={{color:"var(--ar-yellow)"}}>Sol</span></span>
+            <span style={{color:"#FFFFFF",display:"block"}}>Reclaim <YellowReveal>Sol</YellowReveal></span>
             <span style={{color:"rgba(255,255,255,0.45)",display:"block"}}>locked in your</span>
             <AnimatedWord />
           </h1>
@@ -211,7 +229,7 @@ const Landing = () => {
       {/* HOW IT WORKS */}
       <section style={{position:"relative",zIndex:2,padding:"120px 40px",textAlign:"center"}}>
         <div style={{maxWidth:1100,margin:"0 auto"}}>
-          <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,52px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>How It Works</h2>
+          <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,52px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>How It <YellowReveal>Works</YellowReveal></h2>
           <p style={{fontSize:16,color:"rgba(255,255,255,0.4)",marginBottom:64,lineHeight:1.6}}>Three steps. Under three minutes.</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:16,overflow:"hidden"}}>
             {[
@@ -246,7 +264,7 @@ const Landing = () => {
       {/* WHAT IS ARSWEEP */}
       <section style={{position:"relative",zIndex:2,padding:"120px 40px",textAlign:"center"}}>
         <div style={{maxWidth:1100,margin:"0 auto"}}>
-          <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,52px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>What is <span style={{color:"var(--ar-yellow)"}}>Arsweep</span></h2>
+          <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,52px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>What is <YellowReveal>Arsweep</YellowReveal></h2>
           <p style={{fontSize:16,color:"rgba(255,255,255,0.4)",maxWidth:600,margin:"0 auto 64px",lineHeight:1.75}}>
             Every time you interact with a token on Solana, an empty account is left behind. Each one locks ~0.002 SOL in rent indefinitely. Arsweep finds them all and closes them — returning your SOL instantly, non-custodially, on-chain.
           </p>
@@ -279,7 +297,7 @@ const Landing = () => {
       <section style={{position:"relative",zIndex:2,padding:"120px 40px",background:"rgba(255,255,255,0.015)"}}>
         <div style={{maxWidth:1100,margin:"0 auto"}}>
           <div style={{textAlign:"center",marginBottom:64}}>
-            <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(28px,4vw,48px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>SOL Calculator</h2>
+            <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(28px,4vw,48px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>SOL <YellowReveal>Calculator</YellowReveal></h2>
             <p style={{fontSize:16,color:"rgba(255,255,255,0.4)",lineHeight:1.6}}>How much are you leaving behind?</p>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:48}}>
@@ -371,7 +389,7 @@ const Landing = () => {
       <section style={{position:"relative",zIndex:2,padding:"120px 40px"}}>
         <div style={{maxWidth:1100,margin:"0 auto"}}>
           <div style={{textAlign:"center",marginBottom:72}}>
-            <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,52px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>Road<span style={{color:"var(--ar-yellow)"}}>map</span></h2>
+            <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,52px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>Road<YellowReveal>map</YellowReveal></h2>
             <p style={{fontSize:16,color:"rgba(255,255,255,0.4)",lineHeight:1.6}}>From dust sweeper to complete Solana wallet management suite.</p>
           </div>
           <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"20px 28px",marginBottom:48}}>
@@ -418,7 +436,7 @@ const Landing = () => {
         <div style={{maxWidth:640,margin:"0 auto"}}>
           <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,60px)",fontWeight:400,letterSpacing:"-0.02em",color:"#FFFFFF",marginBottom:20,lineHeight:1.05}}>
             Your SOL is already{" "}
-            <span style={{color:"var(--ar-yellow)"}}>yours.</span>
+            <YellowReveal>yours.</YellowReveal>
           </h2>
           <p style={{fontSize:17,color:"rgba(255,255,255,0.4)",lineHeight:1.7,marginBottom:44}}>
             No email. No signup. Connect wallet, scan, done. Your SOL back in under 3 minutes.
@@ -444,6 +462,7 @@ const Landing = () => {
 
       <div style={{height:1,background:"rgba(255,255,255,0.06)"}} />
 
+      <FAQSection />
       {/* FOOTER */}
       <footer style={{position:"relative",zIndex:2,padding:"28px 40px",display:"flex",alignItems:"center",justifyContent:"space-between",maxWidth:1200,margin:"0 auto"}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>

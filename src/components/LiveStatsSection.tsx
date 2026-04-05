@@ -142,6 +142,16 @@ export default function LiveStatsSection() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const el = document.getElementById('yr-activity');
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      el.style.color = entry.isIntersecting ? 'var(--ar-yellow)' : '#FFFFFF';
+    }, { threshold: 0.5, rootMargin: '0px 0px -80px 0px' });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   const solData = chartData.map(d => d.sol);
   const accData = chartData.map(d => d.accounts);
   const maxSol = Math.max(...solData, 0.001);
@@ -155,7 +165,7 @@ export default function LiveStatsSection() {
             <span style={{ ...M, fontSize: 11, color: "var(--ar-teal)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Live</span>
           </div>
           <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,4vw,48px)", fontWeight: 400, color: "#FFFFFF", marginBottom: 12, lineHeight: 1.1 }}>
-            Real-time Activity
+            Real-time <span id="yr-activity" style={{color:"#FFFFFF",transition:"color 0.6s ease"}}>Activity</span>
           </h2>
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
             SOL being reclaimed across the Solana ecosystem right now.

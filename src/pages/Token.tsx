@@ -9,10 +9,10 @@ const M: React.CSSProperties = { fontFamily: "var(--font-mono)" };
 const D6: React.CSSProperties = { height: 1, background: "rgba(255,255,255,0.06)" };
 
 const utilities = [
-  { icon: Trophy, t: "Leaderboard Rewards", d: "Top sweepers earn $ARSWP every season based on accounts closed and Sol reclaimed." },
-  { icon: Users, t: "Referral Bonuses", d: "Earn $ARSWP for every friend you refer who sweeps their wallet." },
-  { icon: Zap, t: "Fee Discounts", d: "Hold $ARSWP to get reduced platform fees on every sweep." },
-  { icon: Shield, t: "Governance", d: "Vote on future features, fee structures, and protocol upgrades." },
+  { icon: Zap, t: "Fee Discounts", d: "Hold $ARSWP to get reduced platform fees on every sweep. The more you hold, the less you pay." },
+  { icon: Shield, t: "Governance", d: "Vote on future features, fee structures, and protocol upgrades. $ARSWP = voting power." },
+  { icon: Trophy, t: "Sweep-to-Earn", d: "Every wallet you clean earns $ARSWP. The more accounts you close, the more you earn." },
+  { icon: Users, t: "Early Access", d: "Token holders get early access to new features and exclusive tools before public release." },
 ];
 
 const distribution = [
@@ -37,7 +37,7 @@ const TokenPage = () => {
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)", backgroundSize: "28px 28px", maskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)", WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)" }} />
 
       {/* NAV */}
-      <header style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: bannerHeight, borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(11,15,20,0.85)", backdropFilter: "blur(20px)" }}>
+      <header style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: 0, borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(11,15,20,0.85)", backdropFilter: "blur(20px)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => navigate("/")}>
             <ArsweepLogo className="w-6 h-6" />
@@ -54,7 +54,7 @@ const TokenPage = () => {
       </header>
 
       {/* HERO */}
-      <section style={{ position: "relative", zIndex: 2, paddingTop: `calc(${bannerHeight}px + 120px)`, paddingBottom: 100, textAlign: "center", padding: `calc(${bannerHeight}px + 120px) 40px 100px` }}>
+      <section style={{ position: "relative", zIndex: 2, paddingTop: "120px", paddingBottom: 100, textAlign: "center", padding: "120px 40px 100px" }}>
         <div style={{ ...M, fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
           <span style={{ width: 20, height: 1, background: "rgba(255,255,255,0.15)", display: "inline-block" }} />
           Solana SPL Token

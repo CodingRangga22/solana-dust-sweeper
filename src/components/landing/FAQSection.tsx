@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -33,7 +34,18 @@ const faqs = [
   },
 ];
 
-const FAQSection = () => (
+const FAQSection = () => {
+  useEffect(() => {
+    const el = document.getElementById('yr-questions');
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      el.style.color = entry.isIntersecting ? 'var(--ar-yellow)' : '#FFFFFF';
+    }, { threshold: 0.5, rootMargin: '0px 0px -80px 0px' });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
   <motion.section
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -44,18 +56,18 @@ const FAQSection = () => (
   >
     <div className="container mx-auto max-w-2xl">
       <div className="text-center mb-12">
-        <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-foreground">
-          Frequently Asked <span className="gradient-text">Questions</span>
+        <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(28px,4vw,44px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12}}>
+          Frequently Asked <span id="yr-questions" style={{color:"#FFFFFF",transition:"color 0.6s ease"}}>Questions</span>
         </h2>
         <p className="text-muted-foreground">
           Quick answers to common questions.
         </p>
       </div>
 
-      <div className="glass rounded-2xl overflow-hidden">
+      <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,overflow:"hidden"}}>
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, i) => (
-            <AccordionItem key={i} value={`item-${i}`} className="border-border px-6">
+            <AccordionItem key={i} value={`item-${i}`} style={{borderColor:"rgba(255,255,255,0.08)"}} className="px-6">
               <AccordionTrigger className="text-left hover:no-underline py-4">
                 <span className="font-semibold text-foreground pr-2">{faq.q}</span>
               </AccordionTrigger>
@@ -68,6 +80,7 @@ const FAQSection = () => (
       </div>
     </div>
   </motion.section>
-);
+  );
+};
 
 export default FAQSection;
