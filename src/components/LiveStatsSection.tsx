@@ -157,7 +157,7 @@ export default function LiveStatsSection() {
   const maxSol = Math.max(...solData, 0.001);
 
   return (
-    <section style={{ position: "relative", zIndex: 2, padding: "120px 40px" }}>
+    <section style={{ position: "relative", zIndex: 2, padding: "80px clamp(16px, 5vw, 40px)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 64 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
@@ -173,13 +173,13 @@ export default function LiveStatsSection() {
         </div>
 
         {/* Top stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, overflow: "hidden", marginBottom: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, overflow: "hidden", marginBottom: 24 }}>
           {[
             { label: "Total SOL Reclaimed", value: loading ? "..." : totals.sol.toFixed(4) + " SOL" },
             { label: "Accounts Closed", value: loading ? "..." : totals.accounts.toLocaleString() },
             { label: "Wallets Cleaned", value: loading ? "..." : totals.wallets.toLocaleString() },
           ].map(({ label, value }) => (
-            <div key={label} style={{ padding: "28px 32px", background: "rgba(11,15,20,0.95)", textAlign: "center" }}>
+            <div key={label} style={{ padding: "20px 16px", background: "rgba(11,15,20,0.95)", textAlign: "center" }}>
               <div style={{ fontSize: 28, fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.02em", marginBottom: 6 }}>{value}</div>
               <div style={{ ...M, fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.06em", textTransform: "uppercase" }}>{label}</div>
             </div>
@@ -187,7 +187,7 @@ export default function LiveStatsSection() {
         </div>
 
         {/* Chart + Activity grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
 
           {/* SOL Chart */}
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 16, padding: "28px 28px 20px" }}>

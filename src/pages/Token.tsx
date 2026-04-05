@@ -39,12 +39,12 @@ const TokenPage = () => {
       {/* NAV */}
       <header style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: 0, borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(11,15,20,0.85)", backdropFilter: "blur(20px)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => navigate("/")}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => navigate("/agent")}>
             <ArsweepLogo className="w-6 h-6" />
             <span style={{ ...M, fontSize: 14, fontWeight: 600, color: "#FFFFFF", letterSpacing: "0.06em", textTransform: "uppercase" }}>ARSWEEP</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button onClick={() => navigate("/")} style={{ ...M, fontSize: 13, color: "rgba(255,255,255,0.45)", background: "none", border: "none", cursor: "pointer" }}>← Back to Home</button>
+            <button onClick={() => navigate("/agent")} style={{ ...M, fontSize: 13, color: "rgba(255,255,255,0.45)", background: "none", border: "none", cursor: "pointer" }}>← Agent</button>
             <button onClick={() => navigate("/app")} style={{ ...M, fontSize: 13, fontWeight: 500, color: "#0B0F14", background: "#FFFFFF", border: "none", borderRadius: 8, padding: "7px 18px", cursor: "pointer" }}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
@@ -54,7 +54,7 @@ const TokenPage = () => {
       </header>
 
       {/* HERO */}
-      <section style={{ position: "relative", zIndex: 2, paddingTop: "120px", paddingBottom: 100, textAlign: "center", padding: "120px 40px 100px" }}>
+      <section style={{ position: "relative", zIndex: 2, paddingTop: "120px", paddingBottom: 100, textAlign: "center", padding: "120px clamp(16px,5vw,40px) 80px" }}>
         <div style={{ ...M, fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
           <span style={{ width: 20, height: 1, background: "rgba(255,255,255,0.15)", display: "inline-block" }} />
           Solana SPL Token
@@ -96,15 +96,15 @@ const TokenPage = () => {
       <div style={D6} />
 
       {/* UTILITIES */}
-      <section style={{ position: "relative", zIndex: 2, padding: "100px 40px" }}>
+      <section style={{ position: "relative", zIndex: 2, padding: "80px clamp(16px,5vw,40px)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 64 }}>
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,4vw,48px)", fontWeight: 400, color: "#FFFFFF", marginBottom: 12, lineHeight: 1.1 }}>Token Utility</h2>
             <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>$ARSWP is not just a token. It is the backbone of the Arsweep ecosystem.</p>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, overflow: "hidden" }}>
             {utilities.map(({ icon: Icon, t, d }) => (
-              <div key={t} style={{ padding: "40px 36px", background: "rgba(11,15,20,0.95)", transition: "background 0.2s" }}
+              <div key={t} style={{ padding: "28px clamp(16px,3vw,36px)", background: "rgba(11,15,20,0.95)", transition: "background 0.2s" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "rgba(20,26,35,0.98)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "rgba(11,15,20,0.95)")}
               >
@@ -122,7 +122,7 @@ const TokenPage = () => {
       <div style={D6} />
 
       {/* CTA */}
-      <section style={{ position: "relative", zIndex: 2, padding: "100px 40px", textAlign: "center", background: "rgba(255,255,255,0.015)" }}>
+      <section style={{ position: "relative", zIndex: 2, padding: "80px clamp(16px,5vw,40px)", textAlign: "center", background: "rgba(255,255,255,0.015)" }}>
         <div style={{ maxWidth: 560, margin: "0 auto" }}>
           <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,4vw,48px)", fontWeight: 400, color: "#FFFFFF", marginBottom: 16, lineHeight: 1.1 }}>
             Start earning{" "}
@@ -154,7 +154,7 @@ const TokenPage = () => {
       <div style={D6} />
 
       {/* FOOTER */}
-      <footer style={{ position: "relative", zIndex: 2, padding: "28px 40px", display: "flex", alignItems: "center", justifyContent: "space-between", maxWidth: 1200, margin: "0 auto" }}>
+      <footer style={{ position: "relative", zIndex: 2, padding: "20px clamp(16px,4vw,40px)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <ArsweepLogo className="w-6 h-6" />
           <span style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.25)" }}>Arsweep — built for Solana. 2026</span>

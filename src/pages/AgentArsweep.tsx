@@ -248,7 +248,7 @@ export default function AgentArsweep() {
             </button>
           ))}
         </div>
-        <div className="fixed bottom-10 left-0 w-60 px-3 pb-3 pt-2 bg-black/80 backdrop-blur-md border-t border-white/8 z-20">
+        <div className="hidden md:block fixed bottom-10 left-0 w-60 px-3 pb-3 pt-2 bg-black/80 backdrop-blur-md border-t border-white/8 z-20">
           <WalletMultiButton className="!bg-white/8 !border !border-white/12 hover:!bg-white/12 !h-9 !text-xs !rounded-xl !w-full !text-white/80" />
         </div>
       </div>
@@ -257,13 +257,13 @@ export default function AgentArsweep() {
       <div className="flex-1 flex flex-col min-w-0 relative z-10">
         {/* Header */}
         <div className="h-14 border-b border-white/8 flex items-center justify-between px-4 md:px-6 bg-black/40 backdrop-blur-md">
-          <div className="flex items-center gap-2 flex-1 justify-center">
-            <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate('/')} className="md:hidden p-1.5 rounded-lg hover:bg-white/8 text-white/40 hover:text-white transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-            </motion.button>
+          <div className="flex items-center gap-2">
             <motion.button whileTap={{ scale: 0.9 }} onClick={() => setShowMobileSidebar(true)} className="md:hidden p-1.5 rounded-lg hover:bg-white/8 text-white/40 hover:text-white transition-colors">
               <Menu className="w-4 h-4" />
             </motion.button>
+            <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }} className="md:hidden">
+              <ArsweepLogo className="w-6 h-6" />
+            </motion.div>
             <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-white/40">
               <span className="h-1.5 w-1.5 bg-green-400 rounded-full animate-pulse" />
               Online
@@ -276,7 +276,7 @@ export default function AgentArsweep() {
 
         {/* Messages */}
         <div className="flex-1 px-4 md:px-6 overflow-y-auto" ref={scrollRef}>
-          <div className="max-w-2xl mx-auto w-full">
+          <div className="max-w-2xl mx-auto w-full space-y-4 pt-6 pb-6">
             {messages.length === 0 && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center pt-8">
                 <div className="relative mx-auto mb-4 w-28 h-28">
@@ -298,7 +298,7 @@ export default function AgentArsweep() {
                     <span className="text-xs text-green-400 font-medium">Online & Ready</span>
                   </div>
                 </motion.div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 max-w-xl mx-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 max-w-xl mx-auto w-full px-2">
                   {quickSuggestions.map((s, idx) => (
                     <motion.button key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + idx * 0.1 }}
                       whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} onClick={s.action}
@@ -344,7 +344,7 @@ export default function AgentArsweep() {
         </div>
 
         {/* Input */}
-        <div className="p-3 md:p-4 border-t border-white/8 bg-black/40 backdrop-blur-md">
+        <div className="p-3 border-t border-white/8 bg-black/40 backdrop-blur-md">
           <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
             <div className="relative">
               <Textarea ref={textareaRef} value={input} onChange={(e) => setInput(e.target.value)}
@@ -388,7 +388,7 @@ export default function AgentArsweep() {
                   </button>
                 ))}
               </div>
-              <div className="fixed bottom-10 left-0 w-60 px-3 pb-3 pt-2 bg-black/80 backdrop-blur-md border-t border-white/8 z-20">
+              <div className="hidden md:block fixed bottom-10 left-0 w-60 px-3 pb-3 pt-2 bg-black/80 backdrop-blur-md border-t border-white/8 z-20">
                 <WalletMultiButton className="!bg-white/8 !border !border-white/12 !h-9 !text-xs !rounded-xl !w-full !text-white/80" />
               </div>
             </motion.div>
