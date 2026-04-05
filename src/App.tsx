@@ -45,8 +45,7 @@ const App = () => {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="arsweep-theme">
       <BannerProvider initialHeight={isDevnet || isMainnet ? 44 : 0}>
-        <DevnetBanner />
-        <MainnetBanner />
+
         <AppContent endpoint={endpoint} wallets={wallets} />
       </BannerProvider>
     </ThemeProvider>
@@ -61,6 +60,8 @@ const AppContent = ({
   wallets: WalletAdapter[];
 }) => {
   const { bannerHeight } = useBanner();
+  const pathname = window.location.pathname;
+  const noBanner = pathname === '/agent' || pathname === '/app';
   const { isInTelegram, walletFromTwa, actionFromTwa, expand } = useTelegramWebApp();
 
   // Kalau dibuka dari Telegram, expand ke fullscreen dan redirect ke /app
@@ -74,7 +75,7 @@ const AppContent = ({
   }, [isInTelegram, actionFromTwa]);
 
   return (
-    <div style={{ paddingTop: bannerHeight }} className="min-h-screen transition-[padding] duration-200">
+    <div className="min-h-screen">
       {/* TWA Banner — hanya muncul kalau dibuka dari Telegram */}
       <TwaBanner />
       <TwaWalletGuide />

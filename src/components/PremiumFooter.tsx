@@ -59,7 +59,7 @@ const MagneticIcon = ({ children, href, label }: { children: React.ReactNode; hr
       onMouseLeave={reset}
       style={{ x: springX, y: springY }}
       whileTap={{ scale: 0.9 }}
-      className="glass w-11 h-11 rounded-xl flex items-center justify-center text-muted-foreground transition-all duration-300 hover:text-primary hover:shadow-[0_0_20px_hsla(162,93%,51%,0.25)] hover:border-primary/30"
+      style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.45)", transition: "border-color 0.2s, color 0.2s", cursor: "pointer" }}
     >
       {children}
     </motion.a>
@@ -81,12 +81,12 @@ const PremiumFooter = () => {
   };
 
   return (
-    <footer className="relative group/footer opacity-70 hover:opacity-100 transition-opacity duration-500">
+    <footer style={{ position: "relative", borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(11,15,20,0.98)" }}>
       {/* Gradient top border with glow */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-primary to-secondary" />
-      <div className="h-8 w-full bg-gradient-to-b from-primary/5 to-transparent" />
 
-      <div className="relative glass border-t-0 py-16 px-4">
+
+
+      <div style={{ padding: "64px 32px" }}>
         {/* Faint noise texture overlay */}
         <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E\")" }} />
 
@@ -108,9 +108,9 @@ const PremiumFooter = () => {
                 >
                   <ArsweepLogo className="w-8 h-8" />
                 </motion.div>
-                <span className="text-lg font-bold gradient-text" translate="no"><span translate="no"><span translate="no" className="notranslate">Arsweep</span></span></span>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 14, fontWeight: 600, color: "#FFFFFF", letterSpacing: "0.06em", textTransform: "uppercase" }}>ARSWEEP</span>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", lineHeight: 1.7 }}>
                 The most trusted Solana wallet cleaner. Reclaim hidden SOL from dust accounts.
               </p>
               <form onSubmit={handleSubscribe} className="space-y-2 relative z-10">
@@ -149,12 +149,12 @@ const PremiumFooter = () => {
                 ].map((item) => (
                   <li key={item.label}>
                     {"href" in item ? (
-                      <a href={item.href} className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1.5 group">
+                      <a href={item.href} style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }} className=" hover:text-primary transition-colors duration-200 flex items-center gap-1.5 group">
                         {item.label}
                         <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </a>
                     ) : (
-                      <button onClick={item.onClick} className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
+                      <button onClick={item.onClick} style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }} className=" hover:text-primary transition-colors duration-200">
                         {item.label}
                       </button>
                     )}
@@ -179,7 +179,7 @@ const PremiumFooter = () => {
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1.5 group"
+                      style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }} className=" hover:text-primary transition-colors duration-200 flex items-center gap-1.5 group"
                     >
                       {item.icon && <item.icon className="w-3.5 h-3.5" />}
                       {item.label}
@@ -220,10 +220,10 @@ const PremiumFooter = () => {
 
           {/* Bottom bar */}
           <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-muted-foreground">
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(255,255,255,0.2)" }}>
               © 2026 Arsweep. All rights reserved.
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(255,255,255,0.2)" }}>
               Built with ❤️ by Arsweep Team. <span className="text-primary">Secure</span> & <span className="text-primary">Open Source</span>.
             </p>
           </div>

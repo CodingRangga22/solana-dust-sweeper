@@ -34,12 +34,14 @@ const StatsBar = ({ totalDust, potentialRefund, accountsToClose }: StatsBarProps
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 + i * 0.1, duration: 0.5 }}
-            className="glass rounded-2xl p-3 sm:p-5 text-center group hover:shadow-[0_0_30px_hsla(162,93%,51%,0.15),0_0_60px_hsla(271,100%,63%,0.1)] transition-shadow duration-300 gradient-border relative"
+            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: "16px 20px", textAlign: "center", transition: "border-color 0.2s, background 0.2s" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.15)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; }}
           >
-            <stat.icon className={`w-5 h-5 mx-auto mb-2 ${stat.color}`} />
-            <AnimatedCounter value={stat.value} className="text-sm sm:text-2xl font-bold text-foreground break-all" />
+            <stat.icon style={{ width: 18, height: 18, margin: "0 auto 8px", color: "rgba(255,255,255,0.45)" }} />
+            <AnimatedCounter value={stat.value} style={{ fontSize: "clamp(16px,2.5vw,22px)", fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.01em", fontFamily: "var(--font-mono)" }} />
             <div className="flex items-center justify-center gap-1 mt-1">
-              <p className="text-xs text-muted-foreground">{stat.label}</p>
+              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-mono)", letterSpacing: "0.04em", marginTop: 4 }}>{stat.label}</p>
               {stat.hasTooltip && (
                 <div className="relative">
                   <Info

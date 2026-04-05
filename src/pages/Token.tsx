@@ -1,192 +1,175 @@
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Coins, Users, Zap, Shield, Trophy, ExternalLink, Menu } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { ArrowRight, Zap, Shield, Trophy, Users, ExternalLink } from "lucide-react";
 import ArsweepLogo from "@/components/ArsweepLogo";
-import PremiumFooter from "@/components/PremiumFooter";
 import ChatWidget from "@/components/ChatWidget";
 import { useBanner } from "@/components/BannerProvider";
-import { useSidebar } from "@/components/SidebarContext";
 
-const tokenomics = [
-  { label: "Liquidity Pool (Primary)", percent: 50, color: "from-emerald-400 to-cyan-400" },
-  { label: "Ecosystem & Rewards", percent: 25, color: "from-cyan-400 to-blue-400" },
-  { label: "Team & Dev", percent: 15, color: "from-violet-400 to-purple-400" },
-  { label: "Reserve", percent: 10, color: "from-pink-400 to-rose-400" },
-  
-];
+const M: React.CSSProperties = { fontFamily: "var(--font-mono)" };
+const D6: React.CSSProperties = { height: 1, background: "rgba(255,255,255,0.06)" };
 
 const utilities = [
-  { icon: Trophy, title: "Leaderboard Rewards", desc: "Top sweepers earn $ARSWP every season based on accounts closed and SOL reclaimed." },
-  { icon: Users, title: "Referral Bonuses", desc: "Earn $ARSWP for every friend you refer who sweeps their wallet." },
-  { icon: Zap, title: "Fee Discounts", desc: "Hold $ARSWP to get reduced platform fees on every sweep." },
-  { icon: Shield, title: "Governance", desc: "Vote on future features, fee structures, and protocol upgrades." },
+  { icon: Trophy, t: "Leaderboard Rewards", d: "Top sweepers earn $ARSWP every season based on accounts closed and Sol reclaimed." },
+  { icon: Users, t: "Referral Bonuses", d: "Earn $ARSWP for every friend you refer who sweeps their wallet." },
+  { icon: Zap, t: "Fee Discounts", d: "Hold $ARSWP to get reduced platform fees on every sweep." },
+  { icon: Shield, t: "Governance", d: "Vote on future features, fee structures, and protocol upgrades." },
+];
+
+const distribution = [
+  { label: "Liquidity Pool", pct: 50, desc: "Primary liquidity on Pump.fun and Raydium" },
+  { label: "Ecosystem & Rewards", pct: 25, desc: "Leaderboard, referral, and sweep rewards" },
+  { label: "Team & Dev", pct: 15, desc: "Vested over 12 months" },
+  { label: "Reserve", pct: 10, desc: "Marketing, listings, partnerships" },
 ];
 
 const TokenPage = () => {
+  useScrollReveal();
   const navigate = useNavigate();
   const { bannerHeight } = useBanner();
-  const { setOpen } = useSidebar();
+
+  const BP: React.CSSProperties = { fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 500, color: "#0B0F14", background: "#FFFFFF", border: "none", borderRadius: 8, padding: "12px 24px", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, transition: "opacity 0.2s" };
+  const BG: React.CSSProperties = { fontFamily: "var(--font-mono)", fontSize: 13, color: "rgba(255,255,255,0.45)", background: "none", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 24px", cursor: "pointer", transition: "border-color 0.2s, color 0.2s", display: "inline-flex", alignItems: "center", gap: 8 };
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden">
-      <div className="orb w-[600px] h-[600px] bg-primary/8 top-0 -right-60 animate-pulse-glow" />
-      <div className="orb w-[500px] h-[500px] bg-secondary/8 bottom-1/4 -left-40 animate-pulse-glow" style={{ animationDelay: "2s" }} />
+    <div style={{ minHeight: "100vh", background: "var(--ar-base)", backgroundImage: "radial-gradient(ellipse at 25% 40%, rgba(255,215,0,0.05), transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(255,120,73,0.05), transparent 50%)", position: "relative", overflowX: "hidden", fontFamily: "'Inter', sans-serif", color: "#FFFFFF" }}>
 
-      {/* Header */}
-      <header className="fixed left-0 right-0 z-50 glass border-b border-border" style={{ top: bannerHeight }}>
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setOpen(true)} className="sm:hidden p-2 rounded-xl hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors" aria-label="Open menu"><Menu className="w-5 h-5" /></button>
-            <button onClick={() => navigate("/")} className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <ArsweepLogo className="w-8 h-8" />
-              <span className="text-xl font-bold gradient-text">Arsweep</span>
-            </button>
+      {/* Dot grid */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)", backgroundSize: "28px 28px", maskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)", WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)" }} />
+
+      {/* NAV */}
+      <header style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: bannerHeight, borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(11,15,20,0.85)", backdropFilter: "blur(20px)" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => navigate("/")}>
+            <ArsweepLogo className="w-6 h-6" />
+            <span style={{ ...M, fontSize: 14, fontWeight: 600, color: "#FFFFFF", letterSpacing: "0.06em", textTransform: "uppercase" }}>ARSWEEP</span>
           </div>
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate("/")} className="text-sm text-muted-foreground hover:text-primary transition-colors">← Back to Home</button>
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/app")}
-              className="gradient-bg px-5 py-2 rounded-xl text-primary-foreground text-sm font-semibold flex items-center gap-2"
-            >
-              Launch App <ArrowRight className="w-4 h-4" />
-            </motion.button>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <button onClick={() => navigate("/")} style={{ ...M, fontSize: 13, color: "rgba(255,255,255,0.45)", background: "none", border: "none", cursor: "pointer" }}>← Back to Home</button>
+            <button onClick={() => navigate("/app")} style={{ ...M, fontSize: 13, fontWeight: 500, color: "#0B0F14", background: "#FFFFFF", border: "none", borderRadius: 8, padding: "7px 18px", cursor: "pointer" }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
+            >Launch App</button>
           </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative pt-36 pb-20 px-4 text-center">
-        <div className="container mx-auto max-w-4xl">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <span className="inline-flex items-center gap-2 glass px-4 py-1.5 rounded-full text-sm text-muted-foreground mb-6">
-              <Coins className="w-4 h-4 text-primary" />
-              Solana SPL Token
-            </span>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6">
-              Introducing{" "}
-              <span className="gradient-text">$ARSWP</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed">
-              The native token of the Arsweep ecosystem. Earn it by sweeping. Use it for discounts. Vote with it on governance.
-            </p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-sm font-semibold mb-10">
-              🔜 Coming Soon — Join the waitlist on Discord
-            </div>
-            <div className="flex flex-wrap justify-center gap-4">
-              <motion.button
-                whileHover={{ scale: 1.03, boxShadow: "0 0 24px hsla(162,93%,51%,0.35)" }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => navigate("/app")}
-                className="gradient-bg px-8 py-4 rounded-2xl text-primary-foreground font-semibold text-lg flex items-center gap-2"
-              >
-                Earn $ARSWP Now <ArrowRight className="w-5 h-5" />
-              </motion.button>
-              <motion.a
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                href="https://discord.gg/D2rtvK3fBs"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass glass-hover px-8 py-4 rounded-2xl text-foreground font-semibold text-lg flex items-center gap-2"
-              >
-                Join Discord <ExternalLink className="w-5 h-5" />
-              </motion.a>
-            </div>
-          </motion.div>
+      {/* HERO */}
+      <section style={{ position: "relative", zIndex: 2, paddingTop: `calc(${bannerHeight}px + 120px)`, paddingBottom: 100, textAlign: "center", padding: `calc(${bannerHeight}px + 120px) 40px 100px` }}>
+        <div style={{ ...M, fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+          <span style={{ width: 20, height: 1, background: "rgba(255,255,255,0.15)", display: "inline-block" }} />
+          Solana SPL Token
+          <span style={{ width: 20, height: 1, background: "rgba(255,255,255,0.15)", display: "inline-block" }} />
+        </div>
+
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(48px,8vw,88px)", fontWeight: 400, lineHeight: 1.0, letterSpacing: "-0.02em", color: "#FFFFFF", marginBottom: 24, maxWidth: 800, margin: "0 auto 24px" }}>
+          Introducing{" "}
+          <span style={{ color: "var(--ar-yellow)" }}>$ARSWP</span>
+        </h1>
+
+        <p style={{ fontSize: 18, color: "rgba(255,255,255,0.45)", maxWidth: 520, margin: "0 auto 16px", lineHeight: 1.75 }}>
+          The native token of the Arsweep ecosystem. Earn it by sweeping. Use it for discounts. Vote with it on governance.
+        </p>
+
+        <div style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", borderRadius: 999, padding: "6px 18px", display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 44 }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(255,255,255,0.4)", display: "inline-block" }} />
+          Coming Soon — Join the waitlist on Discord
+        </div>
+
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <button onClick={() => navigate("/app")} style={BP}
+            onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+            onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
+          >
+            Earn $ARSWP Now
+            <ArrowRight size={14} />
+          </button>
+          <button onClick={() => window.open("https://discord.gg/D2rtvK3fBs", "_blank")} style={BG}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.25)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.8)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.45)"; }}
+          >
+            Join Discord
+            <ExternalLink size={13} />
+          </button>
         </div>
       </section>
 
-      {/* Tokenomics */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-extrabold mb-3">Tokenomics</h2>
-            <p className="text-muted-foreground">Total Supply: <span className="text-primary font-bold">1,000,000,000 $ARSWP</span></p>
+      <div style={D6} />
+
+      {/* UTILITIES */}
+      <section style={{ position: "relative", zIndex: 2, padding: "100px 40px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,4vw,48px)", fontWeight: 400, color: "#FFFFFF", marginBottom: 12, lineHeight: 1.1 }}>Token Utility</h2>
+            <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>$ARSWP is not just a token. It is the backbone of the Arsweep ecosystem.</p>
           </div>
-          <div className="glass rounded-3xl p-8 space-y-4">
-            {tokenomics.map((item, i) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="space-y-2"
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, overflow: "hidden" }}>
+            {utilities.map(({ icon: Icon, t, d }) => (
+              <div key={t} style={{ padding: "40px 36px", background: "rgba(11,15,20,0.95)", transition: "background 0.2s" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(20,26,35,0.98)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "rgba(11,15,20,0.95)")}
               >
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium text-foreground">{item.label}</span>
-                  <span className="text-primary font-bold">{item.percent}%</span>
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+                  <Icon size={20} style={{ color: "rgba(255,255,255,0.6)" }} />
                 </div>
-                <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${item.percent}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: i * 0.1 }}
-                    className={`h-full rounded-full bg-gradient-to-r ${item.color}`}
-                  />
-                </div>
-              </motion.div>
+                <h3 style={{ fontSize: 18, fontWeight: 600, color: "#FFFFFF", marginBottom: 10, lineHeight: 1.3 }}>{t}</h3>
+                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.75 }}>{d}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Utility */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-extrabold mb-3">Token Utility</h2>
-            <p className="text-muted-foreground">$ARSWP is earned, not just bought.</p>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-6">
-            {utilities.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="glass rounded-2xl p-6 flex gap-4"
-              >
-                <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center shrink-0">
-                  <item.icon className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-foreground mb-1">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <div style={D6} />
 
       {/* CTA */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-3xl text-center glass rounded-3xl p-12 border border-primary/20 relative overflow-hidden">
-          <div className="orb w-64 h-64 bg-primary/15 -top-32 -left-32" />
-          <div className="orb w-48 h-48 bg-secondary/15 -bottom-16 -right-16" />
-          <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 relative z-10">
-            Ready to earn <span className="gradient-text">$ARSWP</span>?
+      <section style={{ position: "relative", zIndex: 2, padding: "100px 40px", textAlign: "center", background: "rgba(255,255,255,0.015)" }}>
+        <div style={{ maxWidth: 560, margin: "0 auto" }}>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,4vw,48px)", fontWeight: 400, color: "#FFFFFF", marginBottom: 16, lineHeight: 1.1 }}>
+            Start earning{" "}
+            <span style={{ color: "var(--ar-yellow)" }}>$ARSWP</span>
+            {" "}today.
           </h2>
-          <p className="text-muted-foreground mb-8 relative z-10">
-            Start sweeping your wallet now. Every account you close earns you points toward $ARSWP rewards.
+          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.75, marginBottom: 40 }}>
+            Sweep your wallet, refer friends, climb the leaderboard. Every action earns you $ARSWP.
           </p>
-          <motion.button
-            whileHover={{ scale: 1.03, boxShadow: "0 0 28px hsla(162,93%,51%,0.35)" }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/app")}
-            className="gradient-bg px-10 py-4 rounded-2xl text-primary-foreground font-semibold text-lg flex items-center gap-2 mx-auto relative z-10"
-          >
-            Sweep & Earn <ArrowRight className="w-5 h-5" />
-          </motion.button>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <button onClick={() => navigate("/app")} style={BP}
+              onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
+            >
+              Launch App
+              <ArrowRight size={14} />
+            </button>
+            <button onClick={() => window.open("https://discord.gg/D2rtvK3fBs", "_blank")} style={BG}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.25)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.8)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.45)"; }}
+            >
+              Join Discord
+              <ExternalLink size={13} />
+            </button>
+          </div>
         </div>
       </section>
 
-      <PremiumFooter />
+      <div style={D6} />
+
+      {/* FOOTER */}
+      <footer style={{ position: "relative", zIndex: 2, padding: "28px 40px", display: "flex", alignItems: "center", justifyContent: "space-between", maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <ArsweepLogo className="w-6 h-6" />
+          <span style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.25)" }}>Arsweep — built for Solana. 2026</span>
+        </div>
+        <div style={{ display: "flex", gap: 24 }}>
+          {[["Home","/"],["App","/app"],["Docs","/docs"],["Discord","https://discord.gg/D2rtvK3fBs"]].map(([l,p]) => (
+            <span key={l} onClick={() => p.startsWith("http") ? window.open(p,"_blank") : navigate(p)}
+              style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.25)", cursor: "pointer", transition: "color 0.2s" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.7)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
+            >{l}</span>
+          ))}
+        </div>
+      </footer>
+
       <ChatWidget />
     </div>
   );

@@ -15,9 +15,9 @@ export interface Token {
 }
 
 const SkeletonRow = () => (
-  <div className="flex items-center gap-4 p-4 animate-pulse">
-    <div className="w-5 h-5 rounded bg-muted" />
-    <div className="w-10 h-10 rounded-full bg-muted" />
+  <div style={{ display: "flex", alignItems: "center", gap: 16, padding: 16 }} className="animate-pulse">
+    <div style={{ width: 18, height: 18, borderRadius: 4, background: "rgba(255,255,255,0.06)" }} />
+    <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.06)", flexShrink: 0 }} />
     <div className="flex-1 space-y-2">
       <div className="h-4 w-32 bg-muted rounded" />
       <div className="h-3 w-24 bg-muted rounded" />
@@ -34,7 +34,7 @@ const TokenLogo = ({ src, symbol }: { src: string | null; symbol: string }) => {
 
   if (!src || failed) {
     return (
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center text-sm font-bold text-foreground/70 shrink-0 border border-border/50">
+      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", flexShrink: 0, fontFamily: "var(--font-mono)" }}>
         {symbol.slice(0, 2).toUpperCase()}
       </div>
     );
@@ -45,7 +45,7 @@ const TokenLogo = ({ src, symbol }: { src: string | null; symbol: string }) => {
       src={src}
       alt={symbol}
       onError={() => setFailed(true)}
-      className="w-10 h-10 rounded-full object-cover shrink-0 border border-border/50 bg-muted"
+      style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)" }}
     />
   );
 };
@@ -93,9 +93,9 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
               </div>
             )}
 
-            <div className="glass rounded-2xl overflow-hidden">
+            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, overflow: "hidden" }}>
               {/* Table header */}
-              <div className="flex items-center gap-4 px-4 py-3 border-b border-border text-xs text-muted-foreground font-medium uppercase tracking-wider">
+              <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", fontFamily: "var(--font-mono)", fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
                 <button
                   onClick={onSelectAll}
                   disabled={isDisabled || sweepableCount === 0}
@@ -132,7 +132,7 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.04 }}
                         onClick={() => account.isSweepable && !isDisabled && onToggle(id)}
-                        className={`flex items-center gap-3 px-4 py-3.5 transition-all duration-200 border-b border-border last:border-b-0 ${
+                        className={`flex items-center gap-3 px-4 py-3.5 transition-all duration-200 border-b-0 ${
                           account.isSweepable ? (isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer") : "cursor-default"
                         } ${!isDisabled && account.isSweepable && (selected ? "bg-primary/5" : "hover:bg-muted/30 hover:shadow-[inset_0_0_30px_hsla(162,93%,51%,0.04)]")}`}
                       >
@@ -141,13 +141,13 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                           {account.isSweepable ? (
                             <div
                               className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 ${
-                                selected ? "gradient-bg border-transparent animate-[pulse_0.4s_ease-in-out_1]" : "border-border"
+                                selected ? "bg-white/15 border-white/40" : "border-border"
                               }`}
                             >
                               {selected && <Check className="w-3 h-3 text-primary-foreground" />}
                             </div>
                           ) : (
-                            <div className="w-5 h-5 rounded-md border border-border bg-muted/30" />
+                            <div style={{ width: 18, height: 18, borderRadius: 4, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.04)" }} />
                           )}
                         </div>
 

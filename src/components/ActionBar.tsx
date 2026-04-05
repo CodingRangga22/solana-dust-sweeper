@@ -40,11 +40,11 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false, pendingTx = nul
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="fixed bottom-0 left-0 right-0 sm:inset-auto sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 z-[50] sm:w-[calc(100%-2rem)] sm:max-w-xl flex items-end sm:items-stretch"
         >
-          <div className="glass rounded-t-2xl sm:rounded-2xl p-4 shadow-2xl border border-border w-full">
+          <div style={{ background: "rgba(11,15,20,0.95)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px", padding: "20px", width: "100%", boxShadow: "0 -8px 40px rgba(0,0,0,0.4)" }} className="rounded-t-2xl sm:rounded-2xl">
             <div className="flex flex-col gap-3">
               <div className="text-sm text-foreground space-y-2 flex-1">
                 <p>
-                  Selected: <span className="font-bold text-primary">{count} tokens</span>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "rgba(255,255,255,0.5)" }}>Selected:</span>{" "}<span style={{ fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 600, color: "#FFFFFF" }}>{count} accounts</span>
                 </p>
                 <div className="text-xs space-y-0.5 border-l-2 border-primary/30 pl-3">
                   <p className="font-semibold text-foreground">Transaction Summary</p>

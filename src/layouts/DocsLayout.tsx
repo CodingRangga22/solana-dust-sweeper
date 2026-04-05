@@ -1,81 +1,75 @@
 import { useState } from "react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Link, Outlet } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
-export default function DocsLayout(_props?: { children?: React.ReactNode }) {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+const M: React.CSSProperties = { fontFamily: "var(--font-mono)" };
 
+export default function DocsLayout(_props?: { children?: React.ReactNode }) {
+  useScrollReveal();
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const closeDrawer = () => setDrawerOpen(false);
 
+  const navLinks = [
+    { to: "/docs", label: "Overview" },
+    { to: "/docs/technical", label: "Technical" },
+    { to: "/docs/security", label: "Security" },
+    { to: "/docs/fees", label: "Fee Model" },
+    { to: "/docs/faq", label: "FAQ" },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-background">
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "row", background: "#0B0F14", backgroundImage: "radial-gradient(ellipse at 25% 40%, rgba(255,215,0,0.05), transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(255,120,73,0.05), transparent 50%)", color: "#FFFFFF", fontFamily: "'Inter', sans-serif" }}>
 
-      {/* Mobile header — hamburger toggle (drawer can be wired later) */}
-      <header className="lg:hidden h-14 border-b border-border flex items-center px-4 shrink-0 bg-background">
-        <button
-          type="button"
-          aria-label="Open menu"
-          className="p-2"
-          onClick={() => setDrawerOpen(true)}
-        >
-          <Menu className="w-5 h-5 text-foreground" />
-        </button>
-      </header>
+      {/* Mobile overlay */}
+      {drawerOpen && (
+        <button type="button" aria-label="Close menu"
+          onClick={closeDrawer}
+          style={{ position: "fixed", inset: 0, zIndex: 40, background: "rgba(0,0,0,0.6)", border: "none", cursor: "pointer" }}
+        />
+      )}
 
-      {/* Mobile overlay — tap to close drawer */}
-      <button
-        type="button"
-        aria-label="Close menu"
-        className={`fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden ${drawerOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
-        onClick={closeDrawer}
-      />
-
-      {/* Sidebar — hidden on mobile/tablet, drawer when menu opened; visible on desktop (lg) */}
-      <aside
-        className={`hidden lg:block fixed lg:relative inset-y-0 left-0 z-50 w-full max-w-[16rem] lg:max-w-none lg:w-64 border-r border-border bg-background p-6 flex flex-col transition-transform duration-200 ease-out ${drawerOpen ? "!block translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold">Arsweep Docs</h2>
-          <button
-            type="button"
-            aria-label="Close menu"
-            className="p-2 rounded-lg hover:bg-muted lg:hidden"
-            onClick={closeDrawer}
-          >
-            <X className="w-5 h-5" />
-          </button>
+      {/* Sidebar */}
+      <aside style={{
+        width: 240, flexShrink: 0,
+        borderRight: "1px solid rgba(255,255,255,0.06)",
+        background: "rgba(11,15,20,0.98)",
+        padding: "32px 24px",
+        display: "flex", flexDirection: "column",
+        position: "sticky", top: 0, height: "100vh", overflowY: "auto",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
+          <span style={{ ...M, fontSize: 13, fontWeight: 600, color: "#FFFFFF", letterSpacing: "0.06em" }}>
+            ARSWEEP DOCS
+          </span>
         </div>
 
-        <nav className="space-y-3 text-sm text-muted-foreground">
-          <Link to="/docs" className="block hover:text-primary" onClick={closeDrawer}>Overview</Link>
-          <Link to="/docs/technical" className="block hover:text-primary" onClick={closeDrawer}>Technical</Link>
-          <Link to="/docs/security" className="block hover:text-primary" onClick={closeDrawer}>Security</Link>
-          <Link to="/docs/fees" className="block hover:text-primary" onClick={closeDrawer}>Fee Model</Link>
-          <Link to="/docs/faq" className="block hover:text-primary" onClick={closeDrawer}>FAQ</Link>
+                <div style={{ marginBottom: 24 }}>
+          <Link to="/"
+            style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.3)", textDecoration: "none", transition: "color 0.2s" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#FFFFFF")}
+            onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.3)")}
+          >← Back to Home</Link>
+        </div>
+        <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {navLinks.map(({ to, label }) => (
+            <Link key={to} to={to} onClick={closeDrawer}
+              style={{ ...M, fontSize: 13, color: "rgba(255,255,255,0.45)", textDecoration: "none", padding: "8px 12px", borderRadius: 8, transition: "color 0.2s, background 0.2s" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#FFFFFF"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.45)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+            >{label}</Link>
+          ))}
         </nav>
 
-        <div className="mt-10 text-xs">
-          <Link to="/" className="text-primary text-sm hover:underline" onClick={closeDrawer}>
-            ← Back to Home
-          </Link>
-        </div>
+
       </aside>
 
-      {/* Content + mobile menu button */}
-      <main className="flex-1 min-w-0 py-8 relative">
-        <button
-          type="button"
-          aria-label="Open menu"
-          className="lg:hidden absolute top-4 left-4 p-2 rounded-lg border border-border bg-background hover:bg-muted"
-          onClick={() => setDrawerOpen(true)}
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-        <div className="pt-12 lg:pt-0 w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-10">
+      {/* Main content */}
+      <main style={{ flex: 1, minWidth: 0, padding: "48px 64px", overflowY: "auto" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <Outlet />
         </div>
       </main>
-
     </div>
   );
 }

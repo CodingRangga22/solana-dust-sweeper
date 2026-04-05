@@ -50,7 +50,7 @@ export function WalletScanCard({ result, onPremiumAnalysis }: WalletScanCardProp
 
   return (
     <div className="space-y-3">
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-4 text-white">
+      <div className="bg-white/4 border border-white/10 rounded-xl p-4 text-white">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-semibold">Wallet Scan Results</h3>
           <a href={`https://solscan.io/account/${result.address}`} target="_blank" rel="noopener noreferrer" className="hover:opacity-80">
@@ -60,11 +60,11 @@ export function WalletScanCard({ result, onPremiumAnalysis }: WalletScanCardProp
         <p className="text-xs opacity-90 font-mono">{result.address.slice(0, 8)}...{result.address.slice(-8)}</p>
       </div>
 
-      <Card className="p-4 bg-muted/50">
+      <div className="p-4 bg-white/4 border border-white/10 rounded-xl">
         <div className="grid grid-cols-3 gap-4">
           <div>
             <p className="text-xs text-muted-foreground mb-1">Total Value</p>
-            <p className="text-lg font-bold text-green-500">{formatUSD(result.totalValue)}</p>
+            <p className="text-lg font-bold text-yellow-400">{formatUSD(result.totalValue)}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1">Tokens</p>
@@ -75,12 +75,12 @@ export function WalletScanCard({ result, onPremiumAnalysis }: WalletScanCardProp
             <p className="text-lg font-bold">{result.nftCount}</p>
           </div>
         </div>
-      </Card>
+      </div>
 
-      <Card className="p-3 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border-blue-600/20">
+      <div className="p-3 bg-white/4 border border-white/10 rounded-xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
               <span className="text-white text-xs font-bold">◎</span>
             </div>
             <div>
@@ -93,20 +93,20 @@ export function WalletScanCard({ result, onPremiumAnalysis }: WalletScanCardProp
             <p className="text-xs text-muted-foreground">{formatUSD(result.solValue)}</p>
           </div>
         </div>
-      </Card>
+      </div>
 
       {displayTokens.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold">Token Holdings</p>
             {onPremiumAnalysis && (
-              <Button size="sm" onClick={onPremiumAnalysis} className="h-7 text-xs bg-gradient-to-r from-purple-600 to-pink-600">
+              <Button size="sm" onClick={onPremiumAnalysis} className="h-7 text-xs bg-white/10 hover:bg-white/15 border border-white/10 text-white">
                 <Sparkles className="h-3 w-3 mr-1" />AI Analysis
               </Button>
             )}
           </div>
           {displayTokens.map((token, idx) => (
-            <Card key={idx} className="p-3">
+            <div key={idx} className="p-3 bg-white/4 border border-white/10 rounded-xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
@@ -122,7 +122,7 @@ export function WalletScanCard({ result, onPremiumAnalysis }: WalletScanCardProp
                   <p className="text-xs text-muted-foreground">{token.value ? formatUSD(token.value) : 'No price'}</p>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
           {hasMore && (
             <Button variant="ghost" size="sm" onClick={() => setShowAllTokens(!showAllTokens)} className="w-full">

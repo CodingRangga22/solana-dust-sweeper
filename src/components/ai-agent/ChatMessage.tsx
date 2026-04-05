@@ -38,7 +38,7 @@ export function ChatMessage({ role, content, timestamp, walletAddress, walletSca
     <div className={`flex gap-4 group ${role === 'user' ? 'justify-end' : ''}`}>
       {/* Avatar */}
       {role === 'assistant' && (
-        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
+        <div className="h-8 w-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
           <Sparkles className="h-4 w-4 text-white" />
         </div>
       )}
@@ -48,7 +48,7 @@ export function ChatMessage({ role, content, timestamp, walletAddress, walletSca
         <div
           className={`rounded-2xl px-4 py-3 relative ${
             role === 'user'
-              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+              ? 'bg-yellow-400 text-black'
               : 'bg-muted border border-border'
           }`}
         >
@@ -86,7 +86,7 @@ export function ChatMessage({ role, content, timestamp, walletAddress, walletSca
                         {String(children).replace(/\n$/, '')}
                       </SyntaxHighlighter>
                     ) : (
-                      <code className="bg-purple-600/10 px-1.5 py-0.5 rounded text-purple-600 font-mono text-xs" {...props}>
+                      <code className="bg-white/10 px-1.5 py-0.5 rounded text-white/80 font-mono text-xs" {...props}>
                         {children}
                       </code>
                     );
@@ -96,7 +96,7 @@ export function ChatMessage({ role, content, timestamp, walletAddress, walletSca
                   ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
                   li: ({ children }) => <li className="mb-1">{children}</li>,
                   a: ({ children, href }) => (
-                    <a href={href} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline">
+                    <a href={href} target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">
                       {children}
                     </a>
                   ),

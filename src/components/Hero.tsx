@@ -1,5 +1,4 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Sparkles, Loader2, RotateCcw, CheckCircle2 } from "lucide-react";
 
 interface HeroProps {
@@ -11,6 +10,8 @@ interface HeroProps {
   accountsFound?: number;
 }
 
+const M: React.CSSProperties = { fontFamily: "var(--font-mono)" };
+
 const Hero = ({ scanning = false, scanned = false, onScan, onRescan, sweeping = false, accountsFound = 0 }: HeroProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -20,109 +21,81 @@ const Hero = ({ scanning = false, scanned = false, onScan, onRescan, sweeping = 
     if (onScan) onScan();
   };
 
-  const handleRescan = () => {
-    if (onRescan) onRescan();
-  };
-
   return (
-    <section className="relative pt-20 sm:pt-32 pb-16 px-4 text-center overflow-hidden">
-      <div className="orb w-[400px] h-[400px] bg-primary/20 -top-40 -left-40 animate-pulse-glow" />
-      <div className="orb w-[300px] h-[300px] bg-secondary/20 -top-20 right-0 animate-pulse-glow" style={{ animationDelay: "2s" }} />
+    <section style={{ paddingTop: 96, paddingBottom: 48, paddingLeft: 24, paddingRight: 24, textAlign: "center" }}>
 
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        className="relative z-10 max-w-2xl mx-auto"
-      >
-        <div className="inline-flex items-center gap-2 glass px-4 py-1.5 rounded-full text-sm text-muted-foreground mb-6">
-          <Sparkles className="w-3.5 h-3.5 text-primary" />
-          Solana Wallet Cleaner
+      <div style={{ ...M, fontSize: 11, color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)", borderRadius: 999, padding: "5px 16px", display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, letterSpacing: "0.08em" }}>
+        <Sparkles size={11} style={{ color: "rgba(255,255,255,0.4)" }} />
+        Solana Wallet Cleaner
+      </div>
+
+      <h1 style={{ fontSize: "clamp(28px,4.5vw,52px)", fontWeight: 800, lineHeight: 1.08, letterSpacing: "-0.025em", color: "#FFFFFF", margin: "0 auto 16px", maxWidth: 600 }}>
+        Clean your wallet,{" "}
+        <span style={{ color: "rgba(255,255,255,0.55)" }}>reclaim your Sol.</span>
+      </h1>
+
+      <p style={{ fontSize: 15, color: "rgba(255,255,255,0.4)", maxWidth: 400, margin: "0 auto 36px", lineHeight: 1.75 }}>
+        Find dust tokens and empty accounts. Close them and get your rent deposits back instantly.
+      </p>
+
+      {scanning && (
+        <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+          <Loader2 size={24} style={{ color: "rgba(255,255,255,0.6)" }} className="animate-spin" />
+          <p style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.35)" }}>Scanning wallet...</p>
+          <div style={{ width: 180, height: 2, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
+            <div className="animate-[scanProgress_2s_ease-in-out_infinite]"
+              style={{ height: "100%", background: "rgba(255,255,255,0.5)", borderRadius: 2 }} />
+          </div>
         </div>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4">
-          Clean your wallet,{" "}
-          <span className="gradient-text">reclaim your SOL</span>.
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-md mx-auto mb-8">
-          Find dust tokens and empty accounts. Close them and get your rent deposits back instantly.
-        </p>
+      )}
 
-        {scanning ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="inline-flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            <p className="text-sm text-muted-foreground">Scanning wallet…</p>
-            <div className="w-48 h-1.5 rounded-full bg-muted overflow-hidden">
-              <motion.div
-                className="h-full rounded-full gradient-bg"
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 2, ease: "easeInOut" }}
-              />
-            </div>
-          </motion.div>
-        ) : scanned ? (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-3">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
-              <CheckCircle2 className="w-4 h-4" />
-              {accountsFound > 0
-                ? `Found ${accountsFound} sweepable account${accountsFound > 1 ? "s" : ""}`
-                : "Scan complete — no sweepable accounts found"}
-            </div>
-            <motion.button
-              whileHover={!sweeping ? { scale: 1.03 } : undefined}
-              whileTap={!sweeping ? { scale: 0.97 } : undefined}
-              onClick={handleRescan}
-              disabled={sweeping}
-              className="flex items-center gap-2 px-5 py-2 rounded-xl glass border border-border text-sm text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Rescan Wallet
-            </motion.button>
-            {accountsFound === 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="flex flex-col items-center gap-3 mt-2"
-              >
-                <p className="text-xs text-muted-foreground">Your wallet is clean! Share it with your friends 🧹</p>
-                <div className="flex flex-wrap justify-center gap-3">
-                  <motion.a
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.97 }}
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("Just cleaned my Solana wallet with @Arsweep_AI — 0 dust accounts found! 🧹✨\n\nReclaim your locked SOL for free:\nhttps://arsweep.fun")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-black border border-white/10 text-white hover:bg-white/10 transition-all duration-200"
-                  >
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4l11.733 16h4.267l-11.733-16zm0 16l6.768-6.768M20 4l-6.768 6.768"/></svg>
-                    Share on X
-                  </motion.a>
-                  <motion.a
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.97 }}
-                    href="/app?tab=referral"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold glass border border-primary/30 text-primary hover:border-primary/60 transition-all duration-200"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    Invite Friends & Earn
-                  </motion.a>
-                </div>
-              </motion.div>
-            )}
-          </motion.div>
-        ) : (
-          <motion.button
-            whileHover={!sweeping ? { scale: 1.03 } : undefined}
-            whileTap={!sweeping ? { scale: 0.97 } : undefined}
-            onClick={handleScan}
+      {!scanning && scanned && (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+          <div style={{ ...M, fontSize: 12, display: "flex", alignItems: "center", gap: 8, padding: "8px 18px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)" }}>
+            <CheckCircle2 size={14} />
+            {accountsFound > 0
+              ? `Found ${accountsFound} sweepable account${accountsFound > 1 ? "s" : ""}`
+              : "Scan complete — no sweepable accounts found"}
+          </div>
+          <button
+            onClick={() => onRescan && onRescan()}
             disabled={sweeping}
-            className="gradient-bg gradient-bg-hover px-8 py-3.5 rounded-2xl text-primary-foreground font-semibold text-base transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ ...M, fontSize: 12, display: "flex", alignItems: "center", gap: 8, padding: "8px 18px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.45)", cursor: sweeping ? "not-allowed" : "pointer", opacity: sweeping ? 0.5 : 1 }}
           >
-            Start Scanning
-          </motion.button>
-        )}
-      </motion.div>
+            <RotateCcw size={13} />
+            Rescan Wallet
+          </button>
+          {accountsFound === 0 && (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginTop: 8 }}>
+              <p style={{ ...M, fontSize: 11, color: "rgba(255,255,255,0.25)" }}>Your wallet is clean! Share it.</p>
+              <div style={{ display: "flex", gap: 10 }}>
+                <a href="https://twitter.com/intent/tweet?text=Just+cleaned+my+Solana+wallet+with+@Arsweep_AI"
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ ...M, fontSize: 12, display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF", textDecoration: "none" }}>
+                  Share on X
+                </a>
+                <a href="/app?tab=referral"
+                  style={{ ...M, fontSize: 12, display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)", textDecoration: "none" }}>
+                  <Sparkles size={12} />
+                  Invite and Earn
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!scanning && !scanned && (
+        <button
+          onClick={handleScan}
+          disabled={sweeping}
+          style={{ ...M, fontSize: 13, fontWeight: 500, color: "#0B0F14", background: "#FFFFFF", border: "none", borderRadius: 8, padding: "13px 32px", cursor: sweeping ? "not-allowed" : "pointer", opacity: sweeping ? 0.5 : 1, transition: "opacity 0.2s" }}
+          onMouseEnter={e => { if (!sweeping) (e.currentTarget as HTMLElement).style.opacity = "0.85"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = sweeping ? "0.5" : "1"; }}
+        >
+          Start Scanning
+        </button>
+      )}
     </section>
   );
 };

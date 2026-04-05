@@ -39,7 +39,7 @@ const WalletMenu = ({
 
   if (!connected || !publicKey) {
     return (
-      <WalletMultiButton className="!bg-transparent !bg-none !rounded-xl !px-5 !py-2.5 !text-sm !font-semibold !text-white !transition-all !duration-200 !border-0 !shadow-none" style={{ background: "linear-gradient(135deg, hsl(162,93%,51%), hsl(271,100%,63%))" }} />
+      <WalletMultiButton className="!rounded-lg !text-sm !font-medium !px-4 !py-2 !border-0 !shadow-none" style={{ background: "#FFFFFF", color: "#0B0F14", fontFamily: "IBM Plex Mono, monospace" }} />
     );
   }
 
@@ -68,7 +68,7 @@ const WalletMenu = ({
 
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-opacity" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", color: "#FFFFFF", fontFamily: "IBM Plex Mono, monospace" }}
       >
         {wallet?.adapter.icon && (
           <img

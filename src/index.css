@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -200,3 +202,87 @@
 [data-brand]::before {
   content: attr(data-brand);
 }
+
+/* ── Arsweep Landing v5 ── */
+:root {
+  --ar-base: #0B0F14;
+  --ar-teal: #1DB88E;
+  --ar-yellow: #E8FF47;
+  --ar-white: #FFFFFF;
+  --ar-gray1: rgba(255,255,255,0.55);
+  --ar-gray2: rgba(255,255,255,0.35);
+  --ar-gray3: rgba(255,255,255,0.20);
+  --ar-border: rgba(255,255,255,0.07);
+  --ar-border2: rgba(255,255,255,0.12);
+  --ar-surface: rgba(255,255,255,0.03);
+  --font-display: 'DM Serif Display', serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+/* ── End Arsweep Landing v5 ── */
+
+/* Global dot grid background */
+body {
+  background-color: #0B0F14;
+  background-image:
+    radial-gradient(ellipse at 25% 40%, rgba(255,215,0,0.05), transparent 45%),
+    radial-gradient(ellipse at 75% 60%, rgba(255,120,73,0.05), transparent 50%);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+/* Fade in up animation for cards */
+@keyframes arFadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ar-fade-in {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ar-fade-in.ar-visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.ar-fade-in.ar-visible:nth-child(1) { transition-delay: 0.00s; }
+.ar-fade-in.ar-visible:nth-child(2) { transition-delay: 0.10s; }
+.ar-fade-in.ar-visible:nth-child(3) { transition-delay: 0.20s; }
+.ar-fade-in.ar-visible:nth-child(4) { transition-delay: 0.30s; }
+.ar-fade-in.ar-visible:nth-child(5) { transition-delay: 0.40s; }
+.ar-fade-in.ar-visible:nth-child(6) { transition-delay: 0.50s; }
+.ar-fade-in.ar-visible:nth-child(7) { transition-delay: 0.60s; }
+.ar-fade-in.ar-visible:nth-child(8) { transition-delay: 0.70s; }
+.ar-fade-in.ar-visible:nth-child(9) { transition-delay: 0.80s; }
+
+/* ── Scroll Reveal ── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(40px) scale(0.97);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+[data-reveal-delay="1"] { transition-delay: 0.08s; }
+[data-reveal-delay="2"] { transition-delay: 0.16s; }
+[data-reveal-delay="3"] { transition-delay: 0.24s; }
+[data-reveal-delay="4"] { transition-delay: 0.32s; }
+[data-reveal-delay="5"] { transition-delay: 0.40s; }
+[data-reveal-delay="6"] { transition-delay: 0.48s; }

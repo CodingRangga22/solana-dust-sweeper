@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { toast } from "sonner";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
@@ -35,6 +36,7 @@ const MIN_SWAP_VALUE_CENTS = 5; // $0.05 — below this, skip swap and close-onl
 const TOKEN_ICONS = ["🪙", "🐶", "🌙", "💀", "🐕", "🧹", "💨", "🐱", "🦊", "🐸"];
 
 const Dashboard = () => {
+  useScrollReveal();
   const { connection } = useConnection();
   const {
     lockedPublicKey: publicKey,
@@ -448,7 +450,7 @@ const Dashboard = () => {
   // Not connected
   if (!connected) {
     return (
-      <div className="relative min-h-screen bg-background overflow-hidden">
+      <div className="relative min-h-screen overflow-hidden" style={{ background: "transparent" }}>
         <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
         <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
         <Header onChangeWallet={handleChangeWallet} onDisconnect={handleDisconnect} walletMismatch={walletMismatch} />
@@ -488,7 +490,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden" style={{ background: "transparent" }}>
       <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
       <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
 

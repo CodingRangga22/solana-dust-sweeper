@@ -5,7 +5,8 @@ import { useBanner } from "./BannerProvider";
 
 const DevnetBanner = () => {
   const { setBannerDismissed } = useBanner();
-  if (!isDevnet) return null;
+  const pathname = window.location.pathname;
+  if (!isDevnet || pathname === '/agent' || pathname === '/app') return null;
   return <DevnetBannerContent onDismiss={() => setBannerDismissed(true)} />;
 };
 
@@ -36,7 +37,8 @@ const DevnetBannerContent = ({ onDismiss }: { onDismiss: () => void }) => {
 
 export const MainnetBanner = () => {
   const { setBannerDismissed } = useBanner();
-  if (!isMainnet) return null;
+  const pathname = window.location.pathname;
+  if (!isMainnet || pathname === '/agent' || pathname === '/app') return null;
   return (
     <div className="fixed top-0 left-0 right-0 z-[60] flex flex-wrap items-center justify-center gap-2 px-4 py-2 bg-blue-500/10 border-b border-blue-500/20 backdrop-blur-sm" role="alert" aria-live="polite">
       <div className="flex items-center gap-2">

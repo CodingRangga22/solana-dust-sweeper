@@ -1,161 +1,80 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-
-type Phase = "scan" | "detect" | "sweep" | "confirm" | "complete";
-
-const accounts = [
-  "9sk3...LpQz",
-  "4Gh2...Xk92",
-  "8Ls1...TqP3",
-  "2Kd9...AsL1",
-  "7Zp3...QwL9",
-];
+import ArsweepLogo from "@/components/ArsweepLogo";
 
 export default function HeroDemo() {
-  const [phase, setPhase] = useState<Phase>("scan");
-  const [index, setIndex] = useState(-1);
-  const [closed, setClosed] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [logs, setLogs] = useState<string[]>([]);
-
-  const rent = 0.00203928;
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    const id = setInterval(() => setTick(t => t + 1), 50);
+    return () => clearInterval(id);
+  }, []);
 
-    switch (phase) {
-      case "scan":
-        setLogs(["Connecting to RPC…"]);
-        timer = setTimeout(() => {
-          setLogs((l) => [...l, "Scanning wallet token accounts…"]);
-          setPhase("detect");
-        }, 1000);
-        break;
+  const t = tick * 0.04;
+  const sway = Math.sin(t * 0.8) * 8;
+  const swayY = Math.sin(t * 1.1) * 4;
+  const rotate = Math.sin(t * 0.7) * 5;
 
-      case "detect":
-        if (index < accounts.length - 1) {
-          timer = setTimeout(() => {
-            setIndex((i) => i + 1);
-            setLogs((l) => [...l, `Empty account detected: ${accounts[index + 1]}`]);
-          }, 600);
-        } else {
-          timer = setTimeout(() => setPhase("sweep"), 800);
-        }
-        break;
-
-      case "sweep":
-        if (closed < accounts.length) {
-          timer = setTimeout(() => {
-            setClosed((c) => c + 1);
-            setTotal((t) => t + rent);
-            setLogs((l) => [...l, `Closing account ${accounts[closed]}…`]);
-          }, 700);
-        } else {
-          timer = setTimeout(() => setPhase("confirm"), 1000);
-        }
-        break;
-
-      case "confirm":
-        setLogs((l) => [...l, "Transaction submitted to Solana network…"]);
-        timer = setTimeout(() => setPhase("complete"), 1500);
-        break;
-
-      case "complete":
-        setLogs((l) => [...l, "Sweep successful ✓ Rent reclaimed."]);
-        timer = setTimeout(() => {
-          setPhase("scan");
-          setIndex(-1);
-          setClosed(0);
-          setTotal(0);
-          setLogs([]);
-        }, 5000);
-        break;
-    }
-
-    return () => clearTimeout(timer);
-  }, [phase, index, closed]);
+  const orbs = [
+    { r: 180, speed: 0.3,   size: 7,  op: 0.28 },
+    { r: 140, speed: -0.5,  size: 5,  op: 0.16 },
+    { r: 220, speed: 0.2,   size: 4,  op: 0.20 },
+    { r: 100, speed: 0.7,   size: 6,  op: 0.12 },
+    { r: 260, speed: -0.25, size: 3,  op: 0.09 },
+    { r: 160, speed: 0.6,   size: 4,  op: 0.14 },
+  ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="rounded-2xl bg-black/70 backdrop-blur-2xl border border-white/10 shadow-[0_0_60px_rgba(0,255,200,0.08)] p-6">
+    <div style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"center", padding:"20px 0", position:"relative" }}>
+      <svg width="520" height="520" viewBox="0 0 560 560" fill="none" style={{ position:"absolute" }}>
+        {[260,220,180,140,100].map((r,i) => (
+          <circle key={r} cx="280" cy="280" r={r}
+            stroke={i===2 ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.03)"}
+            strokeWidth="1" />
+        ))}
+        {Array.from({length:32}).map((_,i) => {
+          const a = (i/32)*Math.PI*2 + t*0.15;
+          return <line key={i}
+            x1={280+Math.cos(a)*256} y1={280+Math.sin(a)*256}
+            x2={280+Math.cos(a)*264} y2={280+Math.sin(a)*264}
+            stroke={i%4===0 ? "rgba(255,255,255,0.13)" : "rgba(255,255,255,0.04)"}
+            strokeWidth={i%4===0 ? 1.5 : 0.5} />;
+        })}
+        {orbs.map((orb,i) => {
+          const a = t*orb.speed + (i*Math.PI*2/orbs.length);
+          const x = 280+Math.cos(a)*orb.r;
+          const y = 280+Math.sin(a)*orb.r;
+          return <g key={i}>
+            <circle cx={x} cy={y} r={orb.size*2} fill={`rgba(255,255,255,${orb.op*0.08})`} />
+            <circle cx={x} cy={y} r={orb.size} fill={`rgba(255,255,255,${orb.op})`} />
+          </g>;
+        })}
+        <circle cx="280" cy="280" r={82+Math.sin(t*1.5)*7}
+          stroke="rgba(255,255,255,0.04)" strokeWidth="1" fill="none" />
+        {[
+          {a:-0.35, r:200, text:"Non-Custodial"},
+          {a:Math.PI*0.62, r:195, text:"On-Chain"},
+          {a:Math.PI*1.28, r:205, text:"Open Source"},
+        ].map(({a,r,text}) => {
+          const x = 280+Math.cos(a)*r;
+          const y = 280+Math.sin(a)*r;
+          return <g key={text}>
+            <rect x={x-44} y={y-10} width={88} height={20} rx={10}
+              fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+            <text x={x} y={y+4} textAnchor="middle" fontSize="10"
+              fill="rgba(255,255,255,0.26)" fontFamily="IBM Plex Mono, monospace">{text}</text>
+          </g>;
+        })}
+      </svg>
 
-        {/* Header */}
-        <div className="flex justify-between mb-6">
-          <div>
-            <div className="text-xs text-white/40">Wallet</div>
-            <div className="text-sm text-emerald-400">7Gh3...X9kL</div>
-          </div>
-
-          <motion.div
-            key={total}
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            className="text-xl font-bold text-emerald-400"
-          >
-            +{total.toFixed(5)} SOL
-          </motion.div>
-        </div>
-
-        {/* Accounts */}
-        <div className="space-y-2 mb-6">
-          {accounts.map((acc, i) => {
-            const detected = i <= index;
-            const closedAcc = i < closed;
-
-            return (
-              <div
-                key={i}
-                className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10"
-              >
-                <span className="text-sm text-white">{acc}</span>
-
-                {closedAcc && (
-                  <span className="text-xs text-black bg-emerald-400 px-3 py-1 rounded-full">
-                    Closed
-                  </span>
-                )}
-
-                {!closedAcc && detected && (
-                  <span className="text-xs text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
-                    Closing…
-                  </span>
-                )}
-
-                {!detected && (
-                  <span className="text-xs text-white/30 bg-white/10 px-3 py-1 rounded-full">
-                    Pending
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* RPC Log Feed */}
-        <div className="bg-black/60 rounded-xl p-4 h-40 overflow-hidden border border-white/10">
-          <div className="text-xs text-white/40 mb-2">Execution Log</div>
-          <div className="space-y-1 text-xs font-mono text-white/70">
-            {logs.slice(-6).map((log, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                {log}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {phase === "complete" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-4 text-center text-emerald-400 font-semibold"
-          >
-            Sweep Completed ✓
-          </motion.div>
-        )}
+      {/* Logo bergoyang — translate + rotate */}
+      <div style={{
+        position: "relative", zIndex: 10,
+        width: 240, height: 240,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        transform: `translate(${sway}px, ${swayY}px) rotate(${rotate}deg)`,
+        transition: "transform 0.05s linear",
+      }}>
+        <ArsweepLogo className="w-24 h-24" />
       </div>
     </div>
   );
