@@ -9,9 +9,9 @@ const M: React.CSSProperties = { fontFamily: "var(--font-mono)" };
 const D6: React.CSSProperties = { height: 1, background: "rgba(255,255,255,0.06)" };
 
 const utilities = [
-  { icon: Zap, t: "Fee Discounts", d: "Hold $ARSWP to get reduced platform fees on every sweep. The more you hold, the less you pay." },
-  { icon: Shield, t: "Governance", d: "Vote on future features, fee structures, and protocol upgrades. $ARSWP = voting power." },
-  { icon: Trophy, t: "Sweep-to-Earn", d: "Every wallet you clean earns $ARSWP. The more accounts you close, the more you earn." },
+  { icon: Zap, t: "Fee Discounts", d: "Hold $ASWP to get reduced platform fees on every sweep. The more you hold, the less you pay." },
+  { icon: Shield, t: "Governance", d: "Vote on future features, fee structures, and protocol upgrades. $ASWP = voting power." },
+  { icon: Trophy, t: "Sweep-to-Earn", d: "Every wallet you clean earns $ASWP. The more accounts you close, the more you earn." },
   { icon: Users, t: "Early Access", d: "Token holders get early access to new features and exclusive tools before public release." },
 ];
 
@@ -63,7 +63,7 @@ const TokenPage = () => {
 
         <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(48px,8vw,88px)", fontWeight: 400, lineHeight: 1.0, letterSpacing: "-0.02em", color: "#FFFFFF", marginBottom: 24, maxWidth: 800, margin: "0 auto 24px" }}>
           Introducing{" "}
-          <span style={{ color: "var(--ar-yellow)" }}>$ARSWP</span>
+          <span style={{ color: "var(--ar-yellow)" }}>$ASWP</span>
         </h1>
 
         <p style={{ fontSize: 18, color: "rgba(255,255,255,0.45)", maxWidth: 520, margin: "0 auto 16px", lineHeight: 1.75 }}>
@@ -80,7 +80,7 @@ const TokenPage = () => {
             onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
             onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
           >
-            Earn $ARSWP Now
+            Earn $ASWP Now
             <ArrowRight size={14} />
           </button>
           <button onClick={() => window.open("https://discord.gg/D2rtvK3fBs", "_blank")} style={BG}
@@ -100,7 +100,7 @@ const TokenPage = () => {
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 64 }}>
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,4vw,48px)", fontWeight: 400, color: "#FFFFFF", marginBottom: 12, lineHeight: 1.1 }}>Token Utility</h2>
-            <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>$ARSWP is not just a token. It is the backbone of the Arsweep ecosystem.</p>
+            <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>$ASWP is not just a token. It is the backbone of the Arsweep ecosystem.</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, overflow: "hidden" }}>
             {utilities.map(({ icon: Icon, t, d }) => (
@@ -126,11 +126,11 @@ const TokenPage = () => {
         <div style={{ maxWidth: 560, margin: "0 auto" }}>
           <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,4vw,48px)", fontWeight: 400, color: "#FFFFFF", marginBottom: 16, lineHeight: 1.1 }}>
             Start earning{" "}
-            <span style={{ color: "var(--ar-yellow)" }}>$ARSWP</span>
+            <span style={{ color: "var(--ar-yellow)" }}>$ASWP</span>
             {" "}today.
           </h2>
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.75, marginBottom: 40 }}>
-            Sweep your wallet, refer friends, climb the leaderboard. Every action earns you $ARSWP.
+            Sweep your wallet, refer friends, climb the leaderboard. Every action earns you $ASWP.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             <button onClick={() => navigate("/app")} style={BP}

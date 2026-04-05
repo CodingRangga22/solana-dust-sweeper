@@ -141,7 +141,7 @@ const PremiumFooter = () => {
               <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Product</p>
               <ul className="space-y-2.5">
                 {[
-                  { label: "ARSWP Token", onClick: () => navigate("/token") },
+                  { label: "ASWP Token", onClick: () => navigate("/token") },
                   { label: "Dashboard", onClick: () => navigate("/app") },
                   { label: "Simulation", onClick: () => navigate("/simulation") },
                   { label: "Direct Sweep", onClick: () => navigate("/app") },

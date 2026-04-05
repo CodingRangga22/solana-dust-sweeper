@@ -162,7 +162,7 @@ const Landing = () => {
             </div>
           </div>
           <div className="hidden sm:flex" style={{position:"absolute",left:"50%",transform:"translateX(-50%)",alignItems:"center",gap:28}}>
-{[["Docs","/docs"],["$ARSWP","/token"],["Agent","/agent"]].map(([l,p])=>(
+{[["Docs","/docs"],["Agent","/agent"]].map(([l,p])=>(
               <span key={p} onClick={()=>navigate(p)} style={{fontSize:14,color:"rgba(255,255,255,0.5)",cursor:"pointer",transition:"color 0.2s"}}
                 onMouseEnter={e=>(e.currentTarget.style.color="#FFFFFF")}
                 onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.5)")}
@@ -173,7 +173,7 @@ const Landing = () => {
         </div>
         {menuOpen && (
           <div className="sm:hidden" style={{background:"rgba(11,15,20,0.98)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(255,255,255,0.08)",padding:"8px 16px 16px"}}>
-            {[["Agent","/agent"],["$ARSWP","/token"],["Watch Demo","/demo"],["Simulation","/simulation"],["Docs","/docs"],["Discord","https://discord.gg/D2rtvK3fBs"]].map(([l,p])=>(
+            {[["Agent","/agent"],["Watch Demo","/demo"],["Simulation","/simulation"],["Docs","/docs"],["Discord","https://discord.gg/D2rtvK3fBs"]].map(([l,p])=>(
               <span key={p} onClick={()=>{p.startsWith("http")?window.open(p,"_blank"):navigate(p);setMenuOpen(false);}}
                 style={{fontSize:14,color:"rgba(255,255,255,0.7)",cursor:"pointer",padding:"12px 8px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"block"}}
               >{l}</span>
@@ -289,7 +289,7 @@ const Landing = () => {
               {icon:"⟳",t:"Batch Processing",d:"Close up to 27 accounts in a single transaction. Efficient, fast, and minimizes the number of approvals needed."},
               {icon:"◎",t:"Non-Custodial",d:"We never hold your assets or request your private key. Every transaction is signed by you, in your wallet."},
               {icon:"◈",t:"Fully On-Chain",d:"Every sweep operation is a verifiable Solana transaction. Transparent, permanent, and auditable by anyone."},
-              {icon:"⟳",t:"Referral & Rewards",d:"Earn $ARSWP tokens by sweeping and referring others. Climb the leaderboard and get rewarded for keeping Solana clean."},
+              
             ].map(({icon,t,d})=>(
               <div key={t} style={{padding:"36px 32px",background:"rgba(11,15,20,0.95)",transition:"background 0.2s"}}
                 onMouseEnter={e=>(e.currentTarget.style.background="rgba(20,26,35,0.98)")}
@@ -420,7 +420,7 @@ const Landing = () => {
               {s:"COMPLETED",sc:"var(--ar-teal)",sb:"rgba(29,184,142,0.1)",bc:"rgba(29,184,142,0.25)",t:"Devnet Testing",d:"Program deployed and tested end-to-end. Jupiter API integrated. 100+ test sweeps completed."},
               {s:"LIVE NOW",sc:"var(--ar-teal)",sb:"rgba(29,184,142,0.1)",bc:"rgba(29,184,142,0.25)",t:"Mainnet Launch",d:"Full mainnet deployment complete. Real SOL sweeping live. Treasury accumulating fees."},
               {s:"IN PROGRESS",sc:"rgba(255,255,255,0.6)",sb:"rgba(255,255,255,0.05)",bc:"rgba(255,255,255,0.15)",t:"Community Building",d:"Growing Discord and X community. Building awareness before token launch. Target: 500+ members."},
-              {s:"COMING SOON",sc:"rgba(255,255,255,0.4)",sb:"rgba(255,255,255,0.03)",bc:"rgba(255,255,255,0.08)",t:"$ARSWP Token Launch",d:"Launching $ARSWP token on Pump.fun. Community members get early access and rewards."},
+              
               {s:"Q2 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"AI Wallet Hygiene Agent",d:"AI-powered agent that analyzes your wallet, detects dust and spam tokens automatically."},
               {s:"Q3 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"Cross-Chain Swap",d:"Seamlessly swap tokens across multiple chains directly from Arsweep."},
               {s:"Q3 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"Vault & Earn",d:"Put your reclaimed SOL to work. Deposit into vaults and earn yield automatically."},
@@ -486,7 +486,7 @@ const Landing = () => {
           </span>
         </div>
         <div style={{display:"flex",gap:24}}>
-          {[["Docs","/docs"],["GitHub","https://github.com/CodingRangga22"],["Discord","https://discord.gg/D2rtvK3fBs"],["$ARSWP","/token"]].map(([l,p])=>(
+          {[["Docs","/docs"],["GitHub","https://github.com/CodingRangga22"],["Discord","https://discord.gg/D2rtvK3fBs"],["$ASWP","/token"]].map(([l,p])=>(
             <span key={l}
               onClick={()=>p.startsWith("http")?window.open(p,"_blank"):navigate(p)}
               style={{fontFamily:"var(--font-mono)",fontSize:12,color:"rgba(255,255,255,0.25)",cursor:"pointer",transition:"color 0.2s"}}

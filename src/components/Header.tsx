@@ -47,7 +47,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
 
         {/* Center — Nav desktop */}
         <div className="hidden sm:flex" style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", alignItems: "center", gap: 28 }}>
-          {[["Docs","/docs"],["$ARSWP","/token"],["Agent","/agent"]].map(([l,p])=>(
+          {[["Docs","/docs"],["Agent","/agent"]].map(([l,p])=>(
             <Link key={p} to={p}
               style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
               onMouseEnter={e=>(e.currentTarget.style.color="#FFFFFF")}
@@ -74,7 +74,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
           borderBottom: "1px solid rgba(255,255,255,0.08)",
           padding: "8px 20px 20px",
         }}>
-          {[["Docs","/docs"],["$ARSWP","/token"],["Agent","/agent"]].map(([l,p])=>(
+          {[["Docs","/docs"],["Agent","/agent"]].map(([l,p])=>(
             <Link key={p} to={p} onClick={() => setMobileOpen(false)}
               style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", textDecoration: "none", padding: "12px 8px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "block" }}
             >{l}</Link>

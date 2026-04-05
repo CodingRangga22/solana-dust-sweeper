@@ -305,7 +305,7 @@ export function NotificationSettings() {
           </div>
           {subscription.tier === 'free' && (
             <p className="text-xs text-muted-foreground mt-1 ml-6">
-              Hold $ARSWP tokens to unlock Premium features (coming soon)
+              Hold $ASWP tokens to unlock Premium features (coming soon)
             </p>
           )}
         </div>

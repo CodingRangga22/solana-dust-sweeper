@@ -33,10 +33,10 @@ const milestones = [
     ring: "ring-primary/30",
   },
   {
-    label: "$ARSWP Token Launch",
+    label: "$ASWP Token Launch",
     status: "upcoming",
     desc: "Coming Soon",
-    detail: "Launching $ARSWP token on Pump.fun. Community members get early access and rewards.",
+    detail: "Launching $ASWP token on Pump.fun. Community members get early access and rewards.",
     icon: Coins,
     color: "text-yellow-400",
     bg: "bg-yellow-400/10",
