@@ -59,7 +59,7 @@ export const useX402Payment = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Payment': JSON.stringify({ signature: payData.signature, network: 'solana', amount: amountAtomic }),
+        'PAYMENT-SIGNATURE': payData.signature,
       },
       body: JSON.stringify({ walletAddress: wallet.publicKey.toString() }),
     });
