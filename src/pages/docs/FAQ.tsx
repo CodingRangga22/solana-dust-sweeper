@@ -30,10 +30,10 @@ export default function FAQ() {
       </div>
       <div className="mt-10 p-6 rounded-xl border bg-primary/5 text-center">
         <p className="font-semibold mb-2">Still have questions?</p>
-        <p className="text-sm text-muted-foreground mb-4">Reach out on X or join our Discord.</p>
+        <p className="text-sm text-muted-foreground mb-4">Reach out on X or join our Telegram.</p>
         <div className="flex justify-center gap-3 flex-wrap">
           <a href="https://x.com/Ars​weep_AI" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition">@Arsweep_AI on X</a>
-          <a href="https://discord.gg/D2rtvK3fBs" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg border text-sm font-medium hover:bg-muted transition">Discord Support</a>
+          <a href="https://t.me/arsweepalert" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg border text-sm font-medium hover:bg-muted transition">Telegram Support</a>
         </div>
       </div>
     </div>

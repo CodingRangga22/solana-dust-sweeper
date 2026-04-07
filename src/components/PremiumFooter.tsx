@@ -21,7 +21,7 @@ const InstagramIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
     <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
   </svg>
 );
-const DiscordIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+const TelegramIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M9 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" fill="currentColor" />
     <path d="M8.5 17c0 0 1.5 2 3.5 2s3.5-2 3.5-2" /><path d="M18.4 7.3a16 16 0 0 0-4-1.3l-.5 1a12.5 12.5 0 0 0-3.8 0l-.5-1a16 16 0 0 0-4 1.3A17.2 17.2 0 0 0 3 18c1.5 1.2 3.8 2 6 2l.7-1.3A10.5 10.5 0 0 1 6 17.5l.5-.4c2.8 1.3 6.2 1.3 9 0l.5.4a10.5 10.5 0 0 1-3.7 1.2L13 20c2.2 0 4.5-.8 6-2a17.2 17.2 0 0 0-2.6-10.7z" />
@@ -171,7 +171,7 @@ const PremiumFooter = () => {
                   { label: "Privacy Policy", href: "/privacy" },
                   { label: "Terms of Service", href: "/terms" },
                   { label: "Contact", href: "mailto:contact@arsweep.io" },
-                  { label: "Discord Community", href: "https://discord.gg/D2rtvK3fBs" },
+                  { label: "Telegram Community", href: "https://t.me/arsweepalert" },
                   { label: "Solana Explorer", href: isDevnet ? "https://explorer.solana.com/?cluster=devnet" : "https://explorer.solana.com" },
                 ].map((item) => (
                   <li key={item.label}>
@@ -196,7 +196,7 @@ const PremiumFooter = () => {
                 <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Community</p>
                 <div className="flex items-center gap-3" translate="no">
                   <MagneticIcon href="https://x.com/Arsweep_AI" label="X (Twitter)"><TwitterIcon /></MagneticIcon>
-                  <MagneticIcon href="https://discord.gg/D2rtvK3fBs" label="Discord"><DiscordIcon /></MagneticIcon>
+                  <MagneticIcon href="https://t.me/arsweepalert" label="Telegram"><TelegramIcon /></MagneticIcon>
                   <MagneticIcon href="https://t.me/ArsweepAi_bot" label="Telegram"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></MagneticIcon>
                 </div>
               </div>

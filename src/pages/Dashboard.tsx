@@ -450,9 +450,34 @@ const Dashboard = () => {
   // Not connected
   if (!connected) {
     return (
-      <div className="relative min-h-screen overflow-hidden" style={{ background: "transparent" }}>
-        <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
-        <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
+      <div
+        className="relative min-h-screen overflow-hidden"
+        style={{
+          background: "var(--ar-base)",
+          backgroundImage:
+            "radial-gradient(ellipse at 25% 40%, rgba(255,215,0,0.05), transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(255,120,73,0.05), transparent 50%)",
+        }}
+      >
+        {/* Dot grid */}
+        <div
+          className="pointer-events-none fixed inset-0 z-0"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+            maskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)",
+            WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)",
+          }}
+        />
+        {/* Noise */}
+        <div
+          className="pointer-events-none fixed inset-0 z-0"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+            backgroundSize: "200px",
+            opacity: 0.028,
+            mixBlendMode: "overlay",
+          }}
+        />
         <Header onChangeWallet={handleChangeWallet} onDisconnect={handleDisconnect} walletMismatch={walletMismatch} />
         <ChangeWalletInstructionModal
           open={showChangeWalletModal}
@@ -462,23 +487,46 @@ const Dashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center justify-center min-h-[70vh] px-4"
+          className="relative z-10 flex flex-col items-center justify-center min-h-[70vh] px-4 pt-20"
         >
-          <div className="glass rounded-3xl p-10 max-w-lg w-full text-center border border-border/50">
-            <div className="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <Wallet className="w-10 h-10 text-primary-foreground" />
+          <div
+            className="rounded-3xl p-10 max-w-lg w-full text-center"
+            style={{
+              background: "rgba(11,15,20,0.88)",
+              border: "1px solid rgba(255,255,255,0.10)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+              backdropFilter: "blur(20px)",
+            }}
+          >
+            <div
+              className="w-20 h-20 rounded-2xl mx-auto mb-6 shadow-lg flex items-center justify-center"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.10)",
+              }}
+            >
+              <Wallet className="w-10 h-10" style={{ color: "rgba(255,255,255,0.85)" }} />
             </div>
-            <h2 className="text-3xl font-extrabold text-foreground mb-2">Connect Your Wallet</h2>
-            <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto leading-relaxed">
+            <h2 style={{ fontFamily: "var(--font-display)", fontSize: 36, fontWeight: 600, color: "#FFFFFF", marginBottom: 8 }}>
+              Connect Your Wallet
+            </h2>
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: "rgba(255,255,255,0.45)", marginBottom: 22, lineHeight: 1.7, maxWidth: 420, marginInline: "auto" }}>
               Scan your Solana wallet for empty token accounts and reclaim locked SOL — takes under 5 seconds.
             </p>
-            <div className="flex flex-wrap justify-center gap-3 mb-8 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50">🔒 Read-only scan</span>
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50">✅ Non-custodial</span>
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50">⚡ Free to scan</span>
+            <div className="flex flex-wrap justify-center gap-3 mb-8" style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+              <span className="px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>🔒 Read-only scan</span>
+              <span className="px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>✅ Non-custodial</span>
+              <span className="px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>⚡ Free to scan</span>
             </div>
-            <WalletMultiButton className="!bg-primary !text-primary-foreground !rounded-2xl !px-8 !py-4 !text-lg !font-semibold hover:!opacity-90 !transition-opacity !w-full !justify-center" />
-            <p className="text-xs text-muted-foreground mt-4">
+            <WalletMultiButton
+              className="!rounded-2xl !px-8 !py-4 !text-sm !font-semibold !w-full !justify-center !border-0 !shadow-none"
+              style={{
+                background: "#FFFFFF",
+                color: "#0B0F14",
+                fontFamily: "var(--font-mono)",
+              }}
+            />
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(255,255,255,0.30)", marginTop: 14 }}>
               Supports Phantom, Solflare, Backpack & more
             </p>
           </div>

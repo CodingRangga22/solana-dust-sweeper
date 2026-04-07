@@ -1,5 +1,6 @@
 import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { NETWORK } from "@/config/env";
 
 // ── Thresholds ────────────────────────────────────────────────────────
 const DUST_AMOUNT_THRESHOLD = BigInt(1_000);
@@ -64,27 +65,59 @@ async function fetchTokenPriceUsd(mint: string): Promise<number> {
   }
 }
 
+function pow10BigInt(exp: number): bigint {
+  if (exp <= 0) return BigInt(1);
+  // Prevent absurd exponent causing runaway memory/time.
+  const safeExp = Math.min(exp, 30);
+  return BigInt("1" + "0".repeat(safeExp));
+}
+
 function computeTotalUsdCents(
   pricePerToken: number,
   rawAmount: bigint,
   decimals: number,
 ): number {
-  if (pricePerToken === 0 || rawAmount === BigInt(0)) return 0;
-  const humanAmount = Number(rawAmount) / Math.pow(10, decimals);
-  return Math.floor(humanAmount * pricePerToken * 100);
+  if (!Number.isFinite(pricePerToken) || pricePerToken <= 0) return 0;
+  if (rawAmount <= BigInt(0)) return 0;
+
+  // Convert price to fixed-point micro-dollars to keep bigint math stable.
+  const priceMicros = BigInt(Math.floor(pricePerToken * 1_000_000));
+  if (priceMicros <= BigInt(0)) return 0;
+
+  const denom = pow10BigInt(decimals) * BigInt(1_000_000);
+  const cents = (rawAmount * priceMicros * BigInt(100)) / denom;
+
+  // Clamp to safe JS number range for downstream UI (protect against overflow).
+  const maxSafe = BigInt(Number.MAX_SAFE_INTEGER);
+  if (cents > maxSafe) return Number.MAX_SAFE_INTEGER;
+  return Number(cents);
 }
 
 // ── Jupiter Quote API (liquidity check) ──────────────────────────────
 const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 
-async function checkHasLiquidity(mint: string): Promise<boolean> {
+async function checkHasLiquidity(mint: string, decimals: number): Promise<boolean> {
   try {
-    const res = await fetch(
-      `https://api.jup.ag/swap/v1/quote?inputMint=${mint}&outputMint=${USDC_MINT}&amount=1000000&slippageBps=5000`,
-      { headers: jupiterHeaders() }
-    );
-    const json = await res.json();
-    return !json?.error && !!json?.routePlan?.length;
+    // Jupiter "amount" is in input-mint base units, so we must respect decimals.
+    const oneTokenBaseUnits = pow10BigInt(Math.max(0, decimals));
+
+    // Try a few increasing amounts (some routes require minimum trade size).
+    const attempts = [
+      oneTokenBaseUnits,
+      oneTokenBaseUnits * BigInt(10),
+      oneTokenBaseUnits * BigInt(100),
+    ].map((a) => (a > BigInt("1000000000000") ? BigInt("1000000000000") : a)); // cap at 1e12
+
+    for (const amt of attempts) {
+      const res = await fetch(
+        `https://api.jup.ag/swap/v1/quote?inputMint=${mint}&outputMint=${USDC_MINT}&amount=${amt.toString()}&slippageBps=5000`,
+        { headers: jupiterHeaders() }
+      );
+      const json = await res.json();
+      if (!json?.error && !!json?.routePlan?.length) return true;
+    }
+
+    return false;
   } catch {
     return false;
   }
@@ -104,9 +137,13 @@ async function fetchTokenMetadata(mint: string): Promise<TokenMetadata> {
   };
 
   try {
-    const apiKey = import.meta.env.VITE_HELIUS_RPC_URL?.split("api-key=")[1] ?? "";
+    const apiKey =
+      import.meta.env.VITE_HELIUS_API_KEY ??
+      import.meta.env.VITE_HELIUS_RPC_URL?.split("api-key=")[1] ??
+      "";
+    const heliusCluster = NETWORK === "devnet" ? "devnet" : "mainnet";
     const res = await fetch(
-      `https://mainnet.helius-rpc.com/?api-key=${apiKey}`,
+      `https://${heliusCluster}.helius-rpc.com/?api-key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -189,7 +226,7 @@ export async function fetchAllTokenAccounts(
 
     const [pricePerToken, hasLiquidityPool, metadata, mintFlags] = await Promise.all([
       fetchTokenPriceUsd(mintStr),
-      amount > BigInt(0) ? checkHasLiquidity(mintStr) : Promise.resolve(false),
+      amount > BigInt(0) ? checkHasLiquidity(mintStr, decimals) : Promise.resolve(false),
       fetchTokenMetadata(mintStr),
       fetchMintFlags(connection, mintStr),
     ]);
@@ -201,7 +238,7 @@ export async function fetchAllTokenAccounts(
 
     if (amount === BigInt(0)) reasons.push("zero_balance");
     if (amount > BigInt(0) && amount <= DUST_AMOUNT_THRESHOLD) reasons.push("dust_amount");
-    if (!hasLiquidityPool) reasons.push("no_liquidity");
+    if (amount > BigInt(0) && !hasLiquidityPool) reasons.push("no_liquidity");
     if (usdValueCents <= DUST_USD_THRESHOLD_CENTS) reasons.push("low_usd_value");
 
     const lastActivityMs: number | null = null;
@@ -221,13 +258,15 @@ export async function fetchAllTokenAccounts(
       usdValueCents > 0 &&
       usdValueCents <= DUST_USD_THRESHOLD_CENTS;
 
-    const humanAmount = Number(amount) / Math.pow(10, decimals);
+    // Avoid Number(bigint) overflow in logs; keep it readable.
+    const humanAmountApprox =
+      amount > BigInt("9007199254740991000000") ? ">=9e21" : (Number(amount) / Math.pow(10, decimals)).toString();
     const scamFlags = [
       mintFlags.freezeAuthority ? "FREEZABLE" : "",
       mintFlags.mintAuthority ? "MINTABLE" : "",
     ].filter(Boolean).join(", ");
     console.log(
-      `[Arsweep] ${metadata.symbol} (${mintStr.slice(0,8)}...): raw=${amount}, decimals=${decimals}, human=${humanAmount.toFixed(decimals)}, price=$${pricePerToken}, totalUsd=$${(usdValueCents/100).toFixed(2)}, liquidity=${hasLiquidityPool}, sweepable=${isSweepable}${scamFlags ? `, flags=[${scamFlags}]` : ""}`
+      `[Arsweep] ${metadata.symbol} (${mintStr.slice(0,8)}...): raw=${amount}, decimals=${decimals}, human≈${humanAmountApprox}, price=$${pricePerToken}, totalUsd=$${(usdValueCents/100).toFixed(2)}, liquidity=${hasLiquidityPool}, sweepable=${isSweepable}${scamFlags ? `, flags=[${scamFlags}]` : ""}`
     );
 
     results.push({

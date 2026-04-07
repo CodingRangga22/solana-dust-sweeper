@@ -32,7 +32,7 @@ export const useX402Payment = () => {
       createTransferInstruction(fromATA, toATA, wallet.publicKey, amountAtomic, [], TOKEN_PROGRAM_ID)
     );
 
-    const { blockhash } = await connection.getLatestBlockhash('confirmed');
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
     tx.recentBlockhash = blockhash;
     tx.feePayer = wallet.publicKey;
 
@@ -48,6 +48,8 @@ export const useX402Payment = () => {
         fromWallet: wallet.publicKey.toString(),
         amountUSDC,
         signedTx: signedBase64,
+        blockhash,
+        lastValidBlockHeight,
       }),
     });
 

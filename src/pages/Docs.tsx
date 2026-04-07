@@ -95,8 +95,8 @@ const Docs = () => {
           <Link to="/app" className="hover:text-foreground transition-colors">
             App
           </Link>
-          <a href="https://discord.gg/D2rtvK3fBs" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-            Discord
+          <a href="https://t.me/arsweepalert" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+            Telegram
           </a>
         </div>
       </header>

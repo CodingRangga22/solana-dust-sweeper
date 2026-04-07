@@ -8,6 +8,7 @@ import { useBanner } from "@/components/BannerProvider";
 import HeroDemo from "@/components/HeroDemo";
 import LiveStatsSection from "@/components/LiveStatsSection";
 import FAQSection from "@/components/landing/FAQSection";
+import PremiumFooter from "@/components/PremiumFooter";
 
 
 const YellowReveal = ({ children }: { children: React.ReactNode }) => {
@@ -173,7 +174,7 @@ const Landing = () => {
         </div>
         {menuOpen && (
           <div className="sm:hidden" style={{background:"rgba(11,15,20,0.98)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(255,255,255,0.08)",padding:"8px 16px 16px"}}>
-            {[["Agent","/agent"],["$ASWP","/token"],["Watch Demo","/demo"],["Simulation","/simulation"],["Docs","/docs"],["Discord","https://discord.gg/D2rtvK3fBs"]].map(([l,p])=>(
+            {[["Agent","/agent"],["$ASWP","/token"],["Watch Demo","/demo"],["Simulation","/simulation"],["Docs","/docs"],["Telegram","https://t.me/arsweepalert"]].map(([l,p])=>(
               <span key={p} onClick={()=>{p.startsWith("http")?window.open(p,"_blank"):navigate(p);setMenuOpen(false);}}
                 style={{fontSize:14,color:"rgba(255,255,255,0.7)",cursor:"pointer",padding:"12px 8px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"block"}}
               >{l}</span>
@@ -261,7 +262,7 @@ const Landing = () => {
                   <span style={{...M,fontSize:11,color:"rgba(255,255,255,0.2)"}}>{n}</span>
                 </div>
                 <h3 style={{fontSize:17,fontWeight:600,color:"#FFFFFF",marginBottom:10,lineHeight:1.4}}>{t}</h3>
-                <p style={{fontSize:14,color:"rgba(255,255,255,0.45)",lineHeight:1.75}}>{d}</p>
+                <p style={{fontSize:14,color:"rgba(255,255,255,0.45)",lineHeight:1.75,textAlign:"justify"}}>{d}</p>
               </div>
             ))}
           </div>
@@ -282,7 +283,17 @@ const Landing = () => {
           <p style={{fontSize:16,color:"rgba(255,255,255,0.4)",maxWidth:600,margin:"0 auto 64px",lineHeight:1.75}}>
             Every time you interact with a token on Solana, an empty account is left behind. Each one locks ~0.002 SOL in rent indefinitely. Arsweep finds them all and closes them — returning your SOL instantly, non-custodially, on-chain.
           </p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))",gap:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:16,overflow:"hidden",textAlign:"left"}}>
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6"
+            style={{
+              gap: 1,
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: 16,
+              overflow: "hidden",
+              textAlign: "left",
+            }}
+          >
             {[
               {icon:"◈",t:"Dust Account Scanner",d:"Automatically detects all empty token accounts in your wallet — regardless of how many tokens you have interacted with."},
               {icon:"⬡",t:"SOL Rent Reclaimer",d:"Closes selected accounts and refunds the locked rent deposit directly to your wallet. No middleman, no custody."},
@@ -290,14 +301,36 @@ const Landing = () => {
               {icon:"◎",t:"Non-Custodial",d:"We never hold your assets or request your private key. Every transaction is signed by you, in your wallet."},
               {icon:"◈",t:"Fully On-Chain",d:"Every sweep operation is a verifiable Solana transaction. Transparent, permanent, and auditable by anyone."},
               
-            ].map(({icon,t,d})=>(
-              <div key={t} style={{padding:"36px 32px",background:"rgba(11,15,20,0.95)",transition:"background 0.2s"}}
+            ].map(({icon,t,d}, idx, arr)=>(
+              <div
+                key={t}
+                className={`ar-fade-in lg:col-span-2 ${arr.length === 5 && idx >= 3 ? "lg:col-span-3" : ""}`}
+                style={{
+                  padding: "36px 32px",
+                  background: "rgba(11,15,20,0.95)",
+                  transition: "background 0.2s",
+                }}
                 onMouseEnter={e=>(e.currentTarget.style.background="rgba(20,26,35,0.98)")}
                 onMouseLeave={e=>(e.currentTarget.style.background="rgba(11,15,20,0.95)")}
-                className="ar-fade-in"
               >
-                <div style={{width:40,height:40,borderRadius:10,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"rgba(255,255,255,0.5)",marginBottom:20}}>{icon}</div>
-                <h3 style={{fontSize:16,fontWeight:600,color:"#FFFFFF",marginBottom:10,lineHeight:1.4}}>{t}</h3>
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 18,
+                    color: "rgba(255,255,255,0.5)",
+                    margin: "0 auto 20px",
+                  }}
+                >
+                  {icon}
+                </div>
+                <h3 style={{fontSize:16,fontWeight:600,color:"#FFFFFF",marginBottom:10,lineHeight:1.4,textAlign:"center"}}>{t}</h3>
                 <p style={{fontSize:14,color:"rgba(255,255,255,0.45)",lineHeight:1.75}}>{d}</p>
               </div>
             ))}
@@ -409,19 +442,19 @@ const Landing = () => {
           <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"20px 28px",marginBottom:48}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
               <span style={{fontSize:14,color:"#FFFFFF",fontWeight:500}}>Overall Progress</span>
-              <span style={{fontFamily:"var(--font-mono)",fontSize:13,color:"var(--ar-teal)"}}>2 / 10 Milestones</span>
+              <span style={{fontFamily:"var(--font-mono)",fontSize:13,color:"var(--ar-teal)"}}>3 / 10 Milestones</span>
             </div>
             <div style={{height:3,background:"rgba(255,255,255,0.08)",borderRadius:2,overflow:"hidden"}}>
-              <div style={{width:"20%",height:"100%",background:"var(--ar-teal)",borderRadius:2}} />
+              <div style={{width:"30%",height:"100%",background:"var(--ar-teal)",borderRadius:2}} />
             </div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))",gap:16}}>
             {[
               {s:"COMPLETED",sc:"var(--ar-teal)",sb:"rgba(29,184,142,0.1)",bc:"rgba(29,184,142,0.25)",t:"Devnet Testing",d:"Program deployed and tested end-to-end. Jupiter API integrated. 100+ test sweeps completed."},
-              {s:"LIVE NOW",sc:"var(--ar-teal)",sb:"rgba(29,184,142,0.1)",bc:"rgba(29,184,142,0.25)",t:"Mainnet Launch",d:"Full mainnet deployment complete. Real SOL sweeping live. Treasury accumulating fees."},
-              {s:"IN PROGRESS",sc:"rgba(255,255,255,0.6)",sb:"rgba(255,255,255,0.05)",bc:"rgba(255,255,255,0.15)",t:"Community Building",d:"Growing Discord and X community. Building awareness before token launch. Target: 500+ members."},
+              {s:"COMPLETED",sc:"var(--ar-teal)",sb:"rgba(29,184,142,0.1)",bc:"rgba(29,184,142,0.25)",t:"Mainnet Launch",d:"Full mainnet deployment complete. Real SOL sweeping live. Treasury accumulating fees."},
+              {s:"IN PROGRESS",sc:"rgba(255,255,255,0.6)",sb:"rgba(255,255,255,0.05)",bc:"rgba(255,255,255,0.15)",t:"Community Building",d:"Growing Telegram and X community. Building awareness before token launch. Target: 500+ members."},
               
-              {s:"COMING SOON",sc:"rgba(255,255,255,0.4)",sb:"rgba(255,255,255,0.03)",bc:"rgba(255,255,255,0.08)",t:"$ASWP Token Launch",d:"Launching $ASWP token on Pump.fun. Community members get early access and rewards."},
+              {s:"LIVE NOW",sc:"var(--ar-teal)",sb:"rgba(29,184,142,0.1)",bc:"rgba(29,184,142,0.25)",t:"$ASWP Token Launch",d:"$ASWP token is now launching on Pump.fun. Community members get early access and rewards."},
               {s:"Q2 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"AI Wallet Hygiene Agent",d:"AI-powered agent that analyzes your wallet, detects dust and spam tokens automatically."},
               {s:"Q3 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"Cross-Chain Swap",d:"Seamlessly swap tokens across multiple chains directly from Arsweep."},
               {s:"Q3 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"Vault & Earn",d:"Put your reclaimed SOL to work. Deposit into vaults and earn yield automatically."},
@@ -464,7 +497,7 @@ const Landing = () => {
               Scan my wallet
               <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M7.5 3l3.5 3.5L7.5 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
-            <button onClick={()=>window.open("https://t.me/+657UAJGoNE02NDM1","_blank")} style={BG}
+            <button onClick={()=>window.open("https://t.me/arsweepalert","_blank")} style={BG}
               onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.borderColor="rgba(255,255,255,0.25)"; (e.currentTarget as HTMLElement).style.color="rgba(255,255,255,0.8)"; }}
               onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.borderColor="rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color="rgba(255,255,255,0.45)"; }}
             >
@@ -478,25 +511,7 @@ const Landing = () => {
       <div style={{height:1,background:"rgba(255,255,255,0.06)"}} />
 
       <FAQSection />
-      {/* FOOTER */}
-      <footer style={{position:"relative",zIndex:2,padding:"28px 40px",display:"flex",alignItems:"center",justifyContent:"space-between",maxWidth:1200,margin:"0 auto"}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <ArsweepLogo className="w-6 h-6" />
-          <span style={{fontFamily:"var(--font-mono)",fontSize:12,color:"rgba(255,255,255,0.25)"}}>
-            Arsweep — built for Solana. 2026
-          </span>
-        </div>
-        <div style={{display:"flex",gap:24}}>
-          {[["Docs","/docs"],["GitHub","https://github.com/CodingRangga22"],["Discord","https://discord.gg/D2rtvK3fBs"],["$ASWP","/token"]].map(([l,p])=>(
-            <span key={l}
-              onClick={()=>p.startsWith("http")?window.open(p,"_blank"):navigate(p)}
-              style={{fontFamily:"var(--font-mono)",fontSize:12,color:"rgba(255,255,255,0.25)",cursor:"pointer",transition:"color 0.2s"}}
-              onMouseEnter={e=>(e.currentTarget.style.color="rgba(255,255,255,0.7)")}
-              onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.25)")}
-            >{l}</span>
-          ))}
-        </div>
-      </footer>
+      <PremiumFooter />
 
       <ChatWidget />
     </div>

@@ -47,7 +47,7 @@ const sections = [
     icon: RefreshCw,
     title: "Changes to the Service",
     content: [
-      "Arsweep is under active development. We may modify, suspend, or discontinue any aspect of the service at any time, with or without notice. We will make reasonable efforts to communicate significant changes through our Discord and official channels.",
+      "Arsweep is under active development. We may modify, suspend, or discontinue any aspect of the service at any time, with or without notice. We will make reasonable efforts to communicate significant changes through our Telegram and official channels.",
       "We are not liable for any inconvenience or loss resulting from service modifications, downtime, or discontinuation.",
     ],
   },
@@ -68,7 +68,7 @@ const sections = [
       "Questions about these Terms? We are transparent about how we operate and welcome any enquiries. Reach us through our official community channels.",
     ],
     links: [
-      { label: "Discord Community", href: "https://discord.gg/D2rtvK3fBs" },
+      { label: "Telegram Community", href: "https://t.me/arsweepalert" },
       { label: "Follow on X", href: "https://x.com/Arsweep_AI" },
     ],
   },

@@ -26,7 +26,7 @@ const milestones = [
     label: "Community Building",
     status: "current",
     desc: "In Progress",
-    detail: "Growing Discord and X community. Building awareness before token launch. Target: 500+ members.",
+    detail: "Growing Telegram and X community. Building awareness before token launch. Target: 500+ members.",
     icon: Users,
     color: "text-primary",
     bg: "bg-primary/10",
@@ -188,8 +188,8 @@ const RoadmapSection = () => (
       <div className="text-center mt-10">
         <p className="text-xs text-muted-foreground">
           Last updated: April 2026 &nbsp;·&nbsp;
-          <a href="https://discord.gg/D2rtvK3fBs" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-            Join Discord
+          <a href="https://t.me/arsweepalert" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+            Join Telegram
           </a>
         </p>
       </div>

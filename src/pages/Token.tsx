@@ -101,11 +101,11 @@ const TokenPage = () => {
             Earn $ASWP Now
             <ArrowRight size={14} />
           </button>
-          <button onClick={() => window.open("https://discord.gg/D2rtvK3fBs", "_blank")} style={BG}
+          <button onClick={() => window.open("https://t.me/arsweepalert", "_blank")} style={BG}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.25)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.8)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.45)"; }}
           >
-            Join Discord
+            Join Telegram
             <ExternalLink size={13} />
           </button>
         </div>
@@ -158,11 +158,11 @@ const TokenPage = () => {
               Launch App
               <ArrowRight size={14} />
             </button>
-            <button onClick={() => window.open("https://discord.gg/D2rtvK3fBs", "_blank")} style={BG}
+            <button onClick={() => window.open("https://t.me/arsweepalert", "_blank")} style={BG}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.25)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.8)"; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.45)"; }}
             >
-              Join Discord
+              Join Telegram
               <ExternalLink size={13} />
             </button>
           </div>
@@ -178,7 +178,7 @@ const TokenPage = () => {
           <span style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.25)" }}>Arsweep — built for Solana. 2026</span>
         </div>
         <div style={{ display: "flex", gap: 24 }}>
-          {[["Home","/"],["App","/app"],["Docs","/docs"],["Discord","https://discord.gg/D2rtvK3fBs"]].map(([l,p]) => (
+          {[["Home","/"],["App","/app"],["Docs","/docs"],["Telegram","https://t.me/arsweepalert"]].map(([l,p]) => (
             <span key={l} onClick={() => p.startsWith("http") ? window.open(p,"_blank") : navigate(p)}
               style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.25)", cursor: "pointer", transition: "color 0.2s" }}
               onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.7)")}

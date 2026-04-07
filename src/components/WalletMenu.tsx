@@ -39,7 +39,9 @@ const WalletMenu = ({
 
   if (!connected || !publicKey) {
     return (
-      <WalletMultiButton className="!rounded-lg !text-sm !font-medium !px-4 !py-2 !border-0 !shadow-none" style={{ background: "#FFFFFF", color: "#0B0F14", fontFamily: "IBM Plex Mono, monospace" }} />
+      <WalletMultiButton
+        className="arsweep-wallet-button !shadow-none !whitespace-nowrap"
+      />
     );
   }
 

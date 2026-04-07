@@ -62,7 +62,7 @@ export async function sendUSDCPayment(
       createTransferInstruction(fromATA, toATA, wallet.publicKey, amountAtomic, [], TOKEN_PROGRAM_ID)
     );
 
-    const { blockhash } = await connection.getLatestBlockhash();
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
     tx.recentBlockhash = blockhash;
     tx.feePayer = wallet.publicKey;
 
@@ -78,6 +78,8 @@ export async function sendUSDCPayment(
         fromWallet: wallet.publicKey.toString(),
         amountUSDC,
         signedTx: signedBase64,
+        blockhash,
+        lastValidBlockHeight,
       }),
     });
 

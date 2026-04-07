@@ -248,9 +248,6 @@ export default function AgentArsweep() {
             </button>
           ))}
         </div>
-        <div className="hidden md:block fixed bottom-10 left-0 w-60 px-3 pb-3 pt-2 bg-black/80 backdrop-blur-md border-t border-white/8 z-20">
-          <WalletMultiButton className="!bg-white/8 !border !border-white/12 hover:!bg-white/12 !h-9 !text-xs !rounded-xl !w-full !text-white/80" />
-        </div>
       </div>
 
       {/* Main */}
@@ -269,9 +266,12 @@ export default function AgentArsweep() {
               Online
             </span>
           </div>
-          <button onClick={clearChat} className="p-1.5 rounded-lg hover:bg-white/8 text-white/30 hover:text-white/70 transition-colors">
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <WalletMultiButton className="!bg-white/8 !border !border-white/12 hover:!bg-white/12 !h-9 !text-xs !rounded-xl !px-3 !text-white/80 !justify-center" />
+            <button onClick={clearChat} className="p-1.5 rounded-lg hover:bg-white/8 text-white/30 hover:text-white/70 transition-colors">
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
 
         {/* Messages */}
@@ -344,7 +344,7 @@ export default function AgentArsweep() {
         </div>
 
         {/* Input */}
-        <div className="p-3 border-t border-white/8 bg-black/40 backdrop-blur-md">
+        <div className="p-3 md:p-3 border-t border-white/8 bg-black/40 backdrop-blur-md pb-[calc(0.75rem+env(safe-area-inset-bottom))] md:pb-3">
           <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
             <div className="relative">
               <Textarea ref={textareaRef} value={input} onChange={(e) => setInput(e.target.value)}
@@ -387,9 +387,6 @@ export default function AgentArsweep() {
                     <span className="text-[10px] font-bold text-white/30 group-hover:text-yellow-400 transition-colors">{f.price}</span>
                   </button>
                 ))}
-              </div>
-              <div className="hidden md:block fixed bottom-10 left-0 w-60 px-3 pb-3 pt-2 bg-black/80 backdrop-blur-md border-t border-white/8 z-20">
-                <WalletMultiButton className="!bg-white/8 !border !border-white/12 !h-9 !text-xs !rounded-xl !w-full !text-white/80" />
               </div>
             </motion.div>
           </motion.div>
