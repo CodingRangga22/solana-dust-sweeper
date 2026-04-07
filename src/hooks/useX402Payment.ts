@@ -15,7 +15,7 @@ export const useX402Payment = () => {
         address: wallet.publicKey.toString(),
         signTransaction: async (tx: any) => await wallet.signTransaction(tx),
       },
-      network: 'solana-mainnet',
+      network: 'solana',
     });
 
     const response = await client.fetch(`${API_BASE}${endpoint}`, {
