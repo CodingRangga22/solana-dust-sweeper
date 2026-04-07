@@ -15,6 +15,7 @@
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
     "@hookform/resolvers": "^3.10.0",
+    "@payai/facilitator": "^2.3.6",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-aspect-ratio": "^1.1.7",
@@ -52,6 +53,7 @@
     "@twa-dev/sdk": "^8.0.2",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@x402/core": "^2.9.0",
+    "@x402/express": "^2.9.0",
     "@x402/fetch": "^2.9.0",
     "@x402/svm": "^2.9.0",
     "axios": "^1.14.0",

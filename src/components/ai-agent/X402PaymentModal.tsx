@@ -1,6 +1,9 @@
-import { X, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { X, Sparkles, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useX402Payment } from '@/hooks/useX402Payment';
 
 interface X402PaymentModalProps {
   isOpen: boolean;
@@ -10,6 +13,10 @@ interface X402PaymentModalProps {
 
 export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentModalProps) {
   const priceDisplay = serviceType === 'analyze' || serviceType === 'rugcheck' ? '$0.10 USDC' : '$0.05 USDC';
+  const wallet = useWallet();
+  const { publicKey } = wallet;
+  const { isProcessing, error, requestPremium } = useX402Payment(wallet);
+  const [result, setResult] = useState<any>(null);
   const title = serviceType === 'analyze' ? 'AI Wallet Analysis' 
     : serviceType === 'report' ? 'Quick Sweep Report'
     : serviceType === 'roast' ? 'Wallet Roast 🔥'
@@ -21,6 +28,21 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
     : serviceType === 'roast' ? 'Get a brutal AI roast of your wallet + a score from 0-100. Share it on X!'
     : serviceType === 'rugcheck' ? 'AI scans all your tokens against rugcheck.xyz to detect dangerous or suspicious tokens'
     : 'AI creates the optimal sweep plan — which accounts to close first for maximum SOL recovery';
+
+  const endpoint =
+    serviceType === 'analyze' ? '/x402/analyze'
+      : serviceType === 'report' ? '/x402/report'
+      : serviceType === 'roast' ? '/x402/roast'
+      : serviceType === 'rugcheck' ? '/x402/rugcheck'
+      : '/x402/planner';
+
+  const canPay = !!publicKey && !isProcessing;
+
+  const handlePay = async () => {
+    if (!publicKey) return;
+    const data = await requestPremium(publicKey.toString(), endpoint as any);
+    setResult(data);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -54,11 +76,31 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
             <p className="text-xs text-muted-foreground mt-2">Pay via x402 on Solana mainnet (USDC).</p>
           </div>
 
+          {error && (
+            <div className="bg-red-900/20 border border-red-500 rounded-lg p-3 text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
+          {result && (
+            <div className="bg-muted/40 border rounded-lg p-3 max-h-56 overflow-auto">
+              <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(result, null, 2)}</pre>
+            </div>
+          )}
+
           <Button
-            disabled
+            onClick={handlePay}
+            disabled={!canPay}
             className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 h-11 disabled:opacity-50"
           >
-            Coming Soon
+            {isProcessing ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              `Pay ${priceDisplay}`
+            )}
           </Button>
         </div>
       </DialogContent>
