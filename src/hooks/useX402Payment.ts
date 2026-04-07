@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createX402Client } from 'x402-solana/client';
+import { getSolanaRpcUrl } from '@/lib/solana-payment';
 
 const API_BASE = 'https://api.arsweep.fun/v1';
 
@@ -10,12 +11,15 @@ export const useX402Payment = () => {
   const makeX402Payment = async (wallet: any, endpoint: string) => {
     if (!wallet?.publicKey) throw new Error('Wallet not connected');
 
+    // Must use network "solana" (not "solana-mainnet") so x402-solana resolves mainnet RPC correctly.
+    // Must pass rpcUrl: default public RPC blocks browser requests with 403; Helius 402 = billing/API key.
     const client = createX402Client({
       wallet: {
         address: wallet.publicKey.toString(),
         signTransaction: async (tx: any) => await wallet.signTransaction(tx),
       },
       network: 'solana',
+      rpcUrl: getSolanaRpcUrl(),
     });
 
     const response = await client.fetch(`${API_BASE}${endpoint}`, {
