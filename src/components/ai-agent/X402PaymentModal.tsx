@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useX402Payment } from '@/hooks/useX402Payment';
-import { sendUSDCPayment, getSolanaConnection, checkUSDCBalance } from '@/lib/solana-payment';
+import { getSolanaConnection, checkUSDCBalance } from '@/lib/solana-payment';
 
 interface X402PaymentModalProps {
   isOpen: boolean;
@@ -70,20 +70,12 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
       setPaymentStatus('paying');
       setPaymentError('');
 
-      const connection = getSolanaConnection();
-      const paymentResult = await sendUSDCPayment(connection, wallet, price);
-
-      if (!paymentResult.success) {
-        throw new Error(paymentResult.error || 'Payment failed');
-      }
-
-      setPaymentStatus('verifying');
-
       const endpoint = serviceType === 'analyze' ? '/x402/analyze'
         : serviceType === 'report' ? '/x402/report'
         : serviceType === 'roast' ? '/x402/roast'
         : serviceType === 'rugcheck' ? '/x402/rugcheck'
         : '/x402/planner';
+      setPaymentStatus('verifying');
       const data = await requestAnalysis(publicKey.toString(), wallet, endpoint);
       
       setResult(data);
