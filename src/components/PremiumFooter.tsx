@@ -147,16 +147,14 @@ const PremiumFooter = () => {
                   { label: "Documentation", onClick: () => navigate("/docs") },
                 ].map((item) => (
                   <li key={item.label}>
-                    {"href" in item ? (
-                      <a href={item.href} style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }} className=" hover:text-primary transition-colors duration-200 flex items-center gap-1.5 group">
-                        {item.label}
-                        <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </a>
-                    ) : (
-                      <button onClick={item.onClick} style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }} className=" hover:text-primary transition-colors duration-200">
-                        {item.label}
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={item.onClick}
+                      style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}
+                      className="hover:text-primary transition-colors duration-200 text-left w-full"
+                    >
+                      {item.label}
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -176,11 +174,12 @@ const PremiumFooter = () => {
                   <li key={item.label}>
                     <a
                       href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }} className=" hover:text-primary transition-colors duration-200 flex items-center gap-1.5 group"
+                      {...(item.href.startsWith("http")
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                      style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}
+                      className="hover:text-primary transition-colors duration-200 flex items-center gap-1.5 group"
                     >
-                      {item.icon && <item.icon className="w-3.5 h-3.5" />}
                       {item.label}
                       <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </a>

@@ -92,8 +92,20 @@ export async function sendUSDCPayment(
   }
 }
 
+/**
+ * RPC for wallet reads / x402 tx build. Prefer Helius in env; avoid public
+ * api.mainnet-beta.solana.com in the browser — it often returns 403 Forbidden.
+ */
+export function getSolanaRpcUrl(): string {
+  const helius = import.meta.env.VITE_HELIUS_RPC_URL;
+  if (typeof helius === 'string' && helius.trim().startsWith('http')) {
+    return helius.trim();
+  }
+  return 'https://rpc.ankr.com/solana';
+}
+
 export function getSolanaConnection(): Connection {
-  return new Connection(import.meta.env.VITE_HELIUS_RPC_URL || 'https://api.mainnet-beta.solana.com', 'confirmed');
+  return new Connection(getSolanaRpcUrl(), 'confirmed');
 }
 
 export function formatUSDC(amount: number): string {

@@ -27,5 +27,11 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "src/**/*.bak",
+    "src/**/*.bak2",
+    "src/**/*.backup2",
+    "src/_backup_logic_2026-04-06"
+  ]
 }
