@@ -57,9 +57,8 @@ const MagneticIcon = ({ children, href, label }: { children: React.ReactNode; hr
       aria-label={label}
       onMouseMove={handleMouse}
       onMouseLeave={reset}
-      style={{ x: springX, y: springY }}
+      style={{ x: springX, y: springY, width: 40, height: 40, borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.45)", transition: "border-color 0.2s, color 0.2s", cursor: "pointer" }}
       whileTap={{ scale: 0.9 }}
-      style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.45)", transition: "border-color 0.2s, color 0.2s", cursor: "pointer" }}
     >
       {children}
     </motion.a>
