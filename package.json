@@ -13,6 +13,12 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@x402/core": "~2.9.0",
+    "@x402/fetch": "~2.9.0",
+    "@x402/svm": "~2.9.0",
+    "@solana/addresses": "^5.1.0",
+    "@solana/kit": "^5.1.0",
+    "@solana/transactions": "^5.1.0",
     "@coral-xyz/anchor": "^0.32.1",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.11",

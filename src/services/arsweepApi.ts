@@ -10,8 +10,13 @@ export interface ChatRequest {
 export interface ChatResponse {
   text: string;
   toolsUsed: string[];
-  platform: string;
-  userId: string;
+  platform?: string;
+  userId?: string;
+}
+
+export interface HistoryMessageRow {
+  role: 'user' | 'assistant';
+  content: string;
 }
 
 export interface X402AnalyzeRequest {
@@ -48,6 +53,19 @@ export const arsweepApi = {
     if (!res.ok) {
       const error = await res.json();
       throw new Error(error.error || 'Chat failed');
+    }
+    return res.json();
+  },
+
+  fetchHistory: async (userId: string): Promise<{ messages: HistoryMessageRow[] }> => {
+    const res = await fetch(`${API_BASE_URL}/agent/history/${encodeURIComponent(userId)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error((err as { error?: string }).error || 'History failed');
     }
     return res.json();
   },

@@ -1,53 +1,98 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X, Sparkles, Loader2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import ReactMarkdown from 'react-markdown';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useX402Payment } from '@/hooks/useX402Payment';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useX402Payment, priceUsdcFor, type PremiumServicePath } from '@/hooks/useX402Payment';
+import { formatPremiumResult } from '@/lib/formatPremiumResult';
 
 interface X402PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   serviceType: 'analyze' | 'report' | 'roast' | 'rugcheck' | 'planner';
+  /** Called after payment request succeeds (HTTP OK + body). Parent can append to chat. */
+  onPaidSuccess?: (data: unknown) => void;
 }
 
-export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentModalProps) {
+export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }: X402PaymentModalProps) {
+  const priceUsdc = priceUsdcFor(serviceType);
   const priceDisplay = serviceType === 'analyze' || serviceType === 'rugcheck' ? '$0.10 USDC' : '$0.05 USDC';
-  const wallet = useWallet();
-  const { publicKey } = wallet;
-  const { isProcessing, error, requestPremium } = useX402Payment();
+  const {
+    publicKey,
+    signTransaction,
+    connected,
+    isProcessing,
+    error,
+    requestPremium,
+    usdcBalance,
+    solLamports,
+    balanceLoading,
+    refreshBalances,
+    minSolLamports,
+  } = useX402Payment();
   const [result, setResult] = useState<any>(null);
-  const title = serviceType === 'analyze' ? 'AI Wallet Analysis' 
-    : serviceType === 'report' ? 'Quick Sweep Report'
-    : serviceType === 'roast' ? 'Wallet Roast 🔥'
-    : serviceType === 'rugcheck' ? 'Rug Pull Detector 🕵️'
-    : 'Auto-Sweep Planner 🤖';
-  const description = serviceType === 'analyze'
-    ? 'Deep AI-powered analysis of your wallet holdings, risk assessment, and personalized recommendations'
-    : serviceType === 'report' ? 'Fast report showing all dust tokens that can be swept to reclaim SOL rent'
-    : serviceType === 'roast' ? 'Get a brutal AI roast of your wallet + a score from 0-100. Share it on X!'
-    : serviceType === 'rugcheck' ? 'AI scans all your tokens against rugcheck.xyz to detect dangerous or suspicious tokens'
-    : 'AI creates the optimal sweep plan — which accounts to close first for maximum SOL recovery';
+  const [acknowledged, setAcknowledged] = useState(false);
 
-  const endpoint =
-    serviceType === 'analyze' ? '/premium/analyze'
-      : serviceType === 'report' ? '/premium/report'
-      : serviceType === 'roast' ? '/premium/roast'
-      : serviceType === 'rugcheck' ? '/premium/rugcheck'
-      : '/premium/planner';
+  const title =
+    serviceType === 'analyze'
+      ? 'AI Wallet Analysis'
+      : serviceType === 'report'
+        ? 'Quick Sweep Report'
+        : serviceType === 'roast'
+          ? 'Wallet Roast 🔥'
+          : serviceType === 'rugcheck'
+            ? 'Rug Pull Detector 🕵️'
+            : 'Auto-Sweep Planner 🤖';
+  const description =
+    serviceType === 'analyze'
+      ? 'Deep AI-powered analysis of your wallet holdings, risk assessment, and personalized recommendations'
+      : serviceType === 'report'
+        ? 'Fast report showing all dust tokens that can be swept to reclaim SOL rent'
+        : serviceType === 'roast'
+          ? 'Get a brutal AI roast of your wallet + a score from 0-100. Share it on X!'
+          : serviceType === 'rugcheck'
+            ? 'AI scans all your tokens against rugcheck.xyz to detect dangerous or suspicious tokens'
+            : 'AI creates the optimal sweep plan — which accounts to close first for maximum SOL recovery';
 
-  const canPay = !!publicKey && !isProcessing;
+  const endpoint: PremiumServicePath =
+    serviceType === 'analyze'
+      ? '/premium/analyze'
+      : serviceType === 'report'
+        ? '/premium/report'
+        : serviceType === 'roast'
+          ? '/premium/roast'
+          : serviceType === 'rugcheck'
+            ? '/premium/rugcheck'
+            : '/premium/planner';
+
+  useEffect(() => {
+    if (isOpen) {
+      setResult(null);
+      setAcknowledged(false);
+      void refreshBalances();
+    }
+  }, [isOpen, refreshBalances]);
+
+  const usdcOk = usdcBalance != null && usdcBalance + 1e-9 >= priceUsdc;
+  const walletReady = !!publicKey && !!signTransaction && connected;
+  const canSignAndPay =
+    walletReady && !balanceLoading && usdcOk && acknowledged && !isProcessing;
 
   const handlePay = async () => {
     if (!publicKey) return;
-    const data = await requestPremium(publicKey.toString(), endpoint as any);
+    const data = await requestPremium(publicKey.toString(), endpoint);
     setResult(data);
+    onPaidSuccess?.(data);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogTitle className="sr-only">Payment Modal</DialogTitle>
+        <DialogDescription className="sr-only">
+          Pembayaran fitur premium Arsweep melalui x402 dan facilitator Pay AI di Solana mainnet.
+        </DialogDescription>
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
@@ -73,104 +118,86 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
                 {priceDisplay}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">Pay via x402 on Solana mainnet (USDC).</p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Pembayaran USDC di <strong>Solana mainnet</strong> dari wallet Anda. Setelah Anda mengonfirmasi, wallet akan
+              meminta tanda tangan transaksi sebelum fitur dijalankan.
+            </p>
           </div>
 
-          {error && (
-            <div className="bg-red-900/20 border border-red-500 rounded-lg p-3 text-red-400 text-sm">
-              {error}
+          {!connected || !publicKey ? (
+            <p className="text-sm text-amber-400">Hubungkan wallet terlebih dahulu.</p>
+          ) : !signTransaction ? (
+            <p className="text-sm text-amber-400">
+              Wallet ini tidak mengekspos penandatanganan transaksi tunggal. Coba Phantom / Solflare di desktop.
+            </p>
+          ) : (
+            <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm space-y-1">
+              <p className="font-medium text-foreground">Saldo mainnet (untuk pembayaran)</p>
+              {balanceLoading ? (
+                <p className="text-muted-foreground flex items-center gap-2">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Memuat saldo USDC…
+                </p>
+              ) : (
+                <>
+                  <p>
+                    USDC:{' '}
+                    <span className="font-mono">{usdcBalance != null ? usdcBalance.toFixed(6) : '—'}</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    SOL (referensi):{' '}
+                    {solLamports != null ? (solLamports / 1e9).toFixed(6) : '—'}{' '}
+                    {solLamports != null && solLamports < minSolLamports ? (
+                      <span className="text-amber-500"> · Biaya jaringan biasanya ditanggung facilitator; jika gagal, tambah sedikit SOL.</span>
+                    ) : null}
+                  </p>
+                </>
+              )}
             </div>
+          )}
+
+          {walletReady && !balanceLoading && usdcBalance != null && !usdcOk && (
+            <div className="bg-red-900/20 border border-red-500 rounded-lg p-3 text-red-300 text-sm">
+              Saldo USDC Anda di Solana mainnet tidak cukup untuk transaksi ini. Diperlukan setidaknya{' '}
+              <span className="font-mono">{priceUsdc.toFixed(2)} USDC</span>. Isi USDC mainnet di wallet ini lalu coba lagi.
+            </div>
+          )}
+
+          {error && (
+            <div className="bg-red-900/20 border border-red-500 rounded-lg p-3 text-red-400 text-sm">{error}</div>
           )}
 
           {result && (
-            <div className="bg-muted/40 border rounded-lg p-4 space-y-3">
-              {serviceType === 'roast' && result.data && (
-                <>
-                  <div className="text-center">
-                    <span className="text-4xl font-black">{result.data.score}</span>
-                    <span className="text-sm text-muted-foreground">/100</span>
-                    <p className="text-xs font-bold text-purple-400 mt-1">{result.data.tier}</p>
-                  </div>
-                  <p className="text-sm italic text-center">"{result.data.roast}"</p>
-                  <p className="text-xs text-muted-foreground text-center">{result.data.advice}</p>
-                </>
-              )}
-              {serviceType === 'analyze' && result.data && (
-                <>
-                  <p className="text-sm font-medium">{result.data.recommendation}</p>
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    <p>Token Accounts: {result.data.totalTokenAccounts}</p>
-                    <p>Empty Accounts: {result.data.emptyAccounts}</p>
-                    <p>Reclaimable SOL: {result.data.estimatedReclaimableSOL} SOL (${result.data.estimatedReclaimableUSD})</p>
-                  </div>
-                </>
-              )}
-              {serviceType === 'report' && result.data && (
-                <>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="bg-muted rounded p-2">
-                      <p className="text-lg font-bold">{result.data.summary?.totalAccounts ?? 0}</p>
-                      <p className="text-xs text-muted-foreground">Total</p>
-                    </div>
-                    <div className="bg-muted rounded p-2">
-                      <p className="text-lg font-bold text-red-400">{result.data.summary?.emptyAccounts ?? 0}</p>
-                      <p className="text-xs text-muted-foreground">Empty</p>
-                    </div>
-                    <div className="bg-muted rounded p-2">
-                      <p className="text-lg font-bold text-green-400">{result.data.summary?.totalReclaimableSOL ?? '0'}</p>
-                      <p className="text-xs text-muted-foreground">SOL</p>
-                    </div>
-                  </div>
-                  {result.data.emptyAccountsList?.length === 0 && (
-                    <p className="text-sm text-center text-green-400">✅ No dust tokens found!</p>
-                  )}
-                </>
-              )}
-              {serviceType === 'rugcheck' && result.data && (
-                <>
-                  <div className="grid grid-cols-3 gap-2 text-center mb-2">
-                    <div className="bg-red-900/30 rounded p-2">
-                      <p className="text-lg font-bold text-red-400">{result.data.summary?.dangerous ?? 0}</p>
-                      <p className="text-xs text-muted-foreground">Dangerous</p>
-                    </div>
-                    <div className="bg-yellow-900/30 rounded p-2">
-                      <p className="text-lg font-bold text-yellow-400">{result.data.summary?.caution ?? 0}</p>
-                      <p className="text-xs text-muted-foreground">Caution</p>
-                    </div>
-                    <div className="bg-green-900/30 rounded p-2">
-                      <p className="text-lg font-bold text-green-400">{result.data.summary?.safe ?? 0}</p>
-                      <p className="text-xs text-muted-foreground">Safe</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-center">{result.data.alert}</p>
-                </>
-              )}
-              {serviceType === 'planner' && result.data && (
-                <>
-                  <p className="text-sm font-medium text-center">{result.data.recommendation}</p>
-                  <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                    <p>SOL Balance: {result.data.currentSOLBalance}</p>
-                    <p>Sweepable: {result.data.plan?.sweepableAccounts ?? 0} accounts</p>
-                    <p>Reclaimable: {result.data.plan?.netReclaimableSOL ?? '0'} SOL</p>
-                    <p>Batches: {result.data.plan?.totalBatches ?? 0}</p>
-                  </div>
-                </>
-              )}
+            <div className="max-h-56 overflow-auto rounded-lg border bg-muted/40 p-3 text-xs prose prose-sm dark:prose-invert max-w-none">
+              <ReactMarkdown>{formatPremiumResult(serviceType, result)}</ReactMarkdown>
             </div>
           )}
 
+          <label className="flex items-start gap-2 text-sm text-muted-foreground cursor-pointer">
+            <Checkbox
+              checked={acknowledged}
+              onCheckedChange={(v) => setAcknowledged(v === true)}
+              disabled={!walletReady || !usdcOk || balanceLoading}
+              className="mt-0.5"
+            />
+            <span>
+              Saya mengerti bahwa saya akan <strong>menandatangani</strong> transaksi pembayaran USDC sebesar {priceDisplay}{' '}
+              di Solana mainnet, dan fitur premium hanya berjalan setelah pembayaran berhasil.
+            </span>
+          </label>
+
           <Button
             onClick={handlePay}
-            disabled={!canPay}
+            disabled={!canSignAndPay}
             className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 h-11 disabled:opacity-50"
           >
             {isProcessing ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Processing...
+                Menunggu tanda tangan / memproses…
               </>
             ) : (
-              `Pay ${priceDisplay}`
+              `Tanda tangani & bayar ${priceDisplay}`
             )}
           </Button>
         </div>

@@ -1,16 +1,27 @@
 import { useState } from 'react';
-import { arsweepApi, ChatRequest, ChatResponse } from '../services/arsweepApi';
+import { arsweepApi, ChatRequest } from '../services/arsweepApi';
 
-interface Message {
+export interface WalletScanResult {
+  address: string;
+  solBalance: number;
+  solValue: number;
+  tokens: any[];
+  totalValue: number;
+  tokenCount: number;
+  nftCount: number;
+}
+
+export interface ChatMessageModel {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
   walletScan?: WalletScanResult;
+  toolsUsed?: string[];
 }
 
 export const useArsweepChat = (userId: string) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessageModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +29,7 @@ export const useArsweepChat = (userId: string) => {
     setIsLoading(true);
     setError(null);
 
-    const userMessage: Message = {
+    const userMessage: ChatMessageModel = {
       id: Date.now().toString(),
       role: 'user',
       content: message,
@@ -28,13 +39,14 @@ export const useArsweepChat = (userId: string) => {
 
     try {
       const request: ChatRequest = { userId, message, walletAddress };
-      const response: ChatResponse = await arsweepApi.chat(request);
+      const response = await arsweepApi.chat(request);
 
-      const aiMessage: Message = {
+      const aiMessage: ChatMessageModel = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: response.text,
         timestamp: new Date(),
+        toolsUsed: response.toolsUsed?.length ? response.toolsUsed : undefined,
       };
       setMessages(prev => [...prev, aiMessage]);
       return response;
@@ -52,7 +64,7 @@ export const useArsweepChat = (userId: string) => {
     setError(null);
   };
 
-  const updateMessage = (id: string, updates: Partial<Message>) => {
+  const updateMessage = (id: string, updates: Partial<ChatMessageModel>) => {
     setMessages(prev => prev.map(msg => msg.id === id ? { ...msg, ...updates } : msg));
   };
   return { messages, isLoading, error, sendMessage, clearChat, updateMessage, setMessages };

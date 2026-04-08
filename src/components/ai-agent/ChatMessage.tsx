@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Button } from '@/components/ui/button';
+import ArsweepLogo from '@/components/ArsweepLogo';
 import { WalletScanCard } from './WalletScanCard';
 
 interface WalletScanResult {
@@ -23,9 +24,25 @@ interface ChatMessageProps {
   walletAddress?: string;
   walletScan?: WalletScanResult;
   onPremiumAnalysis?: () => void;
+  /** Tool names from agent (assistant only). */
+  toolsUsed?: string[];
+  /** Use Arsweep logo as assistant avatar (agent page). */
+  assistantUseArsweepLogo?: boolean;
+  /** `agent` = white/10 bubble; default = yellow user bubble. */
+  userBubbleVariant?: 'default' | 'agent';
 }
 
-export function ChatMessage({ role, content, timestamp, walletAddress, walletScan, onPremiumAnalysis }: ChatMessageProps) {
+export function ChatMessage({
+  role,
+  content,
+  timestamp,
+  walletAddress,
+  walletScan,
+  onPremiumAnalysis,
+  toolsUsed,
+  assistantUseArsweepLogo,
+  userBubbleVariant = 'default',
+}: ChatMessageProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -38,18 +55,36 @@ export function ChatMessage({ role, content, timestamp, walletAddress, walletSca
     <div className={`flex gap-4 group ${role === 'user' ? 'justify-end' : ''}`}>
       {/* Avatar */}
       {role === 'assistant' && (
-        <div className="h-8 w-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
-          <Sparkles className="h-4 w-4 text-white" />
+        <div className="h-8 w-8 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 overflow-hidden">
+          {assistantUseArsweepLogo ? (
+            <ArsweepLogo className="w-5 h-5" />
+          ) : (
+            <Sparkles className="h-4 w-4 text-white" />
+          )}
         </div>
       )}
 
       {/* Message Content */}
       <div className={`flex flex-col max-w-[80%] ${role === 'user' ? 'items-end' : ''}`}>
+        {role === 'assistant' && toolsUsed && toolsUsed.length > 0 && (
+          <div className="mb-1.5 flex flex-wrap gap-1">
+            {toolsUsed.map((name) => (
+              <span
+                key={name}
+                className="inline-flex items-center rounded-md border border-yellow-400/25 bg-yellow-400/10 px-2 py-0.5 text-[10px] font-mono font-medium uppercase tracking-wide text-yellow-400/90"
+              >
+                🔧 TOOL USED: {name}
+              </span>
+            ))}
+          </div>
+        )}
         <div
           className={`rounded-2xl px-4 py-3 relative ${
             role === 'user'
-              ? 'bg-yellow-400 text-black'
-              : 'bg-muted border border-border'
+              ? userBubbleVariant === 'agent'
+                ? 'bg-white/10 text-white/90 border border-white/10'
+                : 'bg-yellow-400 text-black'
+              : 'bg-white/5 border border-white/10 text-white/90'
           }`}
         >
           {/* Copy Button */}
@@ -58,7 +93,11 @@ export function ChatMessage({ role, content, timestamp, walletAddress, walletSca
             size="icon"
             onClick={handleCopy}
             className={`absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity ${
-              role === 'user' ? 'bg-white/20 hover:bg-white/30' : 'bg-muted hover:bg-muted/80'
+              role === 'user'
+                ? userBubbleVariant === 'agent'
+                  ? 'bg-white/10 hover:bg-white/15'
+                  : 'bg-white/20 hover:bg-white/30'
+                : 'bg-white/10 hover:bg-white/15'
             }`}
           >
             {copied ? (
