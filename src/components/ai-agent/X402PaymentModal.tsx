@@ -83,8 +83,31 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
           )}
 
           {result && (
-            <div className="bg-muted/40 border rounded-lg p-3 max-h-56 overflow-auto">
-              <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(result, null, 2)}</pre>
+            <div className="bg-muted/40 border rounded-lg p-4 space-y-3">
+              {serviceType === 'roast' && result.data && (
+                <>
+                  <div className="text-center">
+                    <span className="text-4xl font-black">{result.data.score}</span>
+                    <span className="text-sm text-muted-foreground">/100</span>
+                    <p className="text-xs font-bold text-purple-400 mt-1">{result.data.tier}</p>
+                  </div>
+                  <p className="text-sm italic text-center">"{result.data.roast}"</p>
+                  <p className="text-xs text-muted-foreground text-center">{result.data.advice}</p>
+                </>
+              )}
+              {serviceType === 'analyze' && result.data && (
+                <>
+                  <p className="text-sm font-medium">{result.data.recommendation}</p>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <p>Token Accounts: {result.data.totalTokenAccounts}</p>
+                    <p>Empty Accounts: {result.data.emptyAccounts}</p>
+                    <p>Reclaimable SOL: {result.data.estimatedReclaimableSOL} SOL (${result.data.estimatedReclaimableUSD})</p>
+                  </div>
+                </>
+              )}
+              {(serviceType === 'report' || serviceType === 'rugcheck' || serviceType === 'planner') && result.data && (
+                <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(result.data, null, 2)}</pre>
+              )}
             </div>
           )}
 
