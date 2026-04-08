@@ -105,8 +105,56 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
                   </div>
                 </>
               )}
-              {(serviceType === 'report' || serviceType === 'rugcheck' || serviceType === 'planner') && result.data && (
-                <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(result.data, null, 2)}</pre>
+              {serviceType === 'report' && result.data && (
+                <>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-muted rounded p-2">
+                      <p className="text-lg font-bold">{result.data.summary?.totalAccounts ?? 0}</p>
+                      <p className="text-xs text-muted-foreground">Total</p>
+                    </div>
+                    <div className="bg-muted rounded p-2">
+                      <p className="text-lg font-bold text-red-400">{result.data.summary?.emptyAccounts ?? 0}</p>
+                      <p className="text-xs text-muted-foreground">Empty</p>
+                    </div>
+                    <div className="bg-muted rounded p-2">
+                      <p className="text-lg font-bold text-green-400">{result.data.summary?.totalReclaimableSOL ?? '0'}</p>
+                      <p className="text-xs text-muted-foreground">SOL</p>
+                    </div>
+                  </div>
+                  {result.data.emptyAccountsList?.length === 0 && (
+                    <p className="text-sm text-center text-green-400">✅ No dust tokens found!</p>
+                  )}
+                </>
+              )}
+              {serviceType === 'rugcheck' && result.data && (
+                <>
+                  <div className="grid grid-cols-3 gap-2 text-center mb-2">
+                    <div className="bg-red-900/30 rounded p-2">
+                      <p className="text-lg font-bold text-red-400">{result.data.summary?.dangerous ?? 0}</p>
+                      <p className="text-xs text-muted-foreground">Dangerous</p>
+                    </div>
+                    <div className="bg-yellow-900/30 rounded p-2">
+                      <p className="text-lg font-bold text-yellow-400">{result.data.summary?.caution ?? 0}</p>
+                      <p className="text-xs text-muted-foreground">Caution</p>
+                    </div>
+                    <div className="bg-green-900/30 rounded p-2">
+                      <p className="text-lg font-bold text-green-400">{result.data.summary?.safe ?? 0}</p>
+                      <p className="text-xs text-muted-foreground">Safe</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-center">{result.data.alert}</p>
+                </>
+              )}
+              {serviceType === 'planner' && result.data && (
+                <>
+                  <p className="text-sm font-medium text-center">{result.data.recommendation}</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                    <p>SOL Balance: {result.data.currentSOLBalance}</p>
+                    <p>Sweepable: {result.data.plan?.sweepableAccounts ?? 0} accounts</p>
+                    <p>Reclaimable: {result.data.plan?.netReclaimableSOL ?? '0'} SOL</p>
+                    <p>Batches: {result.data.plan?.totalBatches ?? 0}</p>
+                  </div>
+                </>
               )}
             </div>
           )}
