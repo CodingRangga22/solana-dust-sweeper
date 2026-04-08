@@ -29,6 +29,7 @@
   },
   "include": ["src"],
   "exclude": [
+    "src/lib/svmSignerAdapter.ts",
     "src/**/*.bak",
     "src/**/*.bak2",
     "src/**/*.backup2",

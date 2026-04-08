@@ -15,7 +15,7 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
   const priceDisplay = serviceType === 'analyze' || serviceType === 'rugcheck' ? '$0.10 USDC' : '$0.05 USDC';
   const wallet = useWallet();
   const { publicKey } = wallet;
-  const { isProcessing, error, requestPremium } = useX402Payment(wallet);
+  const { isProcessing, error, requestPremium } = useX402Payment();
   const [result, setResult] = useState<any>(null);
   const title = serviceType === 'analyze' ? 'AI Wallet Analysis' 
     : serviceType === 'report' ? 'Quick Sweep Report'
@@ -30,11 +30,11 @@ export function X402PaymentModal({ isOpen, onClose, serviceType }: X402PaymentMo
     : 'AI creates the optimal sweep plan — which accounts to close first for maximum SOL recovery';
 
   const endpoint =
-    serviceType === 'analyze' ? '/x402/analyze'
-      : serviceType === 'report' ? '/x402/report'
-      : serviceType === 'roast' ? '/x402/roast'
-      : serviceType === 'rugcheck' ? '/x402/rugcheck'
-      : '/x402/planner';
+    serviceType === 'analyze' ? '/premium/analyze'
+      : serviceType === 'report' ? '/premium/report'
+      : serviceType === 'roast' ? '/premium/roast'
+      : serviceType === 'rugcheck' ? '/premium/rugcheck'
+      : '/premium/planner';
 
   const canPay = !!publicKey && !isProcessing;
 

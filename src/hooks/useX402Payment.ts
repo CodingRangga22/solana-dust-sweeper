@@ -1,28 +1,19 @@
 import { useMemo, useState } from 'react';
-import { x402Client, wrapFetchWithPayment } from '@x402/fetch';
-import { registerExactSvmScheme } from '@x402/svm/exact/client';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { createSvmSignerFromWalletAdapter } from '@/lib/svmSignerAdapter';
-
 const API_BASE = 'https://api.arsweep.fun/v1';
 
-type ServiceEndpoint = '/x402/analyze' | '/x402/report' | '/x402/roast' | '/x402/rugcheck' | '/x402/planner';
+type ServiceEndpoint = '/premium/analyze' | '/premium/report' | '/premium/roast' | '/premium/rugcheck' | '/premium/planner';
 
-export function useX402Payment(wallet: ReturnType<typeof useWallet>) {
+export function useX402Payment() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchWithPayment = useMemo(() => {
-    const client = new x402Client();
-    registerExactSvmScheme(client, { signer: createSvmSignerFromWalletAdapter(wallet) as any });
-    return wrapFetchWithPayment(fetch, client);
-  }, [wallet]);
+  const fetchPlain = useMemo(() => fetch, []);
 
   async function requestPremium(walletAddress: string, endpoint: ServiceEndpoint) {
     setIsProcessing(true);
     setError(null);
     try {
-      const res = await fetchWithPayment(`${API_BASE}${endpoint}`, {
+      const res = await fetchPlain(`${API_BASE}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ walletAddress }),

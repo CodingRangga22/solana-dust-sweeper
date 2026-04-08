@@ -61,7 +61,7 @@ export const arsweepApi = {
 
   // PAID: x402 Wallet Analysis ($0.10 USDC)
   x402Analyze: async (data: X402AnalyzeRequest) => {
-    const res = await fetch(`${API_BASE_URL}/x402/analyze`, {
+    const res = await fetch(`${API_BASE_URL}/premium/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -75,7 +75,7 @@ export const arsweepApi = {
 
   // PAID: x402 Sweep Report ($0.05 USDC)
   x402Report: async (data: X402ReportRequest) => {
-    const res = await fetch(`${API_BASE_URL}/x402/report`, {
+    const res = await fetch(`${API_BASE_URL}/premium/report`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
