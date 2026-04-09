@@ -36,6 +36,8 @@ export function useTelegramWebApp(): TelegramWebAppHook {
     // Only true if actually inside Telegram WebApp (has initData)
     const hasInitData = Boolean(tg.initData && tg.initData.length > 0);
     setIsInTelegram(hasInitData);
+    if (!hasInitData) return;
+
     tg.ready();
     tg.expand();
 

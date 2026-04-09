@@ -37,6 +37,8 @@ import TokenPage from "./pages/Token";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 const queryClient = new QueryClient();
+// Phantom + Solflare explicitly. If Phantom is also registered via Wallet Standard, the provider keeps one
+// adapter per name (Standard wins) — see useStandardWalletAdapters in @solana/wallet-adapter-react.
 const wallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
 
 const App = () => {

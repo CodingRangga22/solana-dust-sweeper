@@ -3,11 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import axios from 'axios';
-import { Send, Plus, Trash2, Zap, Crown, ArrowLeft, Menu } from 'lucide-react';
+import { Send, Plus, Trash2, Zap, Crown, ArrowLeft, Menu, Copy, ChevronDown, LogOut, Unplug } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ArsweepLogo from '@/components/ArsweepLogo';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useArsweepChat } from '@/hooks/useArsweepChat';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,8 +15,11 @@ import { ChatMessage } from '@/components/ai-agent/ChatMessage';
 import { X402PaymentModal } from '@/components/ai-agent/X402PaymentModal';
 import { executeSweepNative, SweepAccount } from '@/lib/sweepNative';
 import { useConnection } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { arsweepApi } from '@/services/arsweepApi';
 import { extractSolscanTxUrl, formatPremiumResult } from '@/lib/formatPremiumResult';
+import { useLogin, usePrivy } from '@privy-io/react-auth';
+import { toast } from 'sonner';
 
 const ANON_STORAGE_KEY = 'arsweep_agent_anon_id';
 const sessionsStorageKey = (userId: string) => `arsweep_agent_sessions_${userId}`;
@@ -174,8 +176,16 @@ const DotGrid = () => (
 
 export default function AgentArsweep() {
   const navigate = useNavigate();
-  const { publicKey, sendTransaction } = useWallet();
+  const { publicKey, sendTransaction, disconnect, connecting, connected } = useWallet();
   const { connection } = useConnection();
+  const { setVisible: setWalletModalVisible } = useWalletModal();
+  const { authenticated, logout } = usePrivy();
+  const { login } = useLogin({
+    onComplete: () => {
+      // Defer until after Privy closes its UI; avoids stacked modals / missed wallet-adapter updates.
+      window.setTimeout(() => setWalletModalVisible(true), 0);
+    },
+  });
 
   const userId = useMemo(
     () => publicKey?.toBase58() ?? getOrCreateAnonId(),
@@ -194,6 +204,8 @@ export default function AgentArsweep() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const currentSessionIdRef = useRef<string>('');
   const fetchGenRef = useRef(0);
+  const [walletMenuOpen, setWalletMenuOpen] = useState(false);
+  const walletMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -205,6 +217,16 @@ export default function AgentArsweep() {
       b2.forEach((b) => ((b as HTMLElement).style.display = ''));
     };
   }, []);
+
+  useEffect(() => {
+    if (!walletMenuOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!walletMenuRef.current) return;
+      if (!walletMenuRef.current.contains(e.target as Node)) setWalletMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [walletMenuOpen]);
 
   useEffect(() => {
     const loaded = loadSessions(userId);
@@ -664,7 +686,116 @@ export default function AgentArsweep() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <WalletMultiButton className="!h-9 !rounded-xl !border !border-white/12 !bg-white/[0.08] !px-3 !text-xs !text-white/85 hover:!bg-white/[0.12]" />
+            <div ref={walletMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  if (publicKey) {
+                    setWalletMenuOpen((v) => !v);
+                    return;
+                  }
+                  if (connecting) return;
+                  if (!authenticated) {
+                    login();
+                    return;
+                  }
+                  setWalletModalVisible(true);
+                }}
+                className="flex h-9 items-center gap-2 rounded-xl border border-white/12 bg-white/[0.08] px-3 text-xs font-medium text-white/85 transition-colors hover:bg-white/[0.12]"
+                title={
+                  publicKey
+                    ? 'Wallet menu'
+                    : connecting
+                      ? 'Connecting wallet…'
+                      : authenticated
+                        ? 'Select wallet (Solana)'
+                        : 'Login with Privy, then select wallet'
+                }
+              >
+                <span className="font-mono text-xs">
+                  {publicKey
+                    ? `${publicKey.toBase58().slice(0, 4)}…${publicKey.toBase58().slice(-4)}`
+                    : connecting || (connected && !publicKey)
+                      ? 'Connecting…'
+                      : authenticated
+                        ? 'Select Wallet'
+                        : 'Login & Select Wallet'}
+                </span>
+                {publicKey ? (
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${walletMenuOpen ? 'rotate-180' : ''}`} />
+                ) : null}
+              </button>
+
+              {publicKey && walletMenuOpen && (
+                <div className="absolute right-0 top-full z-[70] mt-2 w-56 overflow-hidden rounded-xl border border-white/10 bg-black/90 shadow-xl backdrop-blur-md">
+                  <p className="truncate border-b border-white/10 px-4 py-2.5 font-mono text-[11px] text-white/45">
+                    {publicKey.toBase58()}
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(publicKey.toBase58());
+                        toast.success('Address copied');
+                      } catch {
+                        toast.error('Failed to copy address');
+                      } finally {
+                        setWalletMenuOpen(false);
+                      }
+                    }}
+                    className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-white/85 transition-colors hover:bg-white/10"
+                  >
+                    <Copy className="h-4 w-4 text-white/50" />
+                    Copy Address
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await disconnect();
+                        toast.success('Wallet disconnected');
+                      } catch {
+                        toast.error('Failed to disconnect wallet');
+                      } finally {
+                        setWalletMenuOpen(false);
+                      }
+                    }}
+                    className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-white/85 transition-colors hover:bg-white/10"
+                  >
+                    <Unplug className="h-4 w-4 text-white/50" />
+                    Disconnect Wallet
+                  </button>
+
+                  {authenticated ? (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          // Best-effort: disconnect wallet adapter first, then logout Privy.
+                          try {
+                            await disconnect();
+                          } catch {
+                            /* ignore */
+                          }
+                          await logout();
+                          toast.success('Logged out');
+                        } catch {
+                          toast.error('Failed to logout');
+                        } finally {
+                          setWalletMenuOpen(false);
+                        }
+                      }}
+                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-300 transition-colors hover:bg-red-500/10"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout Privy
+                    </button>
+                  ) : null}
+                </div>
+              )}
+            </div>
             <Button
               type="button"
               variant="ghost"
