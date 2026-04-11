@@ -37,9 +37,14 @@ import TokenPage from "./pages/Token";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 const queryClient = new QueryClient();
-// Phantom + Solflare explicitly. If Phantom is also registered via Wallet Standard, the provider keeps one
-// adapter per name (Standard wins) — see useStandardWalletAdapters in @solana/wallet-adapter-react.
-const wallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
+/**
+ * Phantom + Solflare sebagai adapter eksplisit agar modal "Select Wallet" membuka approve extension (bukan Privy connectWallet).
+ * Console mungkin memperingatkan duplikat Wallet Standard — itu aman; prioritas: koneksi yang andal.
+ */
+const wallets: WalletAdapter[] = [
+  new PhantomWalletAdapter(),
+  new SolflareWalletAdapter(),
+];
 
 const App = () => {
   const endpoint = useMemo(() => RPC_ENDPOINT, []);
@@ -83,7 +88,7 @@ const AppContent = ({
       <TwaWalletGuide />
 
       <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider wallets={wallets} autoConnect={true}>
+        <WalletProvider wallets={wallets} autoConnect={false}>
           <WalletModalProvider>
             <QueryClientProvider client={queryClient}>
               <TooltipProvider>
@@ -108,19 +113,21 @@ const AppContent = ({
                       <Route
                         path="/app"
                         element={
-                          isInTelegram ? (
-                            // Skip ProtectedRoute kalau dari Telegram
+                          <ProtectedRoute>
                             <Dashboard />
-                          ) : (
-                            <ProtectedRoute>
-                              <Dashboard />
-                            </ProtectedRoute>
-                          )
+                          </ProtectedRoute>
                         }
                       />
                       <Route path="/leaderboard" element={<Navigate to="/" replace />} />
                       <Route path="/simulation" element={<Simulation />} />
-                      <Route path="/agent" element={<AgentArsweep />} />
+                      <Route
+                        path="/agent"
+                        element={
+                          <ProtectedRoute>
+                            <AgentArsweep />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route path="/demo" element={<Demo />} />
                       <Route path="/dashboard" element={<Navigate to="/app" replace />} />
                       <Route path="/docs" element={<DocsLayout />}>

@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Trophy, Users, Zap, Copy, Check, Crown, Sparkles } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Header from "@/components/Header";
+import WalletMenu from "@/components/WalletMenu";
+import ChangeWalletInstructionModal from "@/components/ChangeWalletInstructionModal";
+import { useWalletSession } from "@/hooks/useWalletSession";
 import PremiumFooter from "@/components/PremiumFooter";
 import { getReferralLeaderboard, getSweepLeaderboard, getActiveSeason, type ReferralLeaderboardEntry, type SweepLeaderboardEntry, type Season } from "@/lib/supabase";
 import { useReferral } from "@/hooks/useReferral";
@@ -47,6 +49,14 @@ const PodiumCard = ({ rank, entry, isReferral }: { rank: number; entry: any; isR
 
 const Leaderboard = () => {
   const { publicKey } = useWallet();
+  const {
+    handleChangeWallet,
+    handleDisconnect,
+    handleDisconnectAndReconnect,
+    walletMismatch,
+    showChangeWalletModal,
+    setShowChangeWalletModal,
+  } = useWalletSession();
   const { user, getReferralLink } = useReferral(publicKey?.toBase58() ?? null);
   const [tab, setTab] = useState<"referral" | "sweep">("referral");
   const [referralBoard, setReferralBoard] = useState<ReferralLeaderboardEntry[]>([]);
@@ -87,7 +97,16 @@ const Leaderboard = () => {
     <div className="relative min-h-screen bg-background overflow-hidden">
       <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
       <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
-      <Header />
+      <Header
+        onChangeWallet={handleChangeWallet}
+        onDisconnect={handleDisconnect}
+        walletMismatch={walletMismatch}
+      />
+      <ChangeWalletInstructionModal
+        open={showChangeWalletModal}
+        onOpenChange={setShowChangeWalletModal}
+        onDisconnect={handleDisconnectAndReconnect}
+      />
       <div className="container mx-auto max-w-3xl px-4 pt-24 pb-12">
         <div className="mb-6">
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
@@ -158,7 +177,12 @@ const Leaderboard = () => {
         {!publicKey && (
           <div className="glass rounded-2xl p-6 mb-6 border border-border/50 text-center">
             <p className="text-sm text-muted-foreground mb-3">Connect wallet to get your referral link</p>
-            <WalletMultiButton className="!bg-primary !text-primary-foreground !rounded-xl !px-6 !py-2 !text-sm !font-semibold" />
+            <WalletMenu
+              variant="compact"
+              onChangeWallet={handleChangeWallet}
+              onDisconnect={handleDisconnect}
+              walletMismatch={walletMismatch}
+            />
           </div>
         )}
 

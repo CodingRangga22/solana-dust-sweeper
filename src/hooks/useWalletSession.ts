@@ -47,7 +47,7 @@ export function useWalletSession(): WalletSession {
     select,
     wallet,
   } = useWallet();
-  const { setVisible } = useWalletModal();
+  const { setVisible: setWalletModalVisible } = useWalletModal();
 
   const [lockedWallet, setLockedWallet] = useState<string | null>(() => {
     try {
@@ -117,11 +117,15 @@ export function useWalletSession(): WalletSession {
       } catch (_) {}
       ADAPTER_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
       await new Promise((resolve) => setTimeout(resolve, 300));
-      setVisible(true);
+      setWalletModalVisible(true);
+      toast.info(
+        "Wallet disconnected. Pilih wallet lagi di jendela “Select Wallet” (Phantom / Solflare).",
+        { duration: 6500 },
+      );
     } catch (err) {
       console.error("Disconnect and reconnect error:", err);
     }
-  }, [disconnect, select, setVisible, wallet, setShowChangeWalletModal]);
+  }, [disconnect, select, wallet, setShowChangeWalletModal, setWalletModalVisible]);
 
   // ── Disconnect (no modal reopen) ────────────────────────────────────
   const handleDisconnect = useCallback(async () => {

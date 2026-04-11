@@ -7,6 +7,7 @@ import { Send, Plus, Trash2, Zap, Crown, ArrowLeft, Menu, Copy, ChevronDown, Log
 import { motion, AnimatePresence } from 'framer-motion';
 import ArsweepLogo from '@/components/ArsweepLogo';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { useArsweepChat } from '@/hooks/useArsweepChat';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,10 +16,9 @@ import { ChatMessage } from '@/components/ai-agent/ChatMessage';
 import { X402PaymentModal } from '@/components/ai-agent/X402PaymentModal';
 import { executeSweepNative, SweepAccount } from '@/lib/sweepNative';
 import { useConnection } from '@solana/wallet-adapter-react';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { arsweepApi } from '@/services/arsweepApi';
 import { extractSolscanTxUrl, formatPremiumResult } from '@/lib/formatPremiumResult';
-import { useLogin, usePrivy } from '@privy-io/react-auth';
+import { usePrivy } from '@privy-io/react-auth';
 import { toast } from 'sonner';
 
 const ANON_STORAGE_KEY = 'arsweep_agent_anon_id';
@@ -178,14 +178,8 @@ export default function AgentArsweep() {
   const navigate = useNavigate();
   const { publicKey, sendTransaction, disconnect, connecting, connected } = useWallet();
   const { connection } = useConnection();
-  const { setVisible: setWalletModalVisible } = useWalletModal();
   const { authenticated, logout } = usePrivy();
-  const { login } = useLogin({
-    onComplete: () => {
-      // Defer until after Privy closes its UI; avoids stacked modals / missed wallet-adapter updates.
-      window.setTimeout(() => setWalletModalVisible(true), 0);
-    },
-  });
+  const { setVisible: setWalletModalVisible } = useWalletModal();
 
   const userId = useMemo(
     () => publicKey?.toBase58() ?? getOrCreateAnonId(),
@@ -677,13 +671,25 @@ export default function AgentArsweep() {
             >
               <ArrowLeft className="h-4 w-4" />
             </motion.button>
-            <span className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-white/50">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/40 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            {publicKey ? (
+              <span
+                className="flex max-w-[min(100vw-12rem,200px)] items-center gap-2 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-mono text-emerald-200/95"
+                title={publicKey.toBase58()}
+              >
+                <span className="relative inline-flex h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
+                <span className="truncate">
+                  {publicKey.toBase58().slice(0, 4)}…{publicKey.toBase58().slice(-4)}
+                </span>
               </span>
-              Online
-            </span>
+            ) : (
+              <span className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-white/50">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/20 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-white/35" />
+                </span>
+                No wallet
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <div ref={walletMenuRef} className="relative">
@@ -695,10 +701,6 @@ export default function AgentArsweep() {
                     return;
                   }
                   if (connecting) return;
-                  if (!authenticated) {
-                    login();
-                    return;
-                  }
                   setWalletModalVisible(true);
                 }}
                 className="flex h-9 items-center gap-2 rounded-xl border border-white/12 bg-white/[0.08] px-3 text-xs font-medium text-white/85 transition-colors hover:bg-white/[0.12]"
@@ -707,9 +709,7 @@ export default function AgentArsweep() {
                     ? 'Wallet menu'
                     : connecting
                       ? 'Connecting wallet…'
-                      : authenticated
-                        ? 'Select wallet (Solana)'
-                        : 'Login with Privy, then select wallet'
+                      : 'Select wallet (Phantom, Solflare…)'
                 }
               >
                 <span className="font-mono text-xs">
@@ -717,9 +717,7 @@ export default function AgentArsweep() {
                     ? `${publicKey.toBase58().slice(0, 4)}…${publicKey.toBase58().slice(-4)}`
                     : connecting || (connected && !publicKey)
                       ? 'Connecting…'
-                      : authenticated
-                        ? 'Select Wallet'
-                        : 'Login & Select Wallet'}
+                      : 'Select wallet'}
                 </span>
                 {publicKey ? (
                   <ChevronDown className={`h-3.5 w-3.5 transition-transform ${walletMenuOpen ? 'rotate-180' : ''}`} />

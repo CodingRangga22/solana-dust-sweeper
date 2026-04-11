@@ -5,7 +5,7 @@ import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
 import { motion } from "framer-motion";
 import { Wallet } from "lucide-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import WalletMenu from "@/components/WalletMenu";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import StatsBar from "@/components/StatsBar";
@@ -518,16 +518,14 @@ const Dashboard = () => {
               <span className="px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>✅ Non-custodial</span>
               <span className="px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>⚡ Free to scan</span>
             </div>
-            <WalletMultiButton
-              className="!rounded-2xl !px-8 !py-4 !text-sm !font-semibold !w-full !justify-center !border-0 !shadow-none"
-              style={{
-                background: "#FFFFFF",
-                color: "#0B0F14",
-                fontFamily: "var(--font-mono)",
-              }}
+            <WalletMenu
+              variant="hero"
+              onChangeWallet={handleChangeWallet}
+              onDisconnect={handleDisconnect}
+              walletMismatch={walletMismatch}
             />
             <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(255,255,255,0.30)", marginTop: 14 }}>
-              Supports Phantom, Solflare, Backpack & more
+              Log in with Privy, then connect Phantom, Solflare, or other Solana wallets
             </p>
           </div>
         </motion.div>

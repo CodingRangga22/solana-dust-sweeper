@@ -19,7 +19,7 @@ const STEPS = [
   "Open Phantom extension",
   "Click your profile avatar (top right)",
   "Select a different account",
-  "Come back and click Connect",
+  "Return here and use Connect Solana wallet in the header (Privy)",
 ];
 
 const ChangeWalletInstructionModal = ({
