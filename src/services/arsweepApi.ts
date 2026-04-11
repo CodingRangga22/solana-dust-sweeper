@@ -1,15 +1,32 @@
 import { getAccessToken } from "@privy-io/react-auth";
+import { getNativeFetch } from "@/lib/captureNativeFetch";
 
 const API_BASE_URL = "https://api.arsweep.fun/v1";
 
+const fetchApi = getNativeFetch();
+
+/** Dedupe concurrent token reads. */
+let accessTokenInFlight: Promise<string | null> | null = null;
+
+async function getBearerToken(): Promise<string | null> {
+  if (!accessTokenInFlight) {
+    accessTokenInFlight = (async () => {
+      try {
+        return (await getAccessToken()) ?? null;
+      } catch {
+        return null;
+      } finally {
+        accessTokenInFlight = null;
+      }
+    })();
+  }
+  return accessTokenInFlight as Promise<string | null>;
+}
+
 // ─── Auth Helper ─────────────────────────────────────────────────────────
 async function authHeaders(): Promise<Record<string, string>> {
-  try {
-    const token = await getAccessToken();
-    if (token) return { Authorization: `Bearer ${token}` };
-  } catch {
-    // unauthenticated — lanjut tanpa token
-  }
+  const token = await getBearerToken();
+  if (token) return { Authorization: `Bearer ${token}` };
   return {};
 }
 
@@ -57,7 +74,7 @@ export interface X402HealthResponse {
 // ─── API Client ──────────────────────────────────────────────────────────
 export const arsweepApi = {
   chat: async (data: ChatRequest): Promise<ChatResponse> => {
-    const res = await fetch(`${API_BASE_URL}/agent/chat`, {
+    const res = await fetchApi(`${API_BASE_URL}/agent/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +90,7 @@ export const arsweepApi = {
   },
 
   fetchHistory: async (userId: string): Promise<{ messages: HistoryMessageRow[] }> => {
-    const res = await fetch(
+    const res = await fetchApi(
       `${API_BASE_URL}/agent/history/${encodeURIComponent(userId)}`,
       {
         method: "POST",
@@ -92,7 +109,7 @@ export const arsweepApi = {
   },
 
   x402Health: async (): Promise<X402HealthResponse> => {
-    const res = await fetch(`${API_BASE_URL}/x402/health`, {
+    const res = await fetchApi(`${API_BASE_URL}/x402/health`, {
       headers: await authHeaders(),
     });
     if (!res.ok) throw new Error("Health check failed");
@@ -100,7 +117,7 @@ export const arsweepApi = {
   },
 
   x402Analyze: async (data: X402AnalyzeRequest) => {
-    const res = await fetch(`${API_BASE_URL}/premium/analyze`, {
+    const res = await fetchApi(`${API_BASE_URL}/premium/analyze`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -116,7 +133,7 @@ export const arsweepApi = {
   },
 
   x402Report: async (data: X402ReportRequest) => {
-    const res = await fetch(`${API_BASE_URL}/premium/report`, {
+    const res = await fetchApi(`${API_BASE_URL}/premium/report`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

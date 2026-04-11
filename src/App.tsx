@@ -4,11 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import type { WalletAdapter } from "@solana/wallet-adapter-base";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { RPC_ENDPOINT, isDevnet, isMainnet, isDocsSubdomain } from "@/config/env";
 import { BannerProvider, useBanner } from "./components/BannerProvider";
 import DevnetBanner, { MainnetBanner } from "./components/DevnetBanner";
@@ -33,18 +30,10 @@ import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { usePrivyWalletSync } from "./hooks/usePrivyWalletSync";
 import TokenPage from "./pages/Token";
-import "@solana/wallet-adapter-react-ui/styles.css";
 
 const queryClient = new QueryClient();
-/**
- * Phantom + Solflare sebagai adapter eksplisit agar modal "Select Wallet" membuka approve extension (bukan Privy connectWallet).
- * Console mungkin memperingatkan duplikat Wallet Standard — itu aman; prioritas: koneksi yang andal.
- */
-const wallets: WalletAdapter[] = [
-  new PhantomWalletAdapter(),
-  new SolflareWalletAdapter(),
-];
 
 const App = () => {
   const endpoint = useMemo(() => RPC_ENDPOINT, []);
@@ -52,102 +41,114 @@ const App = () => {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="arsweep-theme">
       <BannerProvider initialHeight={isDevnet || isMainnet ? 44 : 0}>
-
-        <AppContent endpoint={endpoint} wallets={wallets} />
+        <DevnetBanner />
+        <MainnetBanner />
+        <AppContent endpoint={endpoint} />
       </BannerProvider>
     </ThemeProvider>
   );
 };
 
+
+const WalletSyncInner = () => {
+  usePrivyWalletSync();
+  return null;
+};
+
+const BannerRouteSync = () => {
+  const { pathname } = useLocation();
+  const { setNetworkBannerHiddenForRoute } = useBanner();
+  useEffect(() => {
+    const path = pathname.replace(/\/$/, "") || "/";
+    setNetworkBannerHiddenForRoute(path === "/app" || path === "/agent");
+  }, [pathname, setNetworkBannerHiddenForRoute]);
+  return null;
+};
+
 const AppContent = ({
   endpoint,
-  wallets,
 }: {
   endpoint: string;
-  wallets: WalletAdapter[];
 }) => {
   const { bannerHeight } = useBanner();
-  const pathname = window.location.pathname;
-  const noBanner = pathname === '/agent' || pathname === '/app';
-  const { isInTelegram, walletFromTwa, actionFromTwa, expand } = useTelegramWebApp();
+  const { isInTelegram, actionFromTwa, expand } = useTelegramWebApp();
 
-  // Kalau dibuka dari Telegram, expand ke fullscreen dan redirect ke /app
   useEffect(() => {
     if (!isInTelegram) return;
     expand();
-    // Kalau ada action=sweep dari bot, redirect langsung ke dashboard
     if (actionFromTwa === "sweep" && window.location.pathname === "/") {
       window.location.replace("/app");
     }
   }, [isInTelegram, actionFromTwa]);
 
   return (
-    <div className="min-h-screen">
-      {/* TWA Banner — hanya muncul kalau dibuka dari Telegram */}
+    <div
+      style={{ paddingTop: bannerHeight }}
+      className="min-h-screen transition-[padding] duration-200"
+    >
       <TwaBanner />
       <TwaWalletGuide />
 
       <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider wallets={wallets} autoConnect={false}>
-          <WalletModalProvider>
-            <QueryClientProvider client={queryClient}>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <SidebarProvider>
-                  <BrowserRouter>
-                    <Routes>
-                      <Route
-                        path="/"
-                        element={
-                          isDocsSubdomain() ? (
-                            <Navigate to="/docs" replace />
-                          ) : isInTelegram ? (
-                            // Kalau dari Telegram, langsung ke app
-                            <Navigate to="/app" replace />
-                          ) : (
-                            <Landing />
-                          )
-                        }
-                      />
-                      <Route
-                        path="/app"
-                        element={
-                          <ProtectedRoute>
-                            <Dashboard />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route path="/leaderboard" element={<Navigate to="/" replace />} />
-                      <Route path="/simulation" element={<Simulation />} />
-                      <Route
-                        path="/agent"
-                        element={
-                          <ProtectedRoute>
-                            <AgentArsweep />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route path="/demo" element={<Demo />} />
-                      <Route path="/dashboard" element={<Navigate to="/app" replace />} />
-                      <Route path="/docs" element={<DocsLayout />}>
-                        <Route index element={<Overview />} />
-                        <Route path="technical" element={<Technical />} />
-                        <Route path="security" element={<Security />} />
-                        <Route path="fees" element={<Fees />} />
-                        <Route path="faq" element={<FAQ />} />
-                      </Route>
-                      <Route path="/token" element={<TokenPage />} />
-                      <Route path="/privacy" element={<PrivacyPolicy />} />
-                      <Route path="/terms" element={<TermsOfService />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                    <Sidebar />
-                  </BrowserRouter>
-                </SidebarProvider>
-              </TooltipProvider>
-            </QueryClientProvider>
-          </WalletModalProvider>
+        <WalletProvider wallets={[]} autoConnect={false}>
+          <WalletSyncInner />
+          <QueryClientProvider client={queryClient}>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <SidebarProvider>
+                <BrowserRouter>
+                  <BannerRouteSync />
+                  <Routes>
+                    <Route
+                      path="/"
+                      element={
+                        isDocsSubdomain() ? (
+                          <Navigate to="/docs" replace />
+                        ) : isInTelegram ? (
+                          <Navigate to="/app" replace />
+                        ) : (
+                          <Landing />
+                        )
+                      }
+                    />
+                    <Route
+                      path="/app"
+                      element={
+                        <ProtectedRoute requirePrivyLogin={false}>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route path="/leaderboard" element={<Navigate to="/" replace />} />
+                    <Route path="/simulation" element={<Simulation />} />
+                    <Route
+                      path="/agent"
+                      element={
+                        <ProtectedRoute>
+                          <AgentArsweep />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route path="/demo" element={<Demo />} />
+                    <Route path="/dashboard" element={<Navigate to="/app" replace />} />
+                    <Route path="/docs" element={<DocsLayout />}>
+                      <Route index element={<Overview />} />
+                      <Route path="technical" element={<Technical />} />
+                      <Route path="security" element={<Security />} />
+                      <Route path="fees" element={<Fees />} />
+                      <Route path="faq" element={<FAQ />} />
+                    </Route>
+                    <Route path="/token" element={<TokenPage />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<TermsOfService />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <Sidebar />
+                </BrowserRouter>
+              </SidebarProvider>
+            </TooltipProvider>
+          </QueryClientProvider>
         </WalletProvider>
       </ConnectionProvider>
     </div>

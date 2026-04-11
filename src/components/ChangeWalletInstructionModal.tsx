@@ -19,7 +19,7 @@ const STEPS = [
   "Open Phantom extension",
   "Click your profile avatar (top right)",
   "Select a different account",
-  "Return here and use Connect Solana wallet in the header (Privy)",
+  "Return here and use the header: Hubungkan wallet Solana (Privy), then Select Wallet if prompted",
 ];
 
 const ChangeWalletInstructionModal = ({

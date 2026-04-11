@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Trophy, Users, Zap, Copy, Check, Crown, Sparkles } from "lucide-react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { usePrivySolanaPublicKey } from "@/hooks/usePrivySolanaPublicKey";
 import Header from "@/components/Header";
 import WalletMenu from "@/components/WalletMenu";
 import ChangeWalletInstructionModal from "@/components/ChangeWalletInstructionModal";
@@ -48,7 +48,7 @@ const PodiumCard = ({ rank, entry, isReferral }: { rank: number; entry: any; isR
 };
 
 const Leaderboard = () => {
-  const { publicKey } = useWallet();
+  const { publicKey } = usePrivySolanaPublicKey();
   const {
     handleChangeWallet,
     handleDisconnect,

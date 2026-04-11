@@ -6,6 +6,8 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Button } from '@/components/ui/button';
 import ArsweepLogo from '@/components/ArsweepLogo';
 import { WalletScanCard } from './WalletScanCard';
+import { PremiumResultRich } from './PremiumResultRich';
+import type { PremiumServiceType } from '@/hooks/useArsweepChat';
 
 interface WalletScanResult {
   address: string;
@@ -28,8 +30,9 @@ interface ChatMessageProps {
   toolsUsed?: string[];
   /** Use Arsweep logo as assistant avatar (agent page). */
   assistantUseArsweepLogo?: boolean;
-  /** `agent` = white/10 bubble; default = yellow user bubble. */
+  /** `agent` = white/10 bubble; default = light neutral user bubble. */
   userBubbleVariant?: 'default' | 'agent';
+  premiumResult?: { serviceType: PremiumServiceType; payload: unknown };
 }
 
 export function ChatMessage({
@@ -42,6 +45,7 @@ export function ChatMessage({
   toolsUsed,
   assistantUseArsweepLogo,
   userBubbleVariant = 'default',
+  premiumResult,
 }: ChatMessageProps) {
   const [copied, setCopied] = useState(false);
 
@@ -55,9 +59,15 @@ export function ChatMessage({
     <div className={`flex gap-4 group ${role === 'user' ? 'justify-end' : ''}`}>
       {/* Avatar */}
       {role === 'assistant' && (
-        <div className="h-8 w-8 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 overflow-hidden">
+        <div
+          className={`flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border ${
+            assistantUseArsweepLogo
+              ? 'border-cyan-500/20 bg-gradient-to-br from-white/[0.12] to-white/[0.04] shadow-md shadow-cyan-500/10 ring-1 ring-cyan-500/15'
+              : 'border-white/15 bg-white/10'
+          }`}
+        >
           {assistantUseArsweepLogo ? (
-            <ArsweepLogo className="w-5 h-5" />
+            <ArsweepLogo className="h-5 w-5 drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]" />
           ) : (
             <Sparkles className="h-4 w-4 text-white" />
           )}
@@ -65,13 +75,17 @@ export function ChatMessage({
       )}
 
       {/* Message Content */}
-      <div className={`flex flex-col max-w-[80%] ${role === 'user' ? 'items-end' : ''}`}>
+      <div
+        className={`flex flex-col ${role === 'user' ? 'items-end' : ''} ${
+          role === 'assistant' && premiumResult ? 'max-w-[min(96vw,52rem)]' : 'max-w-[80%]'
+        }`}
+      >
         {role === 'assistant' && toolsUsed && toolsUsed.length > 0 && (
           <div className="mb-1.5 flex flex-wrap gap-1">
             {toolsUsed.map((name) => (
               <span
                 key={name}
-                className="inline-flex items-center rounded-md border border-yellow-400/25 bg-yellow-400/10 px-2 py-0.5 text-[10px] font-mono font-medium uppercase tracking-wide text-yellow-400/90"
+                className="inline-flex items-center rounded-md border border-cyan-500/25 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-mono font-medium uppercase tracking-wide text-cyan-300/90"
               >
                 🔧 TOOL USED: {name}
               </span>
@@ -79,12 +93,14 @@ export function ChatMessage({
           </div>
         )}
         <div
-          className={`rounded-2xl px-4 py-3 relative ${
+          className={`relative rounded-2xl px-4 py-3 ${
             role === 'user'
               ? userBubbleVariant === 'agent'
-                ? 'bg-white/10 text-white/90 border border-white/10'
-                : 'bg-yellow-400 text-black'
-              : 'bg-white/5 border border-white/10 text-white/90'
+                ? 'border border-white/12 bg-gradient-to-br from-white/[0.12] to-white/[0.05] text-white/92 shadow-md shadow-black/20'
+                : 'bg-slate-200 text-slate-900'
+              : assistantUseArsweepLogo
+                ? 'border border-white/[0.1] bg-gradient-to-br from-white/[0.09] to-white/[0.03] text-white/92 shadow-lg shadow-black/25'
+                : 'border border-white/10 bg-white/5 text-white/90'
           }`}
         >
           {/* Copy Button */}
@@ -108,7 +124,9 @@ export function ChatMessage({
           </Button>
 
           {/* Message Text */}
-          {role === 'assistant' ? (
+          {role === 'assistant' && premiumResult ? (
+            <PremiumResultRich serviceType={premiumResult.serviceType} payload={premiumResult.payload} />
+          ) : role === 'assistant' ? (
             <div className="prose prose-sm dark:prose-invert max-w-none">
               <ReactMarkdown
                 components={{
@@ -135,7 +153,7 @@ export function ChatMessage({
                   ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
                   li: ({ children }) => <li className="mb-1">{children}</li>,
                   a: ({ children, href }) => (
-                    <a href={href} target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">
+                    <a href={href} target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:underline">
                       {children}
                     </a>
                   ),

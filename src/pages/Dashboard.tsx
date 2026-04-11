@@ -27,6 +27,8 @@ import { getSwapQuote, getSwapTransaction } from "@/lib/jupiterSwap";
 import { useReferral } from "@/hooks/useReferral";
 import { updateSweepStats } from "@/lib/supabase";
 import { useWalletSession } from "@/hooks/useWalletSession";
+import { usePrivy } from "@privy-io/react-auth";
+import { useWallets } from "@privy-io/react-auth/solana";
 import { useTelegramWebApp } from "@/hooks/useTelegramWebApp";
 import { useTwaSweepCallback } from "@/components/TwaBanner";
 
@@ -39,7 +41,6 @@ const Dashboard = () => {
   useScrollReveal();
   const { connection } = useConnection();
   const {
-    lockedPublicKey: publicKey,
     sessionActive: connected,
     sendTransaction,
     handleChangeWallet,
@@ -49,6 +50,13 @@ const Dashboard = () => {
     setShowChangeWalletModal,
     walletMismatch,
   } = useWalletSession();
+  const { authenticated } = usePrivy();
+  const { wallets: privySolanaWallets } = useWallets();
+  const solanaWalletAddress = privySolanaWallets[0]?.address;
+  const publicKey = useMemo(
+    () => (solanaWalletAddress ? new PublicKey(solanaWalletAddress) : null),
+    [solanaWalletAddress],
+  );
   const { user, season } = useReferral(publicKey?.toBase58() ?? null);
   const { isInTelegram, walletFromTwa, setMainButton, hideMainButton, showConfirm } = useTelegramWebApp();
   const { notifySweepComplete } = useTwaSweepCallback();
@@ -245,7 +253,7 @@ const Dashboard = () => {
     }
     if (!publicKey || !sendTransaction || selectedIds.size === 0) return;
     if (walletMismatch) {
-      toast.error("Wallet account mismatch. Switch back in Phantom or click \"Change Wallet\".");
+      toast.error('Wallet account mismatch. Switch back in your wallet or click "Change Wallet".');
       return;
     }
 
@@ -448,7 +456,7 @@ const Dashboard = () => {
   }, [publicKey, sendTransaction, connection, selectedIds, sweeping, pendingTx, tokenAccounts, season, walletMismatch]);
 
   // Not connected
-  if (!connected) {
+  if (!connected && !authenticated) {
     return (
       <div
         className="relative min-h-screen overflow-hidden"
@@ -525,7 +533,7 @@ const Dashboard = () => {
               walletMismatch={walletMismatch}
             />
             <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(255,255,255,0.30)", marginTop: 14 }}>
-              Log in with Privy, then connect Phantom, Solflare, or other Solana wallets
+              Sign in with Privy and connect a Solana wallet to scan and sign transactions
             </p>
           </div>
         </motion.div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell, Check, MessageSquare, Globe, ExternalLink } from 'lucide-react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { usePrivySolanaPublicKey } from '@/hooks/usePrivySolanaPublicKey';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -10,7 +10,7 @@ import { notificationService } from '@/lib/supabase-notifications';
 import type { UserSubscription } from '@/types/ai-agent';
 
 export function NotificationSettings() {
-  const { publicKey } = useWallet();
+  const { publicKey } = usePrivySolanaPublicKey();
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [telegramId, setTelegramId] = useState('');

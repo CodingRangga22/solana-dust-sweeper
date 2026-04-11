@@ -1,3 +1,5 @@
+/** Must run before `@privy-io/react-auth` so Privy cannot wrap our API `fetch` and recurse into `getAccessToken`. */
+import "@/lib/captureNativeFetch";
 import { Buffer } from "buffer";
 globalThis.Buffer = Buffer;
 
@@ -64,9 +66,9 @@ const app = privyAppId ? (
       // Privy login (email + Solana wallets via modal) — app-wide; wallet-adapter receives the linked Solana connection.
       loginMethods: ["wallet", "email"],
       appearance: {
-        walletChainType: "solana-only",
+        // Izinkan login dengan wallet EVM; user akan diarahkan hubungkan Solana di UI app.
+        walletChainType: "ethereum-and-solana",
         showWalletLoginFirst: true,
-        // Phantom first — same order as connectWallet() calls (see privyWallets.ts).
         walletList: [...PRIVY_SOLANA_WALLET_LIST],
       },
       externalWallets: {

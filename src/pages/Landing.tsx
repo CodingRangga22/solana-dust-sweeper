@@ -151,7 +151,7 @@ const Landing = () => {
 
   return (
     <div style={{minHeight:"100vh",background:"var(--ar-base)",backgroundImage:"radial-gradient(ellipse at 25% 40%, rgba(255,215,0,0.05), transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(255,120,73,0.05), transparent 50%)",position:"relative",overflowX:"hidden",fontFamily:"'Inter',sans-serif",color:"#FFFFFF"}}>
-      <header style={{position:"fixed",left:0,right:0,zIndex:50,top:0,borderBottom:"1px solid rgba(255,255,255,0.05)",background:"rgba(11,15,20,0.85)",backdropFilter:"blur(20px)"}}>
+      <header style={{position:"fixed",left:0,right:0,zIndex:50,top:bannerHeight,borderBottom:"1px solid rgba(255,255,255,0.05)",background:"rgba(11,15,20,0.85)",backdropFilter:"blur(20px)"}}>
         <div style={{maxWidth:1200,margin:"0 auto",padding:"0 20px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <button className="sm:hidden" onClick={()=>setMenuOpen(p=>!p)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",padding:6}}>

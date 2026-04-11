@@ -17,11 +17,12 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
   const { setOpen } = useSidebar();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const isApp = location.pathname === "/app";
+  const path = location.pathname.replace(/\/$/, "") || "/";
+  const isApp = path === "/app";
 
   return (
     <header style={{
-      position: "fixed", left: 0, right: 0, zIndex: 50, top: 0,
+      position: "fixed", left: 0, right: 0, zIndex: 50, top: bannerHeight,
       borderBottom: "1px solid rgba(255,255,255,0.05)",
       background: "rgba(11,15,20,0.88)",
       backdropFilter: "blur(20px)",

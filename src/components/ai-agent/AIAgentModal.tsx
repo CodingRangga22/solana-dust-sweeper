@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { usePrivySolanaPublicKey } from '@/hooks/usePrivySolanaPublicKey';
 import { useArsweepChat } from '@/hooks/useArsweepChat';
 import { NotificationSettings } from './NotificationSettings';
 import { X402PaymentModal } from './X402PaymentModal';
@@ -16,7 +16,7 @@ interface AIAgentModalProps {
 }
 
 export function AIAgentModal({ isOpen, onClose }: AIAgentModalProps) {
-  const { publicKey } = useWallet();
+  const { publicKey } = usePrivySolanaPublicKey();
   const userId = publicKey?.toString() || 'anonymous-' + Date.now();
   const { messages, isLoading, error, sendMessage } = useArsweepChat(userId);
   

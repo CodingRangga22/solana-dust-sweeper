@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
+import { usePrivy } from '@privy-io/react-auth';
+import { useWallets } from '@privy-io/react-auth/solana';
 import { createArsweepFetchWithPayment } from '@/lib/arsweepX402Client';
+import { usePrivySignTransaction } from '@/hooks/usePrivySignTransaction';
 import {
   getPremiumMainnetConnection,
   getMainnetUsdcUiAmount,
@@ -42,8 +44,21 @@ export function priceUsdcFor(
 }
 
 export function useX402Payment() {
-  const wallet = useWallet();
-  const { publicKey, signTransaction, connected } = wallet;
+  const { authenticated } = usePrivy();
+  const { wallets } = useWallets();
+  const { signTransaction } = usePrivySignTransaction();
+
+  const addr = wallets[0]?.address;
+  const publicKey = useMemo(
+    () => (addr ? new PublicKey(addr) : null),
+    [addr],
+  );
+  const connected = authenticated && publicKey != null;
+
+  const signingWallet = useMemo(
+    () => ({ publicKey, signTransaction }),
+    [publicKey, signTransaction],
+  );
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +93,7 @@ export function useX402Payment() {
 
   async function requestPremium(walletAddress: string, premiumPath: PremiumServicePath) {
     if (!publicKey || !signTransaction || !connected) {
-      const msg = 'Hubungkan wallet yang mendukung penandatanganan transaksi.';
+      const msg = 'Hubungkan wallet Solana lewat Privy untuk menandatangani transaksi.';
       setError(msg);
       throw new Error(msg);
     }
@@ -86,7 +101,7 @@ export function useX402Payment() {
     setError(null);
     try {
       const path = toX402Path(premiumPath);
-      const fetchPay = createArsweepFetchWithPayment(wallet);
+      const fetchPay = createArsweepFetchWithPayment(signingWallet);
       const res = await fetchPay(`${API_BASE}${path}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -117,7 +132,6 @@ export function useX402Payment() {
   }
 
   return {
-    wallet,
     publicKey,
     signTransaction,
     connected,

@@ -1,15 +1,17 @@
-function isRecord(x: unknown): x is Record<string, unknown> {
+import { sanitizeRoastText } from '@/lib/roastTextSanitize';
+
+export function isRecord(x: unknown): x is Record<string, unknown> {
   return typeof x === 'object' && x !== null && !Array.isArray(x);
 }
 
 /** API often wraps as { success, data }; UI should show the inner payload. */
-function unwrapApiPayload(data: unknown): unknown {
+export function unwrapApiPayload(data: unknown): unknown {
   if (!isRecord(data)) return data;
   if (typeof data.success === 'boolean' && 'data' in data && data.data !== undefined) return data.data;
   return data;
 }
 
-function humanizeKey(key: string): string {
+export function humanizeKey(key: string): string {
   return key
     .replace(/([A-Z])/g, ' $1')
     .replace(/_/g, ' ')
@@ -225,9 +227,12 @@ function objectToReadableMarkdown(obj: Record<string, unknown>, depth: number): 
   return lines.length ? lines.join('\n') : '_Tidak ada detail._';
 }
 
-function formatGenericPremium(_serviceType: string, data: unknown): string {
+function formatGenericPremium(serviceType: string, data: unknown): string {
   const inner = unwrapApiPayload(data);
-  if (typeof inner === 'string') return inner.trim();
+  if (typeof inner === 'string') {
+    const t = inner.trim();
+    return serviceType === 'roast' ? sanitizeRoastText(t) : t;
+  }
   if (typeof inner === 'number' || typeof inner === 'boolean') return String(inner);
   if (Array.isArray(inner)) {
     if (inner.length === 0) return '_Tidak ada data._';
@@ -239,17 +244,22 @@ function formatGenericPremium(_serviceType: string, data: unknown): string {
   for (const f of textFields) {
     const v = inner[f];
     if (typeof v === 'string' && v.trim().length > 0) {
+      let main = v.trim();
+      if (serviceType === 'roast') main = sanitizeRoastText(main);
       const rest = { ...inner };
       delete rest[f];
       const tail = Object.keys(rest).length ? `\n\n${objectToReadableMarkdown(rest, 0)}` : '';
-      return `${v.trim()}${tail}`;
+      return `${main}${tail}`;
     }
   }
   const score = inner.score ?? inner.walletScore ?? inner.riskScore;
   if (typeof score === 'number' || typeof score === 'string') {
     const lines = [`**Skor:** ${score}`];
     const roast = inner.roast ?? inner.comment ?? inner.verdict;
-    if (typeof roast === 'string') lines.push('', roast);
+    if (typeof roast === 'string') {
+      const r = serviceType === 'roast' ? sanitizeRoastText(roast) : roast;
+      lines.push('', r);
+    }
     const rest = { ...inner };
     delete rest.score;
     delete rest.walletScore;

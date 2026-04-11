@@ -64,7 +64,7 @@ export function WalletScanCard({ result, onPremiumAnalysis }: WalletScanCardProp
         <div className="grid grid-cols-3 gap-4">
           <div>
             <p className="text-xs text-muted-foreground mb-1">Total Value</p>
-            <p className="text-lg font-bold text-yellow-400">{formatUSD(result.totalValue)}</p>
+            <p className="text-lg font-bold text-white">{formatUSD(result.totalValue)}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1">Tokens</p>

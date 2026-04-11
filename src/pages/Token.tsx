@@ -37,7 +37,7 @@ const TokenPage = () => {
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)", backgroundSize: "28px 28px", maskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)", WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)" }} />
 
       {/* NAV */}
-      <header style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: 0, borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(11,15,20,0.85)", backdropFilter: "blur(20px)" }}>
+      <header style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: bannerHeight, borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(11,15,20,0.85)", backdropFilter: "blur(20px)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => navigate("/agent")}>
             <ArsweepLogo className="w-6 h-6" />

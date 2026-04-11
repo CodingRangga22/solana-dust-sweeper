@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect, type CSSProperties } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { usePrivy, useLogin, useLogout } from "@privy-io/react-auth";
+import { useState, useRef, useEffect, useMemo, type CSSProperties } from "react";
+import { useLogout } from "@privy-io/react-auth";
+import { useWallets } from "@privy-io/react-auth/solana";
+import { PublicKey } from "@solana/web3.js";
 import {
   Copy,
   Check,
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useArsweepWalletAuthUi } from "@/hooks/useArsweepWalletAuthUi";
 
 interface WalletMenuProps {
   onChangeWallet: () => void;
@@ -29,13 +30,25 @@ const WalletMenu = ({
   walletMismatch,
   variant = "header",
 }: WalletMenuProps) => {
-  const { authenticated } = usePrivy();
-  const { login } = useLogin();
   const { logout } = useLogout();
+  const {
+    ready,
+    authenticated,
+    login,
+    connectSolana,
+    showSwitchFromEvmHint,
+    needsPrivySolanaWallet,
+  } = useArsweepWalletAuthUi();
 
-  const { publicKey, connected, wallet, connecting } = useWallet();
+  const { ready: walletsReady, wallets: privySolanaWallets } = useWallets();
+  const displayPublicKey = useMemo(() => {
+    const addr = privySolanaWallets[0]?.address;
+    return addr ? new PublicKey(addr) : null;
+  }, [privySolanaWallets]);
+
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [connectBusy, setConnectBusy] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,45 +78,92 @@ const WalletMenu = ({
         }
       : {};
 
-  // Adapter is reconnecting (e.g. after refresh)
-  if (connecting && !publicKey) {
+  if (!ready) {
     return (
       <button
         type="button"
         disabled
-        className={cn(baseBtn, "opacity-70 cursor-wait")}
+        className={cn(baseBtn, "cursor-not-allowed opacity-60")}
         style={primaryStyle}
       >
         <Loader2 className="h-4 w-4 animate-spin" />
-        <span className="font-mono">Connecting wallet…</span>
+        <span className="font-mono">Loading…</span>
       </button>
     );
   }
 
-  if (!connected || !publicKey) {
+  if (!authenticated) {
+    return (
+      <button
+        type="button"
+        onClick={() => login()}
+        className={baseBtn}
+        style={primaryStyle}
+      >
+        <span className="font-mono">Log in</span>
+      </button>
+    );
+  }
+
+  if (needsPrivySolanaWallet) {
     return (
       <div
         className={cn(
-          variant === "hero" &&
-            "flex w-full flex-col items-stretch gap-3",
-          variant !== "hero" && "flex items-center gap-2",
+          "flex flex-col gap-2",
+          variant === "hero" ? "w-full" : "items-stretch",
         )}
       >
-        <WalletMultiButton className={baseBtn} style={primaryStyle} />
-        {!authenticated && variant === "hero" ? (
-          <button
-            type="button"
-            onClick={() => login()}
-            className="text-center text-xs text-muted-foreground underline-offset-4 hover:underline"
+        {showSwitchFromEvmHint ? (
+          <p
+            className={cn(
+              "text-center text-[11px] leading-snug text-amber-200/90",
+              variant === "hero" ? "px-1" : "max-w-[220px]",
+            )}
           >
-            Sign in with email (optional)
-          </button>
+            Arsweep memakai <strong className="font-semibold">Solana</strong>. Hubungkan
+            wallet Solana (Phantom, Solflare, …). Wallet EVM tidak dipakai untuk transaksi
+            on-chain di sini.
+          </p>
         ) : null}
+        <button
+          type="button"
+          disabled={connectBusy}
+          onClick={() => {
+            setConnectBusy(true);
+            void connectSolana().finally(() => setConnectBusy(false));
+          }}
+          className={cn(
+            baseBtn,
+            connectBusy && "cursor-wait opacity-80",
+          )}
+          style={primaryStyle}
+        >
+          {connectBusy ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : null}
+          <span className="font-mono">
+            {connectBusy ? "Membuka Privy…" : "Hubungkan wallet Solana"}
+          </span>
+        </button>
       </div>
     );
   }
 
-  const address = publicKey.toBase58();
+  if (!walletsReady || !displayPublicKey) {
+    return (
+      <button
+        type="button"
+        disabled
+        className={cn(baseBtn, "cursor-wait opacity-70")}
+        style={primaryStyle}
+      >
+        <Loader2 className="h-4 w-4 animate-spin" />
+        <span className="font-mono">Menyiapkan wallet…</span>
+      </button>
+    );
+  }
+
+  const address = displayPublicKey.toBase58();
   const short = `${address.slice(0, 4)}...${address.slice(-4)}`;
 
   const handleCopy = () => {
@@ -118,7 +178,13 @@ const WalletMenu = ({
     setOpen(false);
     try {
       await onDisconnect();
-      if (authenticated) await logout();
+      if (authenticated) {
+        try {
+          await logout();
+        } catch {
+          /* Session may already be invalid (403) — local disconnect is enough */
+        }
+      }
       toast.success("Signed out");
     } catch {
       toast.error("Sign out failed");
@@ -130,7 +196,7 @@ const WalletMenu = ({
       {walletMismatch && (
         <span
           className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-yellow-500/15 text-yellow-400 border border-yellow-500/30"
-          title="Phantom account differs from locked session"
+          title="Akun wallet berbeda dari sesi terkunci"
         >
           <AlertTriangle className="w-3 h-3" />
           Mismatch
@@ -151,13 +217,6 @@ const WalletMenu = ({
           fontFamily: "IBM Plex Mono, monospace",
         }}
       >
-        {wallet?.adapter.icon && (
-          <img
-            src={wallet.adapter.icon}
-            alt=""
-            className="w-4 h-4 rounded-sm"
-          />
-        )}
         <span className="font-mono text-xs">{short}</span>
         <ChevronDown
           className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`}

@@ -5,8 +5,8 @@ import { VersionedTransaction } from '@solana/web3.js';
 type WalletSignTx = (tx: VersionedTransaction) => Promise<VersionedTransaction>;
 
 /**
- * Bridges @solana/wallet-adapter `signTransaction` to @solana/kit `TransactionSigner`
- * expected by @x402/svm ExactSvmScheme.
+ * Bridges Privy (atau adapter) `signTransaction` ke @solana/kit `TransactionSigner`
+ * untuk @x402/svm ExactSvmScheme.
  */
 export function createWalletAdapterPartialSigner(wallet: {
   publicKey: { toBase58(): string } | null;

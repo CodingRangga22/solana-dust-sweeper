@@ -2,11 +2,17 @@ import { x402Client } from '@x402/core/client';
 import { wrapFetchWithPayment } from '@x402/fetch';
 import { ExactSvmScheme } from '@x402/svm/exact/client';
 import { ExactSvmSchemeV1 } from '@x402/svm/exact/v1/client';
-import type { WalletContextState } from '@solana/wallet-adapter-react';
+import type { PublicKey, VersionedTransaction } from '@solana/web3.js';
 import { createCorsSafeFetchForX402 } from '@/lib/x402CorsSafeFetch';
 import { createWalletAdapterPartialSigner } from '@/lib/x402WalletSigner';
 
 const V1_NETWORKS = ['solana', 'solana-devnet', 'solana-testnet'] as const;
+
+/** Minimal wallet shape untuk x402 (Privy `signTransaction` + `PublicKey`). */
+export type ArsweepX402SigningWallet = {
+  publicKey: PublicKey | null;
+  signTransaction?: (tx: VersionedTransaction) => Promise<VersionedTransaction>;
+};
 
 function rpcUrlForX402(): string | undefined {
   const u =
@@ -20,7 +26,7 @@ function rpcUrlForX402(): string | undefined {
  * Fetch yang menangani HTTP 402: membangun pembayaran USDC (Solana) dan meminta tanda tangan wallet.
  */
 export function createArsweepFetchWithPayment(
-  wallet: Pick<WalletContextState, 'publicKey' | 'signTransaction'>,
+  wallet: ArsweepX402SigningWallet,
 ): typeof fetch {
   const signer = createWalletAdapterPartialSigner(wallet);
   const rpc = rpcUrlForX402();

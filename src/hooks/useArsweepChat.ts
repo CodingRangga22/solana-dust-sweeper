@@ -11,6 +11,8 @@ export interface WalletScanResult {
   nftCount: number;
 }
 
+export type PremiumServiceType = 'analyze' | 'report' | 'roast' | 'rugcheck' | 'planner';
+
 export interface ChatMessageModel {
   id: string;
   role: 'user' | 'assistant';
@@ -18,6 +20,8 @@ export interface ChatMessageModel {
   timestamp: Date;
   walletScan?: WalletScanResult;
   toolsUsed?: string[];
+  /** Structured premium payload for rich UI (charts, cards). */
+  premiumResult?: { serviceType: PremiumServiceType; payload: unknown };
 }
 
 export const useArsweepChat = (userId: string) => {
