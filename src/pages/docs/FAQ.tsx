@@ -11,6 +11,7 @@ const faqs = [
   {q:"Does Ars​weep store my wallet data?",a:"No. No backend. All scanning and transaction building is client-side. Your address is never stored or logged."},
   {q:"What wallets are supported?",a:"Any Solana Wallet Adapter wallet — Phantom, Solflare, Backpack, and others. Phantom recommended for best experience."},
   {q:"What is a dust token?",a:"A token with insignificant balance — zero, tiny raw amount, or no trading pool. Accumulates from airdrops, failed swaps, and DeFi interactions."},
+  {q:"Is there an Arsweep token?",a:"Yes — $ASWP is the ecosystem SPL token (community incentives and roadmap utility; launched on Pump.fun). It is separate from sweep pricing: the 1.5% service fee on reclaimed rent is still charged in SOL, and you can use the core app without holding $ASWP. Details on the Token page and under Fee Model in Docs."},
 ];
 export default function FAQ() {
   return (

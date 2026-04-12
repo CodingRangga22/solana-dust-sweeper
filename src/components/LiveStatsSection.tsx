@@ -164,7 +164,7 @@ export default function LiveStatsSection() {
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--ar-teal)", boxShadow: "0 0 8px var(--ar-teal)", display: "inline-block" }} />
             <span style={{ ...M, fontSize: 11, color: "var(--ar-teal)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Live</span>
           </div>
-          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,4vw,48px)", fontWeight: 400, color: "#FFFFFF", marginBottom: 12, lineHeight: 1.1 }}>
+          <h2 className="ar-landing-section-title" style={{ fontSize: "clamp(28px,4vw,48px)", marginBottom: 12 }}>
             Real-time <span id="yr-activity" style={{color:"#FFFFFF",transition:"color 0.6s ease"}}>Activity</span>
           </h2>
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>

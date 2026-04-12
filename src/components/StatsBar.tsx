@@ -3,25 +3,28 @@ import { motion } from "framer-motion";
 import { Coins, RefreshCw, Layers, Info } from "lucide-react";
 import AnimatedCounter from "./AnimatedCounter";
 
-const SERVICE_FEE = 0.015;
-const GAS_FEE_PER = 0.000005;
-
 interface StatsBarProps {
   totalDust: number;
-  potentialRefund: number;
   accountsToClose: number;
+  grossRefund: number;
+  serviceFee: number;
+  gasFee: number;
+  netRefund: number;
 }
 
-const StatsBar = ({ totalDust, potentialRefund, accountsToClose }: StatsBarProps) => {
+const StatsBar = ({
+  totalDust,
+  accountsToClose,
+  grossRefund,
+  serviceFee,
+  gasFee,
+  netRefund,
+}: StatsBarProps) => {
   const [hoveredTooltip, setHoveredTooltip] = useState(false);
-
-  const serviceFee = potentialRefund * SERVICE_FEE;
-  const gasFee = accountsToClose * GAS_FEE_PER;
-  const netRefund = Math.max(potentialRefund - serviceFee - gasFee, 0);
 
   const stats = [
     { label: "Total Dust Found", value: String(totalDust), icon: Coins, color: "text-primary", hasTooltip: false },
-    { label: "Net Refund", value: accountsToClose > 0 ? `${netRefund.toFixed(5)} SOL` : "0.00000 SOL", icon: RefreshCw, color: "text-secondary", hasTooltip: true },
+    { label: "Net Refund", value: accountsToClose > 0 ? `${Math.max(netRefund, 0).toFixed(5)} SOL` : "0.00000 SOL", icon: RefreshCw, color: "text-secondary", hasTooltip: true },
     { label: "Accounts to Close", value: String(accountsToClose), icon: Layers, color: "text-primary", hasTooltip: false },
   ];
 
@@ -58,20 +61,20 @@ const StatsBar = ({ totalDust, potentialRefund, accountsToClose }: StatsBarProps
                       <p className="font-semibold text-foreground mb-2">Fee Breakdown</p>
                       <div className="space-y-1.5">
                         <div className="flex justify-between gap-4">
-                          <span>Gross Refund</span>
-                          <span className="text-foreground">{potentialRefund.toFixed(5)} SOL</span>
+                          <span>Gross (est.)</span>
+                          <span className="text-foreground">{grossRefund.toFixed(5)} SOL</span>
                         </div>
                         <div className="flex justify-between gap-4 text-red-400">
-                          <span>− Network Gas</span>
+                          <span>− Network Gas (est.)</span>
                           <span>~{gasFee.toFixed(5)} SOL</span>
                         </div>
                         <div className="flex justify-between gap-4 text-red-400">
-                          <span>− Service Fee (1.5%)</span>
+                          <span>− Service (1.5% of rent)</span>
                           <span>{serviceFee.toFixed(5)} SOL</span>
                         </div>
                         <div className="border-t border-border pt-1.5 flex justify-between gap-4 font-semibold text-emerald-400">
-                          <span>You Receive</span>
-                          <span>{netRefund.toFixed(5)} SOL</span>
+                          <span>You Receive (est.)</span>
+                          <span>{Math.max(netRefund, 0).toFixed(5)} SOL</span>
                         </div>
                       </div>
                       <div className="absolute top-full right-4 w-2 h-2 rotate-45 glass border-b border-r border-border -mt-1" />

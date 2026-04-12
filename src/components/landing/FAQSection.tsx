@@ -56,7 +56,7 @@ const FAQSection = () => {
   >
     <div className="container mx-auto max-w-2xl">
       <div className="text-center mb-12">
-        <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(28px,4vw,44px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12}}>
+        <h2 className="ar-landing-section-title" style={{ fontSize: "clamp(28px,4vw,44px)", marginBottom: 12 }}>
           Frequently Asked <span id="yr-questions" style={{color:"#FFFFFF",transition:"color 0.6s ease"}}>Questions</span>
         </h2>
         <p className="text-muted-foreground">

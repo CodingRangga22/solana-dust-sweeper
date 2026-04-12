@@ -28,7 +28,7 @@ export default function HeroDemo() {
       <svg width="520" height="520" viewBox="0 0 560 560" fill="none" style={{ position:"absolute" }}>
         {[260,220,180,140,100].map((r,i) => (
           <circle key={r} cx="280" cy="280" r={r}
-            stroke={i===2 ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.03)"}
+            stroke={i===2 ? "rgba(34,211,238,0.09)" : "rgba(255,255,255,0.03)"}
             strokeWidth="1" />
         ))}
         {Array.from({length:32}).map((_,i) => {
@@ -36,7 +36,7 @@ export default function HeroDemo() {
           return <line key={i}
             x1={280+Math.cos(a)*256} y1={280+Math.sin(a)*256}
             x2={280+Math.cos(a)*264} y2={280+Math.sin(a)*264}
-            stroke={i%4===0 ? "rgba(255,255,255,0.13)" : "rgba(255,255,255,0.04)"}
+            stroke={i%4===0 ? "rgba(34,211,238,0.22)" : "rgba(255,255,255,0.04)"}
             strokeWidth={i%4===0 ? 1.5 : 0.5} />;
         })}
         {orbs.map((orb,i) => {

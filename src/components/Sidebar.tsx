@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Video, BookOpen, X, FlaskConical, MessageCircle } from "lucide-react";
+import { Video, BookOpen, X, FlaskConical, MessageCircle, CreditCard } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useSidebar } from "./SidebarContext";
 
@@ -24,6 +24,15 @@ const Sidebar = () => {
           <Link to="/demo" onClick={() => setOpen(false)} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${location.pathname === "/demo" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}>
             <Video className="w-4 h-4" />
             Watch Demo
+          </Link>
+
+          <Link
+            to="/x402"
+            onClick={() => setOpen(false)}
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${location.pathname === "/x402" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}
+          >
+            <CreditCard className="w-4 h-4" />
+            x402
           </Link>
 
           <Link

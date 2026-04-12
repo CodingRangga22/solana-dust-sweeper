@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Fees() {
   return (
     <div className="max-w-3xl">
@@ -5,6 +7,14 @@ export default function Fees() {
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-4">Fee Model</div>
         <h1 className="text-3xl sm:text-4xl font-bold mb-4">Fee Model</h1>
         <p className="text-muted-foreground text-lg leading-relaxed">Arsweep charges a transparent 1.5% service fee per sweep, deducted on-chain and verifiable on Solscan.</p>
+      </div>
+      <div className="border border-primary/20 bg-primary/5 rounded-xl p-5 mb-10">
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-2">$ASWP vs. this fee</p>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          <strong className="text-foreground">$ASWP</strong> is the community ecosystem token (e.g. rewards and roadmap utility on the{" "}
+          <Link to="/token" className="text-primary hover:underline">token page</Link>
+          ). It does <strong className="text-foreground">not</strong> replace SOL rent refunds. The <strong className="text-foreground">1.5% platform fee is always settled in SOL</strong> as described below. You do not need to hold $ASWP to use the sweeper.
+        </p>
       </div>
       <div className="bg-muted/50 border rounded-xl p-6 mb-10">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Calculation</p>

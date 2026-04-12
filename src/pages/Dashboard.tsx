@@ -26,14 +26,17 @@ import { useSwapMode } from "@/hooks/useSwapMode";
 import { getSwapQuote, getSwapTransaction } from "@/lib/jupiterSwap";
 import { useReferral } from "@/hooks/useReferral";
 import { updateSweepStats } from "@/lib/supabase";
+import { formatTokenUiBalance } from "@/lib/utils";
 import { useWalletSession } from "@/hooks/useWalletSession";
 import { usePrivy } from "@privy-io/react-auth";
 import { useWallets } from "@privy-io/react-auth/solana";
 import { useTelegramWebApp } from "@/hooks/useTelegramWebApp";
 import { useTwaSweepCallback } from "@/components/TwaBanner";
 
-const RENT_PER_ACCOUNT = 0.002042; // SOL per closed account (~2,039,280 lamports)
+/** Fallback when rentLamports missing — prefer per-account rent from scan */
+const RENT_PER_ACCOUNT = 0.002042;
 const FEE_BPS = 150;
+const GAS_EST_PER_ACCOUNT = 0.000005;
 const MIN_SWAP_VALUE_CENTS = 5; // $0.05 — below this, skip swap and close-only
 const TOKEN_ICONS = ["🪙", "🐶", "🌙", "💀", "🐕", "🧹", "💨", "🐱", "🦊", "🐸"];
 
@@ -139,7 +142,6 @@ const Dashboard = () => {
       const swapTokens = tokenAccounts.filter(
         (a) =>
           a.isSweepable &&
-          a.hasLiquidityPool &&
           a.amount > BigInt(0) &&
           tokenModes[a.pubkey.toBase58()] === "swap",
       );
@@ -182,7 +184,7 @@ const Dashboard = () => {
         id: a.pubkey.toBase58(),
         name: a.metadata.name,
         mint: a.mint.toBase58(),
-        balance: a.amount.toString(),
+        balance: formatTokenUiBalance(a.amount, a.decimals),
         rentRefundable: RENT_PER_ACCOUNT,
         icon: a.metadata.logoURI ?? TOKEN_ICONS[0],
       })),
@@ -195,7 +197,39 @@ const Dashboard = () => {
     );
   }, [tokens]);
 
-  const totalSol = selectedIds.size * RENT_PER_ACCOUNT;
+  /** Matches on-chain intent: rent reclaim + Jupiter→SOL when swap mode (not just count×constant). */
+  const sweepEstimate = useMemo(() => {
+    let rentSol = 0;
+    let swapSol = 0;
+    let swapRowsMissingQuote = 0;
+
+    for (const a of tokenAccounts) {
+      const id = a.pubkey.toBase58();
+      if (!selectedIds.has(id) || !a.isSweepable) continue;
+      rentSol += a.rentLamports / 1e9;
+      const mode = tokenModes[id] ?? "close";
+      if (mode === "swap" && a.amount > BigInt(0)) {
+        const q = swapQuotes[id];
+        if (q !== undefined) swapSol += q;
+        else swapRowsMissingQuote += 1;
+      }
+    }
+
+    const grossSol = rentSol + swapSol;
+    const serviceFeeSol = rentSol * (FEE_BPS / 10000);
+    const gasFeeSol = GAS_EST_PER_ACCOUNT * selectedIds.size;
+    const netSol = Math.max(grossSol - serviceFeeSol - gasFeeSol, 0);
+
+    return {
+      rentSol,
+      swapSol,
+      grossSol,
+      serviceFeeSol,
+      gasFeeSol,
+      netSol,
+      swapRowsMissingQuote,
+    };
+  }, [tokenAccounts, selectedIds, tokenModes, swapQuotes]);
 
   const handleRescan = useCallback(() => {
     setTokenAccounts([]);
@@ -458,24 +492,9 @@ const Dashboard = () => {
   // Not connected
   if (!connected && !authenticated) {
     return (
-      <div
-        className="relative min-h-screen overflow-hidden"
-        style={{
-          background: "var(--ar-base)",
-          backgroundImage:
-            "radial-gradient(ellipse at 25% 40%, rgba(255,215,0,0.05), transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(255,120,73,0.05), transparent 50%)",
-        }}
-      >
-        {/* Dot grid */}
-        <div
-          className="pointer-events-none fixed inset-0 z-0"
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-            maskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)",
-            WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)",
-          }}
-        />
+      <div className="arsweep-page-shell relative overflow-hidden font-sans">
+        <div className="arsweep-dot-grid" aria-hidden />
+        <div className="arsweep-vignette-fade" aria-hidden />
         {/* Noise */}
         <div
           className="pointer-events-none fixed inset-0 z-0"
@@ -500,9 +519,9 @@ const Dashboard = () => {
           <div
             className="rounded-3xl p-10 max-w-lg w-full text-center"
             style={{
-              background: "rgba(11,15,20,0.88)",
-              border: "1px solid rgba(255,255,255,0.10)",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+              background: "rgba(6,9,11,0.92)",
+              border: "1px solid rgba(34,211,238,0.12)",
+              boxShadow: "0 24px 64px rgba(0,0,0,0.45), 0 0 48px rgba(34,211,238,0.04)",
               backdropFilter: "blur(20px)",
             }}
           >
@@ -552,8 +571,11 @@ const Dashboard = () => {
       <Hero scanning={scanning} scanned={scanned} onScan={handleScan} onRescan={handleRescan} sweeping={sweeping} accountsFound={sweepableAccounts.length} />
       <StatsBar
         totalDust={tokens.length}
-        potentialRefund={totalSol}
         accountsToClose={selectedIds.size}
+        grossRefund={sweepEstimate.grossSol}
+        serviceFee={sweepEstimate.serviceFeeSol}
+        gasFee={sweepEstimate.gasFeeSol}
+        netRefund={sweepEstimate.netSol}
       />
       <TokenList
         tokenAccounts={tokenAccounts}
@@ -566,6 +588,7 @@ const Dashboard = () => {
         tokenModes={tokenModes}
         onToggleMode={toggleMode}
         swapQuotes={swapQuotes}
+        analyticsSlot={<AnalyticsPanel records={sweepHistory} hideRecentList />}
       />
       {publicKey && sweepHistory.length > 0 && (
         <SweepHistory
@@ -576,7 +599,16 @@ const Dashboard = () => {
       )}
       <ActionBar
         count={selectedIds.size}
-        totalSol={totalSol}
+        grossSol={sweepEstimate.grossSol}
+        serviceFeeSol={sweepEstimate.serviceFeeSol}
+        gasFeeSol={sweepEstimate.gasFeeSol}
+        netSol={sweepEstimate.netSol}
+        hasSwapEstimate={sweepEstimate.swapSol > 0}
+        disclaimerNote={
+          sweepEstimate.swapRowsMissingQuote > 0
+            ? "Loading swap quotes… net may update."
+            : undefined
+        }
         onSweep={handleSweep}
         sweeping={sweeping}
         pendingTx={pendingTx}

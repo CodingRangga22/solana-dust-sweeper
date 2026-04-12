@@ -145,13 +145,15 @@ const Landing = () => {
 
   const M:React.CSSProperties = {fontFamily:"var(--font-mono)"};
   const D6:React.CSSProperties = {height:1,background:"rgba(255,255,255,0.06)"};
-  const BP:React.CSSProperties = {fontFamily:"var(--font-mono)",fontSize:13,fontWeight:500,color:"#0B0F14",background:"#FFFFFF",border:"none",borderRadius:8,padding:"12px 24px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8,transition:"opacity 0.2s"};
+  const BP:React.CSSProperties = {fontFamily:"var(--font-mono)",fontSize:13,fontWeight:500,color:"#040506",background:"#f4fbfb",border:"1px solid rgba(34,211,238,0.22)",borderRadius:8,padding:"12px 24px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8,transition:"opacity 0.2s, box-shadow 0.2s",boxShadow:"0 0 36px rgba(34,211,238,0.08)"};
+  /** CTA sekunder — selaras tombol Launch App di header (cyan border) */
+  const BA:React.CSSProperties = {fontFamily:"var(--font-mono)",fontSize:13,fontWeight:500,color:"#f4fbfb",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(34,211,238,0.18)",borderRadius:8,padding:"12px 24px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8,transition:"opacity 0.2s,border-color 0.2s"};
   const BG:React.CSSProperties = {fontFamily:"var(--font-mono)",fontSize:13,color:"rgba(255,255,255,0.45)",background:"none",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"12px 24px",cursor:"pointer",transition:"border-color 0.2s,color 0.2s"};
   const INP:React.CSSProperties = {fontFamily:"var(--font-mono)",width:64,fontSize:13,padding:"6px 10px",textAlign:"center",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:6,color:"#FFFFFF",outline:"none"};
 
   return (
-    <div style={{minHeight:"100vh",background:"var(--ar-base)",backgroundImage:"radial-gradient(ellipse at 25% 40%, rgba(255,215,0,0.05), transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(255,120,73,0.05), transparent 50%)",position:"relative",overflowX:"hidden",fontFamily:"'Inter',sans-serif",color:"#FFFFFF"}}>
-      <header style={{position:"fixed",left:0,right:0,zIndex:50,top:bannerHeight,borderBottom:"1px solid rgba(255,255,255,0.05)",background:"rgba(11,15,20,0.85)",backdropFilter:"blur(20px)"}}>
+    <div className="arsweep-page-shell font-sans antialiased">
+      <header style={{position:"fixed",left:0,right:0,zIndex:50,top:bannerHeight,borderBottom:"1px solid rgba(255,255,255,0.06)",background:"rgba(4,5,6,0.88)",backdropFilter:"blur(20px)"}}>
         <div style={{maxWidth:1200,margin:"0 auto",padding:"0 20px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <button className="sm:hidden" onClick={()=>setMenuOpen(p=>!p)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",padding:6}}>
@@ -163,18 +165,25 @@ const Landing = () => {
             </div>
           </div>
           <div className="hidden sm:flex" style={{position:"absolute",left:"50%",transform:"translateX(-50%)",alignItems:"center",gap:28}}>
-{[["Docs","/docs"],["$ASWP","/token"],["Agent","/agent"]].map(([l,p])=>(
+{[["Docs","/docs"],["Token","/token"],["Agent","/agent"],["x402","/x402"]].map(([l,p])=>(
               <span key={p} onClick={()=>navigate(p)} style={{fontSize:14,color:"rgba(255,255,255,0.5)",cursor:"pointer",transition:"color 0.2s"}}
                 onMouseEnter={e=>(e.currentTarget.style.color="#FFFFFF")}
                 onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.5)")}
               >{l}</span>
             ))}
           </div>
-          <button onClick={()=>navigate("/app")} style={{fontSize:13,color:"#FFFFFF",background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"6px 14px",cursor:"pointer",whiteSpace:"nowrap"}}>Launch App</button>
+          <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+            <button type="button" onClick={()=>navigate("/agent")} className="hidden sm:inline-flex" style={{fontSize:12,color:"#f4fbfb",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(34,211,238,0.22)",borderRadius:8,padding:"6px 12px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"var(--font-mono)",alignItems:"center"}}>Launch Agent</button>
+            <button type="button" onClick={()=>navigate("/app")} style={{fontSize:13,color:"#f4fbfb",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(34,211,238,0.18)",borderRadius:8,padding:"6px 14px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"var(--font-mono)"}}>Launch App</button>
+          </div>
         </div>
         {menuOpen && (
-          <div className="sm:hidden" style={{background:"rgba(11,15,20,0.98)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(255,255,255,0.08)",padding:"8px 16px 16px"}}>
-            {[["Agent","/agent"],["$ASWP","/token"],["Watch Demo","/demo"],["Simulation","/simulation"],["Docs","/docs"],["Telegram","https://t.me/arsweepalert"]].map(([l,p])=>(
+          <div className="sm:hidden" style={{background:"rgba(4,5,6,0.98)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(255,255,255,0.08)",padding:"8px 16px 16px"}}>
+            <div style={{display:"flex",gap:8,marginBottom:12}}>
+              <button type="button" onClick={()=>{ navigate("/agent"); setMenuOpen(false); }} style={{flex:1,...BA,justifyContent:"center",padding:"10px 12px"}}>Launch Agent</button>
+              <button type="button" onClick={()=>{ navigate("/app"); setMenuOpen(false); }} style={{flex:1,...BP,justifyContent:"center",padding:"10px 12px"}}>Launch App</button>
+            </div>
+            {[["Agent","/agent"],["x402","/x402"],["Token","/token"],["Watch Demo","/demo"],["Simulation","/simulation"],["Docs","/docs"],["Telegram","https://t.me/arsweepalert"]].map(([l,p])=>(
               <span key={p} onClick={()=>{p.startsWith("http")?window.open(p,"_blank"):navigate(p);setMenuOpen(false);}}
                 style={{fontSize:14,color:"rgba(255,255,255,0.7)",cursor:"pointer",padding:"12px 8px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"block"}}
               >{l}</span>
@@ -187,8 +196,8 @@ const Landing = () => {
         )}
       </header>
 
-      {/* Dot grid */}
-      <div style={{position:"fixed",inset:0,zIndex:0,pointerEvents:"none",backgroundImage:"radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)",backgroundSize:"28px 28px",maskImage:"radial-gradient(ellipse at center, black 30%, transparent 80%)",WebkitMaskImage:"radial-gradient(ellipse at center, black 30%, transparent 80%)"}} />
+      <div className="arsweep-dot-grid" aria-hidden />
+      <div className="arsweep-vignette-fade" aria-hidden />
 
       {/* Noise */}
       <div style={{position:"fixed",inset:0,zIndex:0,pointerEvents:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,backgroundSize:"200px",opacity:0.028,mixBlendMode:"overlay"}} />
@@ -219,6 +228,12 @@ const Landing = () => {
             >Launch App
               <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M7.5 3l3.5 3.5L7.5 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
+            <button type="button" style={BA} onClick={()=>navigate("/agent")}
+              onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.opacity="0.9"; (e.currentTarget as HTMLElement).style.borderColor="rgba(34,211,238,0.35)"; }}
+              onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.opacity="1"; (e.currentTarget as HTMLElement).style.borderColor="rgba(34,211,238,0.18)"; }}
+            >Launch Agent
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M7.5 3l3.5 3.5L7.5 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            </button>
             <button style={BG} onClick={()=>navigate("/docs")}
               onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.borderColor="rgba(255,255,255,0.25)"; (e.currentTarget as HTMLElement).style.color="rgba(255,255,255,0.8)"; }}
               onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.borderColor="rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color="rgba(255,255,255,0.45)"; }}
@@ -244,7 +259,7 @@ const Landing = () => {
       {/* HOW IT WORKS */}
       <section style={{position:"relative",zIndex:2,padding:"80px clamp(16px, 5vw, 40px)",textAlign:"center"}}>
         <div style={{maxWidth:1100,margin:"0 auto"}}>
-          <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,52px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>How It <YellowReveal>Works</YellowReveal></h2>
+          <h2 className="ar-landing-section-title" style={{fontSize:"clamp(32px,5vw,52px)",marginBottom:12}}>How It <YellowReveal>Works</YellowReveal></h2>
           <p style={{fontSize:16,color:"rgba(255,255,255,0.4)",marginBottom:64,lineHeight:1.6}}>Three steps. Under three minutes.</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))",gap:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:16,overflow:"hidden"}}>
             {[
@@ -252,9 +267,9 @@ const Landing = () => {
               {icon:<Eye size={18} style={{color:"rgba(255,255,255,0.6)"}}/>,n:"02",t:"We find what's been quietly draining you",d:"Every empty account, exact SOL locked, sorted by reclaim value. The number is right there."},
               {icon:<Zap size={18} style={{color:"rgba(255,255,255,0.6)"}}/>,n:"03",t:"You approve. SOL lands back. Done.",d:"One transaction. You sign it. SOL refunded directly to your wallet in seconds."},
             ].map(({icon,n,t,d})=>(
-              <div key={n} style={{padding:"36px 32px",background:"rgba(11,15,20,0.95)",textAlign:"left",transition:"background 0.2s"}}
-                onMouseEnter={e=>(e.currentTarget.style.background="rgba(20,26,35,0.98)")}
-                onMouseLeave={e=>(e.currentTarget.style.background="rgba(11,15,20,0.95)")}
+              <div key={n} style={{padding:"36px 32px",background:"rgba(6,9,11,0.94)",textAlign:"left",transition:"background 0.2s,border-color 0.2s",borderLeft:"1px solid transparent"}}
+                onMouseEnter={e=>{ e.currentTarget.style.background="rgba(10,14,16,0.98)"; e.currentTarget.style.borderLeftColor="rgba(34,211,238,0.12)"; }}
+                onMouseLeave={e=>{ e.currentTarget.style.background="rgba(6,9,11,0.94)"; e.currentTarget.style.borderLeftColor="transparent"; }}
                 className="ar-fade-in"
               >
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:24}}>
@@ -279,7 +294,7 @@ const Landing = () => {
       {/* WHAT IS ARSWEEP */}
       <section style={{position:"relative",zIndex:2,padding:"80px clamp(16px, 5vw, 40px)",textAlign:"center"}}>
         <div style={{maxWidth:1100,margin:"0 auto"}}>
-          <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,52px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>What is <YellowReveal>Arsweep</YellowReveal></h2>
+          <h2 className="ar-landing-section-title" style={{fontSize:"clamp(32px,5vw,52px)",marginBottom:12}}>What is <YellowReveal>Arsweep</YellowReveal></h2>
           <p style={{fontSize:16,color:"rgba(255,255,255,0.4)",maxWidth:600,margin:"0 auto 64px",lineHeight:1.75}}>
             Every time you interact with a token on Solana, an empty account is left behind. Each one locks ~0.002 SOL in rent indefinitely. Arsweep finds them all and closes them — returning your SOL instantly, non-custodially, on-chain.
           </p>
@@ -307,11 +322,11 @@ const Landing = () => {
                 className={`ar-fade-in lg:col-span-2 ${arr.length === 5 && idx >= 3 ? "lg:col-span-3" : ""}`}
                 style={{
                   padding: "36px 32px",
-                  background: "rgba(11,15,20,0.95)",
+                  background: "rgba(6,9,11,0.94)",
                   transition: "background 0.2s",
                 }}
-                onMouseEnter={e=>(e.currentTarget.style.background="rgba(20,26,35,0.98)")}
-                onMouseLeave={e=>(e.currentTarget.style.background="rgba(11,15,20,0.95)")}
+                onMouseEnter={e=>(e.currentTarget.style.background="rgba(10,14,16,0.98)")}
+                onMouseLeave={e=>(e.currentTarget.style.background="rgba(6,9,11,0.94)")}
               >
                 <div
                   style={{
@@ -344,7 +359,7 @@ const Landing = () => {
       <section style={{position:"relative",zIndex:2,padding:"80px clamp(16px, 5vw, 40px)",background:"rgba(255,255,255,0.015)"}}>
         <div style={{maxWidth:1100,margin:"0 auto"}}>
           <div style={{textAlign:"center",marginBottom:64}}>
-            <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(28px,4vw,48px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>SOL <YellowReveal>Calculator</YellowReveal></h2>
+            <h2 className="ar-landing-section-title" style={{fontSize:"clamp(28px,4vw,48px)",marginBottom:12}}>SOL <YellowReveal>Calculator</YellowReveal></h2>
             <p style={{fontSize:16,color:"rgba(255,255,255,0.4)",lineHeight:1.6}}>How much are you leaving behind?</p>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:32}}>
@@ -378,7 +393,7 @@ const Landing = () => {
               </div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,marginTop:28,background:"rgba(255,255,255,0.06)",borderRadius:10,overflow:"hidden"}}>
                 {[{ref:bdARef,l:"accounts"},{ref:bdSRef,l:"SOL locked"},{ref:bdURef,l:"USD value"}].map(({ref,l})=>(
-                  <div key={l} style={{textAlign:"center",padding:"14px 10px",background:"rgba(11,15,20,0.6)"}}>
+                  <div key={l} style={{textAlign:"center",padding:"14px 10px",background:"rgba(6,9,11,0.72)"}}>
                     <span ref={ref} style={{fontSize:18,fontWeight:700,color:"#FFFFFF",display:"block",marginBottom:3}}>0</span>
                     <span style={{fontFamily:"var(--font-mono)",fontSize:10,color:"rgba(255,255,255,0.3)",textTransform:"uppercase",letterSpacing:"0.08em"}}>{l}</span>
                   </div>
@@ -390,8 +405,8 @@ const Landing = () => {
               <span ref={solRef} style={{fontSize:64,fontWeight:800,color:"#FFFFFF",lineHeight:1,letterSpacing:"-0.03em",display:"block",marginBottom:6,transition:"color 0.3s"}}>0.0000</span>
               <span ref={usdRef} style={{fontFamily:"var(--font-mono)",fontSize:13,color:"rgba(255,255,255,0.35)"}}>approx. $0.00 USD</span>
               <div style={{marginTop:24,height:2,background:"rgba(255,255,255,0.08)",borderRadius:2,overflow:"visible"}}>
-                <div ref={barRef} style={{height:"100%",borderRadius:2,background:"rgba(255,255,255,0.7)",width:"0%",transition:"width 0.3s ease",position:"relative"}}>
-                  <span style={{position:"absolute",right:-4,top:-3,width:8,height:8,background:"#FFFFFF",borderRadius:"50%",boxShadow:"0 0 8px rgba(255,255,255,0.4)",display:"block"}} />
+                <div ref={barRef} style={{height:"100%",borderRadius:2,background:"linear-gradient(90deg, rgba(34,211,238,0.85), rgba(125,211,252,0.75))",width:"0%",transition:"width 0.3s ease",position:"relative"}}>
+                  <span style={{position:"absolute",right:-4,top:-3,width:8,height:8,background:"#7dd3fc",borderRadius:"50%",boxShadow:"0 0 10px rgba(34,211,238,0.45)",display:"block"}} />
                 </div>
               </div>
               <button onClick={()=>navigate("/app")} style={{...BP,marginTop:28,justifyContent:"center"}}
@@ -408,7 +423,7 @@ const Landing = () => {
       {/* SECURITY */}
       <section style={{position:"relative",zIndex:2,padding:"80px clamp(16px, 5vw, 40px)",textAlign:"center"}}>
         <div style={{maxWidth:1100,margin:"0 auto"}}>
-          <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(28px,4vw,48px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>Security</h2>
+          <h2 className="ar-landing-section-title" style={{fontSize:"clamp(28px,4vw,48px)",marginBottom:12}}>Security</h2>
           <p style={{fontSize:16,color:"rgba(255,255,255,0.4)",maxWidth:480,margin:"0 auto 64px",lineHeight:1.75}}>Your keys never leave your wallet.</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))",gap:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:16,overflow:"hidden"}}>
             {[
@@ -416,12 +431,12 @@ const Landing = () => {
               {icon:<Eye size={18} style={{color:"rgba(255,255,255,0.6)"}}/>,t:"Open source",d:"Full codebase is public. Read every line before you use it."},
               {icon:<CheckCircle2 size={18} style={{color:"rgba(255,255,255,0.6)"}}/>,t:"On-chain verifiable",d:"Every sweep transaction is permanent and publicly verifiable."},
             ].map(({icon,t,d})=>(
-              <div key={t} style={{padding:"36px 32px",background:"rgba(11,15,20,0.95)",textAlign:"left",transition:"background 0.2s"}}
-                onMouseEnter={e=>(e.currentTarget.style.background="rgba(20,26,35,0.98)")}
-                onMouseLeave={e=>(e.currentTarget.style.background="rgba(11,15,20,0.95)")}
+              <div key={t} style={{padding:"36px 32px",background:"rgba(6,9,11,0.94)",textAlign:"left",transition:"background 0.2s"}}
+                onMouseEnter={e=>(e.currentTarget.style.background="rgba(10,14,16,0.98)")}
+                onMouseLeave={e=>(e.currentTarget.style.background="rgba(6,9,11,0.94)")}
                 className="ar-fade-in"
               >
-                <div style={{width:40,height:40,borderRadius:10,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:20}}>{icon}</div>
+                <div style={{width:40,height:40,borderRadius:10,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(34,211,238,0.1)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:20}}>{icon}</div>
                 <h3 style={{fontSize:17,fontWeight:600,color:"#FFFFFF",marginBottom:10,lineHeight:1.4}}>{t}</h3>
                 <p style={{fontSize:14,color:"rgba(255,255,255,0.45)",lineHeight:1.75}}>{d}</p>
               </div>
@@ -436,7 +451,7 @@ const Landing = () => {
       <section style={{position:"relative",zIndex:2,padding:"80px clamp(16px, 5vw, 40px)"}}>
         <div style={{maxWidth:1100,margin:"0 auto"}}>
           <div style={{textAlign:"center",marginBottom:72}}>
-            <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,52px)",fontWeight:400,letterSpacing:"-0.01em",color:"#FFFFFF",marginBottom:12,lineHeight:1.1}}>Road<YellowReveal>map</YellowReveal></h2>
+            <h2 className="ar-landing-section-title" style={{fontSize:"clamp(32px,5vw,52px)",marginBottom:12}}>Road<YellowReveal>map</YellowReveal></h2>
             <p style={{fontSize:16,color:"rgba(255,255,255,0.4)",lineHeight:1.6}}>From dust sweeper to complete Solana wallet management suite.</p>
           </div>
           <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"20px 28px",marginBottom:48}}>
@@ -450,11 +465,11 @@ const Landing = () => {
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))",gap:16}}>
             {[
-              {s:"COMPLETED",sc:"var(--ar-teal)",sb:"rgba(29,184,142,0.1)",bc:"rgba(29,184,142,0.25)",t:"Devnet Testing",d:"Program deployed and tested end-to-end. Jupiter API integrated. 100+ test sweeps completed."},
-              {s:"COMPLETED",sc:"var(--ar-teal)",sb:"rgba(29,184,142,0.1)",bc:"rgba(29,184,142,0.25)",t:"Mainnet Launch",d:"Full mainnet deployment complete. Real SOL sweeping live. Treasury accumulating fees."},
+              {s:"COMPLETED",sc:"var(--ar-teal)",sb:"var(--ar-teal-soft)",bc:"var(--ar-teal-ring)",t:"Devnet Testing",d:"Program deployed and tested end-to-end. Jupiter API integrated. 100+ test sweeps completed."},
+              {s:"COMPLETED",sc:"var(--ar-teal)",sb:"var(--ar-teal-soft)",bc:"var(--ar-teal-ring)",t:"Mainnet Launch",d:"Full mainnet deployment complete. Real SOL sweeping live. Treasury accumulating fees."},
               {s:"IN PROGRESS",sc:"rgba(255,255,255,0.6)",sb:"rgba(255,255,255,0.05)",bc:"rgba(255,255,255,0.15)",t:"Community Building",d:"Growing Telegram and X community. Building awareness before token launch. Target: 500+ members."},
               
-              {s:"LIVE NOW",sc:"var(--ar-teal)",sb:"rgba(29,184,142,0.1)",bc:"rgba(29,184,142,0.25)",t:"$ASWP Token Launch",d:"$ASWP token is now launching on Pump.fun. Community members get early access and rewards."},
+              {s:"LIVE NOW",sc:"var(--ar-teal)",sb:"var(--ar-teal-soft)",bc:"var(--ar-teal-ring)",t:"$ASWP Token Launch",d:"$ASWP token is now launching on Pump.fun. Community members get early access and rewards."},
               {s:"Q2 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"AI Wallet Hygiene Agent",d:"AI-powered agent that analyzes your wallet, detects dust and spam tokens automatically."},
               {s:"Q3 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"Cross-Chain Swap",d:"Seamlessly swap tokens across multiple chains directly from Arsweep."},
               {s:"Q3 2026",sc:"rgba(255,255,255,0.3)",sb:"transparent",bc:"rgba(255,255,255,0.07)",t:"Vault & Earn",d:"Put your reclaimed SOL to work. Deposit into vaults and earn yield automatically."},
@@ -482,7 +497,7 @@ const Landing = () => {
       {/* CTA */}
       <section style={{position:"relative",zIndex:2,padding:"80px clamp(16px, 5vw, 40px)",textAlign:"center",background:"rgba(255,255,255,0.015)"}}>
         <div style={{maxWidth:640,margin:"0 auto"}}>
-          <h2 style={{fontFamily:"var(--font-display)",fontSize:"clamp(32px,5vw,60px)",fontWeight:400,letterSpacing:"-0.02em",color:"#FFFFFF",marginBottom:20,lineHeight:1.05}}>
+          <h2 className="ar-landing-section-title" style={{fontSize:"clamp(32px,5vw,60px)",marginBottom:20,lineHeight:1.04}}>
             Your SOL is already{" "}
             <YellowReveal>yours.</YellowReveal>
           </h2>

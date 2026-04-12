@@ -4,24 +4,37 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, Loader2 } from "lucide-react";
 import { isMainnet } from "@/config/env";
 
-const SERVICE_FEE_PERCENT = 0.015; // 1.5%
-const GAS_FEE_PER_ACCOUNT = 0.000005;
-
 interface ActionBarProps {
   count: number;
-  totalSol: number;
+  /** Rent + optional Jupiter→SOL (swap) estimate */
+  grossSol: number;
+  /** 1.5% of rent only (matches close-account path) */
+  serviceFeeSol: number;
+  gasFeeSol: number;
+  netSol: number;
+  hasSwapEstimate?: boolean;
+  disclaimerNote?: string;
   onSweep: () => void;
   sweeping?: boolean;
   pendingTx?: string | null;
   sweepProgress?: { currentBatch: number; totalBatches: number; confirmingSlow?: boolean } | null;
 }
 
-const ActionBar = ({ count, totalSol, onSweep, sweeping = false, pendingTx = null, sweepProgress }: ActionBarProps) => {
+const ActionBar = ({
+  count,
+  grossSol,
+  serviceFeeSol,
+  gasFeeSol,
+  netSol,
+  hasSwapEstimate = false,
+  disclaimerNote,
+  onSweep,
+  sweeping = false,
+  pendingTx = null,
+  sweepProgress,
+}: ActionBarProps) => {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [open, setOpen] = useState(true);
-  const gasFee = GAS_FEE_PER_ACCOUNT * count;
-  const serviceFee = totalSol * SERVICE_FEE_PERCENT;
-  const netSol = totalSol - gasFee - serviceFee;
   const isBusy = sweeping || !!pendingTx;
   const canSweep = disclaimerAccepted && !isBusy;
 
@@ -49,17 +62,25 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false, pendingTx = nul
                 <div className="text-xs space-y-0.5 border-l-2 border-primary/30 pl-3">
                   <p className="font-semibold text-foreground">Transaction Summary</p>
                   <p className="text-muted-foreground">
-                    Gross Refund: <span className="text-foreground">{totalSol.toFixed(5)} SOL</span>
+                    Gross (est.): <span className="text-foreground">{grossSol.toFixed(5)} SOL</span>
+                    {hasSwapEstimate && (
+                      <span className="block text-[10px] text-muted-foreground/90 mt-0.5 leading-snug">
+                        Includes Jupiter swap output + rent. Wallet may differ with priority fees and routes.
+                      </span>
+                    )}
                   </p>
                   <p className="text-muted-foreground">
-                    − Network Gas: <span className="text-destructive">{gasFee.toFixed(6)} SOL</span>
+                    − Network (est.): <span className="text-destructive">{gasFeeSol.toFixed(6)} SOL</span>
                   </p>
                   <p className="text-muted-foreground">
-                    − Service Fee (1.5%): <span className="text-destructive">{serviceFee.toFixed(6)} SOL</span>
+                    − Service (1.5% of rent): <span className="text-destructive">{serviceFeeSol.toFixed(6)} SOL</span>
                   </p>
                   <p className="text-primary font-semibold mt-1">
-                    You Receive: {netSol.toFixed(5)} SOL
+                    You Receive (est.): {Math.max(netSol, 0).toFixed(5)} SOL
                   </p>
+                  {disclaimerNote && (
+                    <p className="text-[10px] text-amber-400/90 mt-1">{disclaimerNote}</p>
+                  )}
                 </div>
                 <label className="flex items-start gap-3 mt-3 cursor-pointer group">
                   <input
@@ -99,7 +120,7 @@ const ActionBar = ({ count, totalSol, onSweep, sweeping = false, pendingTx = nul
                 ) : (
                   <>
                     <Trash2 className="w-4 h-4" />
-                    Confirm Sweep → {netSol.toFixed(5)} SOL
+                    Confirm Sweep → {Math.max(netSol, 0).toFixed(5)} SOL
                   </>
                 )}
               </motion.button>

@@ -31,19 +31,19 @@ const TokenPage = () => {
   const BG: React.CSSProperties = { fontFamily: "var(--font-mono)", fontSize: 13, color: "rgba(255,255,255,0.45)", background: "none", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "12px 24px", cursor: "pointer", transition: "border-color 0.2s, color 0.2s", display: "inline-flex", alignItems: "center", gap: 8 };
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--ar-base)", backgroundImage: "radial-gradient(ellipse at 25% 40%, rgba(255,215,0,0.05), transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(255,120,73,0.05), transparent 50%)", position: "relative", overflowX: "hidden", fontFamily: "'Inter', sans-serif", color: "#FFFFFF" }}>
+    <div className="arsweep-page-shell font-sans antialiased">
 
-      {/* Dot grid */}
-      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)", backgroundSize: "28px 28px", maskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)", WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 80%)" }} />
+      <div className="arsweep-dot-grid" aria-hidden />
+      <div className="arsweep-vignette-fade" aria-hidden />
 
-      {/* NAV */}
-      <header style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: bannerHeight, borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(11,15,20,0.85)", backdropFilter: "blur(20px)" }}>
+      <header style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: bannerHeight, borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(4,5,6,0.88)", backdropFilter: "blur(20px)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => navigate("/agent")}>
             <ArsweepLogo className="w-6 h-6" />
             <span style={{ ...M, fontSize: 14, fontWeight: 600, color: "#FFFFFF", letterSpacing: "0.06em", textTransform: "uppercase" }}>ARSWEEP</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <button onClick={() => navigate("/x402")} style={{ ...M, fontSize: 13, color: "rgba(255,255,255,0.45)", background: "none", border: "none", cursor: "pointer" }}>x402</button>
             <button onClick={() => navigate("/agent")} style={{ ...M, fontSize: 13, color: "rgba(255,255,255,0.45)", background: "none", border: "none", cursor: "pointer" }}>← Agent</button>
             <button onClick={() => navigate("/app")} style={{ ...M, fontSize: 13, fontWeight: 500, color: "#0B0F14", background: "#FFFFFF", border: "none", borderRadius: 8, padding: "7px 18px", cursor: "pointer" }}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
@@ -74,7 +74,7 @@ const TokenPage = () => {
           <div
             onClick={() => { navigator.clipboard.writeText("dTMaF2F97BWo6s416JqsDrpzdwa1uarKngSwf25pump"); }}
             title="Click to copy CA"
-            style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.07)", borderRadius: 999, padding: "10px 24px", display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer", letterSpacing: "0.04em", transition: "all 0.2s", fontFamily: "monospace", boxShadow: "0 0 0 1px rgba(29,184,142,0.15)" }}
+            style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.07)", borderRadius: 999, padding: "10px 24px", display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer", letterSpacing: "0.04em", transition: "all 0.2s", fontFamily: "monospace", boxShadow: "0 0 0 1px rgba(34,211,238,0.18)" }}
             onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.35)"; }}
             onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.07)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; }}
           >

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, AlertTriangle, Copy, ExternalLink, ShieldAlert } from "lucide-react";
 import { type TokenAccountInfo, INACTIVITY_DAYS } from "@/lib/tokenAccounts";
+import { formatTokenUiBalance } from "@/lib/utils";
 import SwapModeToggle from "@/components/SwapModeToggle";
 import type { TokenMode } from "@/hooks/useSwapMode";
 
@@ -73,8 +74,7 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
   return (
     <section className="px-4 pb-32">
       <div className="container mx-auto max-w-3xl">
-        <div className="flex gap-6 items-start">
-          <div className="flex-1 min-w-0">
+        <div className="w-full">
             {/* Safety Warning Banner */}
             {scanned && sweepableCount > 0 && (
               <div className="flex items-center gap-3 mb-4 px-4 py-3 rounded-xl border border-destructive/30 bg-destructive/5 text-sm text-destructive">
@@ -174,7 +174,8 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                             </div>
                             <div className="text-right shrink-0">
                               <p className="text-sm font-semibold tabular-nums">
-                                Balance: {account.amount.toLocaleString()}
+                                Balance: {formatTokenUiBalance(account.amount, account.decimals)}{" "}
+                                {symbol}
                               </p>
                               <p className="text-xs text-muted-foreground tabular-nums">
                                 Rent: {(account.rentLamports / 1e9).toFixed(6)} SOL
@@ -270,7 +271,10 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                 </AnimatePresence>
               )}
             </div>
-          </div>
+
+            {analyticsSlot != null && (
+              <div className="mt-8 w-full">{analyticsSlot}</div>
+            )}
         </div>
       </div>
     </section>

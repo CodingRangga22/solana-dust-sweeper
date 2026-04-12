@@ -18,4 +18,4 @@ No. Once closed, the account is permanently removed.
 
 ## Is there a token?
 
-No. Arsweep does not issue a native token.
+Yes. **$ASWP** is the ecosystem token (SPL on Solana; [Pump.fun listing](https://pump.fun/coin/dTMaF2F97BWo6s416JqsDrpzdwa1uarKngSwf25pump)). It is separate from how the app charges for sweeps: the **1.5% service fee on reclaimed rent is still taken in SOL**, and you can use the core sweeper **without** holding $ASWP. See the [$ASWP page](/token) and [Fee model](/docs/fees) for details.

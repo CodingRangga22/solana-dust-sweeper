@@ -9,6 +9,8 @@ import { type SweepRecord } from "@/lib/sweepHistory";
 
 interface AnalyticsPanelProps {
   records: SweepRecord[];
+  /** When true, omit the “Recent sweeps” list (e.g. use alongside `SweepHistory`). */
+  hideRecentList?: boolean;
 }
 
 const formatSOL = (val: number) =>
@@ -74,7 +76,7 @@ const StatCard = ({
   </motion.div>
 );
 
-const AnalyticsPanel = ({ records }: AnalyticsPanelProps) => {
+const AnalyticsPanel = ({ records, hideRecentList = false }: AnalyticsPanelProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const totalSOL = useMemo(() => records.reduce((a, r) => a + r.totalSolReclaimed, 0), [records]);
@@ -225,7 +227,7 @@ const AnalyticsPanel = ({ records }: AnalyticsPanelProps) => {
         </ResponsiveContainer>
       </motion.div>
 
-      {/* ── Sweep history list — scrollable with fade ── */}
+      {!hideRecentList && (
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -299,6 +301,7 @@ const AnalyticsPanel = ({ records }: AnalyticsPanelProps) => {
           )}
         </div>
       </motion.div>
+      )}
     </div>
   );
 };

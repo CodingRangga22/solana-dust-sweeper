@@ -80,7 +80,7 @@ const PremiumFooter = () => {
   };
 
   return (
-    <footer style={{ position: "relative", borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(11,15,20,0.98)" }}>
+    <footer style={{ position: "relative", borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(4,5,6,0.97)" }}>
       {/* Gradient top border with glow */}
 
 
@@ -99,7 +99,7 @@ const PremiumFooter = () => {
                   animate={{
                     filter: [
                       "brightness(1) drop-shadow(0 0 0px transparent)",
-                      "brightness(1.3) drop-shadow(0 0 12px hsla(162,93%,51%,0.4))",
+                      "brightness(1.25) drop-shadow(0 0 14px hsla(187, 90%, 52%, 0.35))",
                       "brightness(1) drop-shadow(0 0 0px transparent)",
                     ],
                   }}
@@ -141,6 +141,7 @@ const PremiumFooter = () => {
               <ul className="space-y-2.5">
                 {[
                   { label: "ASWP Token", onClick: () => navigate("/token") },
+                  { label: "x402 APIs", onClick: () => navigate("/x402") },
                   { label: "Dashboard", onClick: () => navigate("/app") },
                   { label: "Simulation", onClick: () => navigate("/simulation") },
                   { label: "Direct Sweep", onClick: () => navigate("/app") },

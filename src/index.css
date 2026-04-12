@@ -213,7 +213,7 @@
 
   .arsweep-wallet-button.wallet-adapter-button:hover {
     background: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(255, 255, 255, 0.18) !important;
+    border-color: rgba(34, 211, 238, 0.28) !important;
   }
 }
 
@@ -222,29 +222,74 @@
   content: attr(data-brand);
 }
 
-/* ── Arsweep Landing v5 ── */
+/* ── Arsweep brand (aligned with /agent ambient) ── */
 :root {
-  --ar-base: #0B0F14;
-  --ar-teal: #1DB88E;
-  --ar-yellow: #E8FF47;
-  --ar-white: #FFFFFF;
+  --ar-base: #040506;
+  --ar-teal: #22d3ee;
+  /* Scroll / heading accent — sky-mint, replaces neon lime */
+  --ar-yellow: #7dd3fc;
+  --ar-white: #fafafa;
   --ar-gray1: rgba(255,255,255,0.55);
   --ar-gray2: rgba(255,255,255,0.35);
-  --ar-gray3: rgba(255,255,255,0.20);
+  --ar-gray3: rgba(255,255,255,0.2);
   --ar-border: rgba(255,255,255,0.07);
   --ar-border2: rgba(255,255,255,0.12);
   --ar-surface: rgba(255,255,255,0.03);
+  --ar-teal-soft: rgba(34, 211, 238, 0.12);
+  --ar-teal-ring: rgba(34, 211, 238, 0.28);
+  --ar-ambient-gradients:
+    radial-gradient(ellipse 90% 55% at 50% -15%, rgba(56, 189, 248, 0.1), transparent 52%),
+    radial-gradient(ellipse 55% 45% at 100% 35%, rgba(34, 211, 238, 0.08), transparent 48%),
+    radial-gradient(ellipse 45% 35% at 0% 75%, rgba(148, 163, 184, 0.06), transparent 42%);
   --font-display: 'DM Serif Display', serif;
+  /** Section titles on Landing — same voice as hero (Inter, bold, tight), not serif */
+  --font-landing-section: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 }
-/* ── End Arsweep Landing v5 ── */
 
-/* Global dot grid background */
+/* Landing marketing section headings — mirrors hero <h1> (“Reclaim Sol…”) */
+.ar-landing-section-title {
+  font-family: var(--font-landing-section);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  color: #ffffff;
+}
+
+/* Shared full-page shell (Landing, Token, pre-wallet Dashboard) */
+.arsweep-page-shell {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--ar-white);
+  background-color: var(--ar-base);
+  background-image: var(--ar-ambient-gradients);
+}
+
+.arsweep-dot-grid {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.55;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.038) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 35%, black 12%, transparent 68%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 35%, black 12%, transparent 68%);
+}
+
+.arsweep-vignette-fade {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(to bottom, transparent 0%, transparent 52%, var(--ar-base) 100%);
+}
+
+/* Global backdrop — matches /agent */
 body {
-  background-color: #0B0F14;
-  background-image:
-    radial-gradient(ellipse at 25% 40%, rgba(255,215,0,0.05), transparent 45%),
-    radial-gradient(ellipse at 75% 60%, rgba(255,120,73,0.05), transparent 50%);
+  background-color: var(--ar-base);
+  background-image: var(--ar-ambient-gradients);
 }
 
 body::before {
@@ -253,10 +298,11 @@ body::before {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  opacity: 0.55;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.038) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 35%, black 12%, transparent 68%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 35%, black 12%, transparent 68%);
 }
 
 /* Fade in up animation for cards */
