@@ -10,7 +10,7 @@ import {
   createBurnInstruction,
 } from "@solana/spl-token";
 
-export const TREASURY = new PublicKey("J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi");
+export const TREASURY = new PublicKey("BfqfpTe6yv5TTTGrcNVRPVfQ3h6FwzhC78LGbGAN5NkT");
 const FEE_BPS = 150;
 const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
 

@@ -1,90 +1,66 @@
-# Welcome to your Lovable project
+# Arsweep — Solana Dust Sweeper
 
-## Project info
+Arsweep scans your Solana wallet for **empty/low-value SPL token accounts**, then helps you **reclaim locked rent SOL** by closing them (and optionally swapping dust to SOL when safe).
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Quickstart (local)
 
-## How can I edit this code?
+### Prerequisites
+- Node.js \(recommended: 18+ / 20+\)
+- Bun \(recommended\) or npm
+- A Solana wallet \(Phantom, Backpack, etc.\)
+- Privy App ID \(for auth + embedded wallet session\)
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### Setup
+1) Install dependencies:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+bun install
 ```
 
-**Edit a file directly in GitHub**
+2) Create `.env` from example:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+cp .env.example .env
+```
 
-**Use GitHub Codespaces**
+3) Fill required env vars in `.env`:
+- `VITE_PRIVY_APP_ID` \(required\)
+- `VITE_NETWORK` or `NEXT_PUBLIC_NETWORK` \(optional, defaults to `devnet`\)
+- `VITE_HELIUS_RPC_URL` / `VITE_RPC_ENDPOINT` / `NEXT_PUBLIC_RPC_URL` \(optional\)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+4) Run dev server:
 
-## What technologies are used for this project?
+```sh
+bun run dev
+```
 
-This project is built with:
+## Scripts
+- `bun run dev`: start Vite dev server
+- `bun run build`: production build
+- `bun run build:dev`: dev-mode build
+- `bun run lint`: ESLint
+- `bun run test`: Vitest run
+- `bun run test:watch`: Vitest watch
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deployment (single build, two subdomains)
+Deploy the **same SPA build** to two subdomains:
 
-## How can I deploy this project?
+| Subdomain | Purpose |
+|---|---|
+| `app.arsweep.xyz` | Main app (Landing, Dashboard) |
+| `docs.arsweep.xyz` | Documentation (`/docs`) |
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-### Subdomain-style deployment (Arsweep)
-
-Deploy the **same build** to two subdomains for a startup-style setup:
-
-| Subdomain           | Purpose                          |
-|---------------------|----------------------------------|
-| **app.arsweep.xyz** | Main app (Landing, Dashboard)    |
-| **docs.arsweep.xyz**| Documentation (root → `/docs`)   |
-
-- **app.arsweep.xyz** — Normal app; `/` shows Landing, `/app` is the Dashboard.
-- **docs.arsweep.xyz** — Root `/` redirects to `/docs` automatically.
-
-Configure your host (e.g. Vercel, Netlify, or nginx) so both subdomains point to the same SPA. No separate build needed. Optional env for custom hostnames:
-
+Optional env:
 - `VITE_APP_HOST=app.arsweep.xyz`
 - `VITE_DOCS_HOST=docs.arsweep.xyz`
 
-## Can I connect a custom domain to my Lovable project?
+## Notes about `solana.new`
+`solana.new` installs “skills” into `~/.claude/skills` / `~/.codex/skills` / `~/.agents/skills`. It does **not** modify this repo directly.  
+If you ran the installer, it may also update `~/.claude/settings.json` to auto-allow some permission categories.
 
-Yes, you can!
+## Tech
+- Vite + React + TypeScript
+- Tailwind + shadcn/ui
+- Solana \(wallet-adapter + web3.js\)
+- Vitest + ESLint
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

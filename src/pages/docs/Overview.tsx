@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Overview = () => {
   return (
     <div className="max-w-3xl">
@@ -29,12 +31,17 @@ const Overview = () => {
         ))}
       </div>
       <h2 className="text-2xl font-semibold mt-10 mb-4">Core Function</h2>
-      <p className="text-muted-foreground leading-relaxed mb-4">Arsweep routes every sweep through a custom Anchor program. The program validates each account, closes it via the native SPL Token <code className="px-1.5 py-0.5 mx-1 rounded bg-muted text-foreground text-sm font-mono">CloseAccount</code> instruction, and distributes rent back to the user minus a 1.5% fee sent to a validated on-chain treasury.</p>
+      <p className="text-muted-foreground leading-relaxed mb-4">
+        Arsweep builds standard Solana instructions client-side: it closes token accounts using SPL Token{" "}
+        <code className="px-1.5 py-0.5 mx-1 rounded bg-muted text-foreground text-sm font-mono">CloseAccount</code>. When an account still holds a dust balance, Arsweep may{" "}
+        <strong className="text-foreground">burn</strong> first — but only when the token is confirmed worthless (no liquidity route and $0 value).
+        Rent is returned to your wallet, and a transparent <strong className="text-foreground">1.5%</strong> service fee is transferred as a separate System Program transfer.
+      </p>
       <h2 className="text-2xl font-semibold mt-10 mb-4">Design Principles</h2>
       <div className="space-y-3">
         {[
           {icon:"🔒",title:"Non-custodial",desc:"Your private keys never leave your wallet. Ars​weep only requests permission to close specific accounts you select."},
-          {icon:"⛓️",title:"On-chain validated",desc:"A custom Anchor program validates treasury address, account authority, and zero balance before executing any close."},
+          {icon:"🧾",title:"Verifiable transactions",desc:"Every sweep is a normal Solana transaction you can review before signing (close/burn + a separate fee transfer + a memo for auditability)."},
           {icon:"🔍",title:"Transparent fee model",desc:"1.5% service fee deducted on-chain. Every transaction is verifiable on Solscan."},
           {icon:"🔍",title:"Verifiable",desc:"All transactions are on-chain and verifiable via Solana Explorer at any time."},
           {icon:"⚡",title:"Batch sweep",desc:"Close multiple accounts in a single transaction to minimize network fees."},
@@ -47,13 +54,23 @@ const Overview = () => {
       </div>
       <h2 className="text-2xl font-semibold mt-10 mb-4">Program Deployment</h2>
       <div className="bg-muted/50 border rounded-xl p-5 font-mono text-sm space-y-2">
-        {[["Program ID","4cS4fZH6DoFown46UiF2EtG412PVd5BSi8m4tmefAq9o"],["Treasury","J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi"],["Network","Solana Devnet (Mainnet coming soon)"],["Framework","Anchor 0.30 · Rust 1.85"]].map(([k,v])=>(
+        {[["Treasury","BfqfpTe6yv5TTTGrcNVRPVfQ3h6FwzhC78LGbGAN5NkT"],["Network","Solana Devnet or Mainnet (configurable)"],["Token programs","SPL Token + Token-2022"],["Premium payments","USDC on Solana mainnet via x402"]].map(([k,v])=>(
           <div key={k} className="flex justify-between gap-4 flex-wrap">
             <span className="text-muted-foreground">{k}</span>
             <span className="text-foreground break-all">{v}</span>
           </div>
         ))}
       </div>
+
+      <h2 className="text-2xl font-semibold mt-10 mb-4">Premium Tools (x402)</h2>
+      <p className="text-muted-foreground leading-relaxed mb-4">
+        Arsweep includes optional paid agent tools billed per request using the{" "}
+        <a className="text-primary hover:underline" href="https://www.x402.org/" target="_blank" rel="noreferrer">x402</a>{" "}
+        payment flow (USDC on Solana mainnet). Explore the live catalog at{" "}
+        <Link className="text-primary hover:underline" to="/x402">/x402</Link>. The flow is the same pattern popularized by x402 resource catalogs (example:{" "}
+        <a className="text-primary hover:underline" href="https://xona-agent.com/resources" target="_blank" rel="noreferrer">Xona x402 Resources</a>
+        ).
+      </p>
     </div>
   );
 };

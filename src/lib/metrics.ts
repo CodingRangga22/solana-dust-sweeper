@@ -1,7 +1,7 @@
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { RPC_ENDPOINT } from "@/config/env";
 
-const TREASURY = "J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi";
+const TREASURY = "BfqfpTe6yv5TTTGrcNVRPVfQ3h6FwzhC78LGbGAN5NkT";
 const PROGRAM_ID = "4cS4fZH6DoFown46UiF2EtG412PVd5BSi8m4tmefAq9o";
 
 export interface DevnetMetrics {

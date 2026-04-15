@@ -57,6 +57,10 @@ export interface X402ReportRequest {
   walletAddress: string;
 }
 
+export interface X402GenericPremiumRequest {
+  walletAddress: string;
+}
+
 export interface X402HealthResponse {
   status: string;
   service: string;
@@ -144,6 +148,45 @@ export const arsweepApi = {
     if (!res.ok) {
       const error = await res.json();
       throw new Error(error.error || "Report failed");
+    }
+    return res.json();
+  },
+
+  x402Roast: async (data: X402GenericPremiumRequest) => {
+    const res = await fetchApi(`${API_BASE_URL}/premium/roast`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(await authHeaders()) },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error((error as any).error || "Roast failed");
+    }
+    return res.json();
+  },
+
+  x402Rugcheck: async (data: X402GenericPremiumRequest) => {
+    const res = await fetchApi(`${API_BASE_URL}/premium/rugcheck`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(await authHeaders()) },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error((error as any).error || "Rugcheck failed");
+    }
+    return res.json();
+  },
+
+  x402Planner: async (data: X402GenericPremiumRequest) => {
+    const res = await fetchApi(`${API_BASE_URL}/premium/planner`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(await authHeaders()) },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error((error as any).error || "Planner failed");
     }
     return res.json();
   },

@@ -62,9 +62,9 @@ const WalletMenu = ({
   }, []);
 
   const baseBtn = cn(
-    "arsweep-wallet-button inline-flex items-center justify-center gap-2 font-medium transition-opacity shadow-none whitespace-nowrap",
+    "arsweep-wallet-button inline-flex items-center justify-center gap-2 font-medium transition-all shadow-none whitespace-nowrap",
     variant === "hero" &&
-      "!rounded-2xl !px-8 !py-4 !text-sm !w-full !border-0 !shadow-none",
+      "!rounded-2xl !px-8 !py-[1.125rem] !w-full !border-0 !shadow-none hover:!brightness-[1.03] active:!scale-[0.99]",
     variant === "compact" && "!rounded-xl !px-4 !py-2 !text-sm",
     variant === "header" && "!rounded-lg !px-3 !py-2 !text-xs",
   );
@@ -72,9 +72,13 @@ const WalletMenu = ({
   const primaryStyle: CSSProperties =
     variant === "hero"
       ? {
-          background: "#FFFFFF",
-          color: "#0B0F14",
-          fontFamily: "var(--font-mono)",
+          background: "linear-gradient(180deg, #ffffff 0%, #f0f9fb 100%)",
+          color: "#070b10",
+          fontFamily: "var(--font-landing-section)",
+          fontWeight: 600,
+          letterSpacing: "-0.02em",
+          boxShadow:
+            "0 12px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.12), inset 0 1px 0 rgba(255,255,255,0.95)",
         }
       : {};
 
@@ -87,7 +91,7 @@ const WalletMenu = ({
         style={primaryStyle}
       >
         <Loader2 className="h-4 w-4 animate-spin" />
-        <span className="font-mono">Loading…</span>
+        <span className={variant === "hero" ? "font-sans text-[15px] font-semibold" : "font-mono"}>Loading…</span>
       </button>
     );
   }
@@ -100,7 +104,7 @@ const WalletMenu = ({
         className={baseBtn}
         style={primaryStyle}
       >
-        <span className="font-mono">Log in</span>
+        <span className={variant === "hero" ? "font-sans text-[15px] font-semibold" : "font-mono"}>Log in</span>
       </button>
     );
   }
@@ -141,7 +145,7 @@ const WalletMenu = ({
           {connectBusy ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : null}
-          <span className="font-mono">
+          <span className={variant === "hero" ? "font-sans text-[15px] font-semibold" : "font-mono"}>
             {connectBusy ? "Membuka Privy…" : "Hubungkan wallet Solana"}
           </span>
         </button>
@@ -158,7 +162,7 @@ const WalletMenu = ({
         style={primaryStyle}
       >
         <Loader2 className="h-4 w-4 animate-spin" />
-        <span className="font-mono">Menyiapkan wallet…</span>
+        <span className={variant === "hero" ? "font-sans text-[15px] font-semibold" : "font-mono"}>Menyiapkan wallet…</span>
       </button>
     );
   }

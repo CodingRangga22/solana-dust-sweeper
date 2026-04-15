@@ -124,6 +124,15 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                     const mintStr = account.mint.toBase58();
                     const selected = account.isSweepable && selectedIds.has(id);
                     const { name, symbol, logoURI } = account.metadata;
+                    const rug = account.rugcheck;
+                    const rugBadge =
+                      rug?.level === "danger"
+                        ? { label: "RugCheck: Danger", cls: "bg-red-500/20 text-red-300" }
+                        : rug?.level === "warn"
+                          ? { label: "RugCheck: Warn", cls: "bg-yellow-500/20 text-yellow-300" }
+                          : rug?.level === "good"
+                            ? { label: "RugCheck: OK", cls: "bg-emerald-500/15 text-emerald-300" }
+                            : null;
 
                     return (
                       <motion.div
@@ -222,6 +231,19 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                               >
                                 {account.isSweepable ? "Sweepable" : "Active"}
                               </span>
+                              {rugBadge && (
+                                <span
+                                  className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 font-medium ${rugBadge.cls}`}
+                                  title={
+                                    rug?.scoreNormalized != null
+                                      ? `RugCheck score: ${rug.scoreNormalized}/10`
+                                      : "RugCheck"
+                                  }
+                                >
+                                  <ShieldAlert className="w-3 h-3" />
+                                  {rugBadge.label}
+                                </span>
+                              )}
                               {account.hasValueWarning && (
                                 <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center gap-1 font-medium">
                                   <AlertTriangle className="w-3 h-3" />

@@ -13,7 +13,7 @@ anchor.setProvider(provider);
 
 const idl = JSON.parse(readFileSync("./src/idl/arsweep.json", "utf-8"));
 const program = new anchor.Program(idl, provider);
-const TREASURY = new PublicKey("J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi");
+const TREASURY = new PublicKey("BfqfpTe6yv5TTTGrcNVRPVfQ3h6FwzhC78LGbGAN5NkT");
 
 // List semua token accounts
 const accounts = await connection.getParsedTokenAccountsByOwner(

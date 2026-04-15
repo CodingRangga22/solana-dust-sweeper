@@ -2,8 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { ArrowRight, Zap, Shield, Trophy, Users, ExternalLink } from "lucide-react";
 import ArsweepLogo from "@/components/ArsweepLogo";
+import BrandWordmark from "@/components/BrandWordmark";
 import ChatWidget from "@/components/ChatWidget";
 import { useBanner } from "@/components/BannerProvider";
+import AswpPremiumNotice from "@/components/AswpPremiumNotice";
 
 const M: React.CSSProperties = { fontFamily: "var(--font-mono)" };
 const D6: React.CSSProperties = { height: 1, background: "rgba(255,255,255,0.06)" };
@@ -36,11 +38,11 @@ const TokenPage = () => {
       <div className="arsweep-dot-grid" aria-hidden />
       <div className="arsweep-vignette-fade" aria-hidden />
 
-      <header style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: bannerHeight, borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(4,5,6,0.88)", backdropFilter: "blur(20px)" }}>
+      <header style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: bannerHeight, borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(2,6,15,0.88)", backdropFilter: "blur(20px)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => navigate("/agent")}>
-            <ArsweepLogo className="w-6 h-6" />
-            <span style={{ ...M, fontSize: 14, fontWeight: 600, color: "#FFFFFF", letterSpacing: "0.06em", textTransform: "uppercase" }}>ARSWEEP</span>
+            <ArsweepLogo className="h-7 w-7 shrink-0" />
+            <BrandWordmark />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button onClick={() => navigate("/x402")} style={{ ...M, fontSize: 13, color: "rgba(255,255,255,0.45)", background: "none", border: "none", cursor: "pointer" }}>x402</button>
@@ -108,6 +110,10 @@ const TokenPage = () => {
             Join Telegram
             <ExternalLink size={13} />
           </button>
+        </div>
+
+        <div style={{ maxWidth: 860, margin: "44px auto 0" }}>
+          <AswpPremiumNotice />
         </div>
       </section>
 

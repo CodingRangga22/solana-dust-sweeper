@@ -10,10 +10,10 @@ export default function Security() {
       <div className="space-y-3 mb-10">
         {[
           {icon:"🔑",title:"Private keys never leave your wallet",desc:"Ars​weep never requests, stores, or transmits your private keys. All signing happens inside your wallet using the Solana Wallet Adapter standard."},
-          {icon:"✅",title:"On-chain authority validation",desc:"The Anchor program validates token authority on every account before closing. A malicious client cannot sweep accounts owned by other wallets."},
-          {icon:"🏦",title:"Treasury address hardcoded on-chain",desc:"The treasury address is validated using an address constraint in the program. Even if the frontend is compromised, fees cannot be redirected."},
-          {icon:"🔢",title:"Overflow-safe arithmetic",desc:"All fee calculations use Rust checked_mul and checked_div. Overflow causes the transaction to fail safely."},
-          {icon:"📖",title:"Open source and auditable",desc:"Smart contract logic is fully on-chain and verifiable. Anyone can audit transactions via Solana Explorer."},
+          {icon:"✅",title:"Only you can authorize spending",desc:"Closing/burning token accounts and fee transfers require your wallet signature. Without your approval, Arsweep cannot move funds."},
+          {icon:"🧾",title:"Fee destination is visible before you sign",desc:"The 1.5% service fee is a separate System Program transfer to the public treasury address. You can verify the recipient in the wallet transaction preview and on Solscan."},
+          {icon:"🧯",title:"Dust burn is gated by safety checks",desc:"Arsweep only burns tokens when they are confirmed worthless (no liquidity route and $0 value). Otherwise it swaps or skips for safety."},
+          {icon:"📖",title:"Auditable client behavior",desc:"Transactions are standard Solana instructions (SPL Token + System transfer + Memo). You can audit each signature in Solana Explorer."},
         ].map(({icon,title,desc})=>(
           <div key={title} className="flex gap-4 p-4 rounded-xl border bg-muted/20">
             <span className="text-2xl shrink-0">{icon}</span>
@@ -24,7 +24,13 @@ export default function Security() {
       <h2 className="text-2xl font-semibold mb-4">What Ars​weep Cannot Do</h2>
       <div className="bg-muted/40 border rounded-xl p-5 mb-10">
         <ul className="space-y-2 text-sm text-muted-foreground">
-          {["Access or move SOL from your main wallet balance","Close token accounts with non-zero token balances","Redirect fees to any address other than the hardcoded treasury","Sign transactions without your explicit wallet approval","Store or log your wallet address or transaction history"].map(item=>(
+          {[
+            "Sign transactions without your explicit wallet approval",
+            "Move funds from your wallet without showing you the exact instructions first",
+            "Close token accounts you don’t own (SPL authority rules prevent it)",
+            "Hide fees — the service fee is a separate transfer you can see and audit",
+            "Store your wallet keys or seed phrase",
+          ].map((item) => (
             <li key={item} className="flex items-start gap-2"><span className="text-green-500 mt-0.5 shrink-0">x</span><span>{item}</span></li>
           ))}
         </ul>
@@ -34,7 +40,12 @@ export default function Security() {
         <table className="w-full text-sm border-collapse">
           <thead><tr className="border-b"><th className="text-left py-2 pr-4 font-semibold">Threat</th><th className="text-left py-2 font-semibold">Mitigation</th></tr></thead>
           <tbody className="text-muted-foreground">
-            {[["Frontend compromise","Treasury hardcoded on-chain — fee destination cannot change"],["Fake treasury injection","address constraint in Anchor program rejects mismatched accounts"],["Unauthorized sweep","token authority check — only account owner can close"],["Non-empty account sweep","amount == 0 constraint enforced on-chain"],["Math overflow","checked arithmetic — tx fails safely on overflow"]].map(([threat,mit])=>(
+            {[
+              ["Frontend compromise","Always review the recipient of the fee transfer in your wallet before signing; use the official domain/build."],
+              ["Unauthorized sweep","SPL Token program enforces authority checks — only the token account owner can close/burn."],
+              ["Accidental burn of valuable token","Arsweep blocks burning when liquidity/value is detected; swap route is preferred, otherwise the token is skipped."],
+              ["Fee confusion","A Memo is included and the fee is a separate transfer so it’s easy to audit in Explorer."],
+            ].map(([threat,mit])=>(
               <tr key={threat} className="border-b last:border-0">
                 <td className="py-2 pr-4 font-medium text-foreground">{threat}</td>
                 <td className="py-2">{mit}</td>

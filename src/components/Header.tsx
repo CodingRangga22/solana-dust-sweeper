@@ -6,12 +6,12 @@ import { Menu, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useBanner } from "./BannerProvider";
 import WalletMenu from "./WalletMenu";
+import BrandWordmark from "./BrandWordmark";
 interface HeaderProps {
   onChangeWallet?: () => void;
   onDisconnect?: () => void;
   walletMismatch?: boolean;
 }
-const M: React.CSSProperties = { fontFamily: "var(--font-mono)" };
 const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) => {
   const { bannerHeight } = useBanner();
   const { setOpen } = useSidebar();
@@ -21,13 +21,11 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
   const isApp = path === "/app";
 
   return (
-    <header style={{
-      position: "fixed", left: 0, right: 0, zIndex: 50, top: bannerHeight,
-      borderBottom: "1px solid rgba(255,255,255,0.05)",
-      background: "rgba(11,15,20,0.88)",
-      backdropFilter: "blur(20px)",
-    }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <header
+      className="arsweep-premium-nav relative"
+      style={{ position: "fixed", left: 0, right: 0, zIndex: 50, top: bannerHeight }}
+    >
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         {/* Left — Hamburger (mobile) + Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {/* Hamburger: /app pakai Sidebar, landing pakai mobileOpen */}
@@ -38,24 +36,23 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
           >
             {mobileOpen && !isApp ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-            <ArsweepLogo className="w-6 h-6" />
-            <span style={{ ...M, fontSize: 14, fontWeight: 600, color: "#FFFFFF", letterSpacing: "0.06em", textTransform: "uppercase" }}>ARSWEEP</span>
+          <Link to="/" className="group flex items-center gap-2.5 no-underline sm:gap-3" style={{ textDecoration: "none" }}>
+            <ArsweepLogo className="h-7 w-7 shrink-0 transition-transform duration-200 group-hover:scale-[1.03]" />
+            <BrandWordmark />
           </Link>
         </div>
 
 
 
         {/* Center — Nav desktop */}
-        <div className="hidden sm:flex" style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", alignItems: "center", gap: 28 }}>
+        <nav className="hidden sm:flex absolute left-1/2 -translate-x-1/2 items-center gap-1" aria-label="Main">
           {[["Docs","/docs"],["$ASWP","/token"],["Agent","/agent"],["x402","/x402"]].map(([l,p])=>(
             <Link key={p} to={p}
-              style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
-              onMouseEnter={e=>(e.currentTarget.style.color="#FFFFFF")}
-              onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.5)")}
+              className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors duration-200"
+              style={{ textDecoration: "none" }}
             >{l}</Link>
           ))}
-        </div>
+        </nav>
 
         {/* Right — Wallet + Theme (desktop), Wallet only (mobile) */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -70,9 +67,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
 
       {/* Mobile Menu Dropdown (landing only) */}
       {mobileOpen && !isApp && (
-        <div className="sm:hidden" style={{
-          background: "rgba(11,15,20,0.98)", backdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
+        <div className="sm:hidden border-b border-white/[0.06] bg-[rgba(5,8,13,0.96)] backdrop-blur-xl shadow-premium-sm" style={{
           padding: "8px 20px 20px",
         }}>
           {[["Docs","/docs"],["$ASWP","/token"],["Agent","/agent"],["x402","/x402"]].map(([l,p])=>(

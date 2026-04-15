@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 
 export type PremiumServiceUi = 'analyze' | 'report' | 'roast' | 'rugcheck' | 'planner';
 
-const COLORS = ['#22d3ee', '#38bdf8', '#6366f1', '#a78bfa', '#f472b6', '#94a3b8'];
+const COLORS = ["#e5e5e5", "#d4d4d4", "#a3a3a3", "#737373", "#525252", "#94a3b8"];
 
 function fmtNum(n: number): string {
   if (Number.isInteger(n)) return String(n);
@@ -64,7 +64,7 @@ function SolscanLinkRow({ payload }: { payload: unknown }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 rounded-lg border border-cyan-500/25 bg-cyan-500/10 px-3 py-2 text-sm font-medium text-cyan-200 transition-colors hover:bg-cyan-500/15"
+      className="inline-flex items-center gap-2 rounded-lg border border-white/25 bg-white/10 px-3 py-2 text-sm font-medium text-white/85 transition-colors hover:bg-white/15"
     >
       <ExternalLink className="h-4 w-4 shrink-0 opacity-80" />
       {label}
@@ -104,11 +104,11 @@ function ReportView({ data }: { data: unknown }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 border-b border-white/[0.06] pb-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500/15 ring-1 ring-cyan-500/25">
-          <PieChartIcon className="h-4 w-4 text-cyan-300" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 ring-1 ring-white/25">
+          <PieChartIcon className="h-4 w-4 text-white/80" />
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-cyan-300/90">Sweep report</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/85">Sweep report</p>
           <p className="text-[11px] text-white/45">Ringkasan akun & perkiraan SOL yang bisa dikembalikan</p>
         </div>
       </div>
@@ -146,31 +146,33 @@ function ReportView({ data }: { data: unknown }) {
         <div className="flex flex-col justify-center gap-3 rounded-xl border border-white/[0.08] bg-black/20 p-4">
           <p className="text-center text-[11px] font-medium text-white/50">Perkiraan nilai kembali</p>
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-3 py-2 text-center">
+            <div className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-center">
               <p className="text-[10px] uppercase tracking-wider text-white/45">SOL</p>
-              <p className="font-mono text-lg font-semibold text-cyan-200">{sol.toFixed(5)}</p>
+              <p className="font-mono text-lg font-semibold text-white/85">{sol.toFixed(5)}</p>
             </div>
-            <div className="rounded-lg border border-sky-500/20 bg-sky-500/5 px-3 py-2 text-center">
+            <div className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-center">
               <p className="text-[10px] uppercase tracking-wider text-white/45">USD</p>
-              <p className="font-mono text-lg font-semibold text-sky-200">${usd.toFixed(2)}</p>
+              <p className="font-mono text-lg font-semibold text-white/90">${usd.toFixed(2)}</p>
             </div>
           </div>
           <p className="text-center text-[10px] text-white/35">Perkiraan · bukan jaminan harga</p>
         </div>
       </div>
 
-      {typeof root.sweepUrl === 'string' && root.sweepUrl.startsWith('http') ? (
-        <a
-          href={root.sweepUrl}
-          className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white/85 hover:bg-white/[0.07]"
-        >
-          <Wallet className="h-4 w-4" />
-          Buka dashboard Arsweep
-          <ExternalLink className="h-3.5 w-3.5 opacity-60" />
-        </a>
-      ) : null}
+      <div className="flex flex-wrap items-center gap-2 pt-1">
+        {typeof root.sweepUrl === 'string' && root.sweepUrl.startsWith('http') ? (
+          <a
+            href={root.sweepUrl}
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white/85 hover:bg-white/[0.07]"
+          >
+            <Wallet className="h-4 w-4" />
+            Buka dashboard Arsweep
+            <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+          </a>
+        ) : null}
 
-      <SolscanLinkRow payload={data} />
+        <SolscanLinkRow payload={data} />
+      </div>
     </div>
   );
 }
@@ -193,11 +195,11 @@ function AnalyzeView({ data }: { data: unknown }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 border-b border-white/[0.06] pb-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500/15 ring-1 ring-cyan-500/25">
-          <Sparkles className="h-4 w-4 text-cyan-300" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 ring-1 ring-white/25">
+          <Sparkles className="h-4 w-4 text-white/80" />
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-cyan-300/90">AI wallet analysis</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/85">AI wallet analysis</p>
           <p className="text-[11px] text-white/45">Metrik utama dari respons premium</p>
         </div>
       </div>
@@ -290,7 +292,7 @@ function RoastView({ data }: { data: unknown }) {
           </div>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/10">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-cyan-500 via-sky-400 to-fuchsia-500"
+              className="h-full rounded-full bg-gradient-to-r from-white/70 via-white/45 to-white/25"
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -298,7 +300,7 @@ function RoastView({ data }: { data: unknown }) {
       ) : null}
 
       {body ? (
-        <blockquote className="rounded-xl border-l-4 border-cyan-500/50 bg-white/[0.04] px-4 py-3 text-sm italic leading-relaxed text-white/85">
+        <blockquote className="rounded-xl border-l-4 border-white/40 bg-white/[0.04] px-4 py-3 text-sm italic leading-relaxed text-white/85">
           {body}
         </blockquote>
       ) : (
@@ -319,10 +321,20 @@ function RugcheckView({ data }: { data: unknown }) {
     if (Array.isArray(tokens)) {
       tokens.slice(0, 12).forEach((t, i) => {
         if (!isRecord(t)) return;
-        const sym = (t.symbol as string) || (t.mint as string)?.slice(0, 4) || `Token ${i + 1}`;
+        const rawSym = (typeof t.symbol === 'string' ? t.symbol : '') || '';
+        const mint = typeof t.mint === 'string' ? t.mint.trim() : '';
+        const mint4 = mint ? mint.slice(0, 4) : '';
+        const sym =
+          rawSym && !/^\?+$/.test(rawSym.trim())
+            ? rawSym
+            : mint4 && !/^\?+$/.test(mint4.trim())
+              ? mint4
+              : `Unknown token ${i + 1}`;
+        const mintShort = mint && mint.length > 12 ? `${mint.slice(0, 4)}…${mint.slice(-4)}` : mint;
+        const label = mintShort ? `${sym} (${mintShort})` : sym;
         const risk = String(t.risk ?? t.level ?? t.status ?? t.verdict ?? '—');
         const tone = /high|rug|danger|bad/i.test(risk) ? 'bad' : /med|warn|mid/i.test(risk) ? 'mid' : 'ok';
-        rows.push({ label: sym, value: risk, tone });
+        rows.push({ label, value: risk, tone });
       });
     }
     if (rows.length === 0) {
@@ -377,7 +389,7 @@ function RugcheckView({ data }: { data: unknown }) {
               className={cn(
                 'flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm',
                 r.tone === 'bad' && 'border-rose-500/30 bg-rose-950/20 text-rose-100',
-                r.tone === 'mid' && 'border-sky-500/25 bg-sky-950/20 text-sky-100',
+                r.tone === 'mid' && 'border-white/25 bg-white/10 text-white/90',
                 r.tone === 'ok' && 'border-emerald-500/20 bg-emerald-950/15 text-emerald-100',
               )}
             >
@@ -399,17 +411,75 @@ function PlannerView({ data }: { data: unknown }) {
   const root = unwrapApiPayload(data);
   const steps: string[] = [];
 
-  if (isRecord(root)) {
-    const raw = root.steps ?? root.plan ?? root.actions ?? root.order;
-    if (Array.isArray(raw)) {
-      raw.forEach((x, i) => {
-        if (typeof x === 'string') steps.push(x);
-        else if (isRecord(x) && typeof x.description === 'string') steps.push(x.description);
-        else if (isRecord(x) && typeof x.action === 'string') steps.push(x.action);
-        else steps.push(`${i + 1}. ${JSON.stringify(x).slice(0, 120)}`);
-      });
+  const maybeExtractSteps = (v: unknown): string[] => {
+    if (!v) return [];
+    if (typeof v === 'string') {
+      const t = v.trim();
+      // Sometimes backend returns a stringified JSON.
+      if (t.startsWith('{') || t.startsWith('[')) {
+        try {
+          const parsed = JSON.parse(t) as unknown;
+          return maybeExtractSteps(parsed);
+        } catch {
+          return t ? [t] : [];
+        }
+      }
+      return t ? [t] : [];
     }
-    if (steps.length === 0 && typeof root.summary === 'string') steps.push(root.summary);
+    if (Array.isArray(v)) {
+      const out: string[] = [];
+      v.forEach((x, i) => {
+        if (typeof x === 'string') out.push(x);
+        else if (isRecord(x) && typeof x.description === 'string') out.push(x.description);
+        else if (isRecord(x) && typeof x.action === 'string') out.push(x.action);
+        else if (isRecord(x) && typeof x.step === 'string') out.push(x.step);
+        else if (isRecord(x) && typeof x.title === 'string') out.push(x.title);
+        else out.push(`${i + 1}. ${JSON.stringify(x).slice(0, 160)}`);
+      });
+      return out.filter((s) => s.trim().length > 0);
+    }
+    if (isRecord(v)) {
+      // Common nested containers for planner output.
+      const direct =
+        v.steps ??
+        v.plan ??
+        v.actions ??
+        v.order ??
+        v.recommendations ??
+        v.recommendedSteps ??
+        v.instructions ??
+        v.tasks;
+      const fromDirect = maybeExtractSteps(direct);
+      if (fromDirect.length) return fromDirect;
+
+      // Some APIs return a "summary" / "message" with steps embedded.
+      const text = v.summary ?? v.message ?? v.text ?? v.description;
+      const fromText = maybeExtractSteps(text);
+      if (fromText.length) return fromText;
+    }
+    return [];
+  };
+
+  if (isRecord(root)) {
+    const raw =
+      root.steps ??
+      root.plan ??
+      root.actions ??
+      root.order ??
+      root.recommendations ??
+      root.recommendedSteps ??
+      root.instructions ??
+      root.tasks ??
+      root.result ??
+      root.data;
+    if (Array.isArray(raw)) {
+      steps.push(...maybeExtractSteps(raw));
+    }
+    if (steps.length === 0) {
+      steps.push(...maybeExtractSteps(raw));
+      if (steps.length === 0) steps.push(...maybeExtractSteps(root.summary));
+      if (steps.length === 0) steps.push(...maybeExtractSteps(root.message));
+    }
   }
 
   return (
@@ -425,10 +495,10 @@ function PlannerView({ data }: { data: unknown }) {
       </div>
 
       {steps.length > 0 ? (
-        <ol className="relative space-y-0 border-l border-cyan-500/25 pl-6">
+        <ol className="relative space-y-0 border-l border-white/25 pl-6">
           {steps.map((s, i) => (
             <li key={i} className="relative pb-6 last:pb-0">
-              <span className="absolute -left-[25px] top-0 flex h-6 w-6 items-center justify-center rounded-full border border-cyan-500/40 bg-[#0a0c10] text-[11px] font-bold text-cyan-300">
+              <span className="absolute -left-[25px] top-0 flex h-6 w-6 items-center justify-center rounded-full border border-white/35 bg-[#0a0c10] text-[11px] font-bold text-white/80">
                 {i + 1}
               </span>
               <p className="text-sm leading-relaxed text-white/85">{s}</p>
@@ -457,8 +527,8 @@ function FallbackJson({ payload }: { payload: unknown }) {
 export function PremiumResultRich({ serviceType, payload }: { serviceType: PremiumServiceUi; payload: unknown }) {
   return (
     <div className="not-prose w-full space-y-1">
-      <div className="mb-2 flex items-center gap-2 rounded-lg border border-white/[0.06] bg-gradient-to-r from-cyan-500/10 via-transparent to-transparent px-3 py-2">
-        <BarChart3 className="h-4 w-4 text-cyan-400" />
+      <div className="mb-2 flex items-center gap-2 rounded-lg border border-white/[0.06] bg-gradient-to-r from-white/10 via-transparent to-transparent px-3 py-2">
+        <BarChart3 className="h-4 w-4 text-white/60" />
         <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-white/55">Premium result</span>
       </div>
 

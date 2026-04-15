@@ -56,8 +56,12 @@ export default function Fees() {
         ))}
       </div>
       <h2 className="text-2xl font-semibold mb-4">On-Chain Verification</h2>
-      <p className="text-muted-foreground leading-relaxed mb-4">The 1.5% fee is enforced by the Anchor program. The fee always goes to the hardcoded treasury:</p>
-      <div className="bg-muted/50 border rounded-xl p-4 font-mono text-xs break-all mb-4">J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi</div>
+      <p className="text-muted-foreground leading-relaxed mb-4">
+        The 1.5% fee is implemented as a separate{" "}
+        <span className="font-mono text-foreground">SystemProgram.transfer</span> to the public treasury address below, plus a Memo for easy auditing.
+        You can verify the exact lamports sent to treasury on any sweep signature.
+      </p>
+      <div className="bg-muted/50 border rounded-xl p-4 font-mono text-xs break-all mb-4">BfqfpTe6yv5TTTGrcNVRPVfQ3h6FwzhC78LGbGAN5NkT</div>
       <p className="text-sm text-muted-foreground">Verify any sweep on <a href="https://solscan.io/?cluster=devnet" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Solscan</a> to confirm exact fee and treasury destination.</p>
     </div>
   );

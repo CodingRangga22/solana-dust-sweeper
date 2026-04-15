@@ -3,6 +3,7 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ArsweepLogo from "./ArsweepLogo";
+import BrandWordmark from "./BrandWordmark";
 import { isDevnet } from "@/config/env";
 
 // Social icon components
@@ -80,11 +81,29 @@ const PremiumFooter = () => {
   };
 
   return (
-    <footer style={{ position: "relative", borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(4,5,6,0.97)" }}>
-      {/* Gradient top border with glow */}
-
-
-
+    <footer
+      style={{
+        position: "relative",
+        borderTop: "1px solid rgba(255,255,255,0.08)",
+        backgroundColor: "#040506",
+        backgroundImage:
+          "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,255,0.06), transparent 60%), radial-gradient(ellipse 55% 55% at 15% 40%, rgba(255,255,255,0.03), transparent 62%), radial-gradient(ellipse 55% 55% at 85% 55%, rgba(255,255,255,0.025), transparent 64%)",
+      }}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-px"
+        style={{
+          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-20"
+        style={{
+          background: "radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255,255,255,0.06), transparent 70%)",
+        }}
+      />
       <div style={{ padding: "64px 32px" }}>
         {/* Faint noise texture overlay */}
         <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E\")" }} />
@@ -99,7 +118,7 @@ const PremiumFooter = () => {
                   animate={{
                     filter: [
                       "brightness(1) drop-shadow(0 0 0px transparent)",
-                      "brightness(1.25) drop-shadow(0 0 14px hsla(187, 90%, 52%, 0.35))",
+                      "brightness(1.18) drop-shadow(0 0 16px rgba(255,255,255,0.18))",
                       "brightness(1) drop-shadow(0 0 0px transparent)",
                     ],
                   }}
@@ -107,7 +126,7 @@ const PremiumFooter = () => {
                 >
                   <ArsweepLogo className="w-8 h-8" />
                 </motion.div>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: 14, fontWeight: 600, color: "#FFFFFF", letterSpacing: "0.06em", textTransform: "uppercase" }}>ARSWEEP</span>
+                <BrandWordmark />
               </div>
               <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", lineHeight: 1.7 }}>
                 The most trusted Solana wallet cleaner. Reclaim hidden SOL from dust accounts.

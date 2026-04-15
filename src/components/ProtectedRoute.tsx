@@ -1,5 +1,6 @@
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { usePrivy, useLogin } from "@privy-io/react-auth";
+import ConnectWalletGate from "@/components/ConnectWalletGate";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -16,34 +17,30 @@ const ProtectedRoute = ({ children, requirePrivyLogin = true }: ProtectedRoutePr
 
   if (!ready) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-background text-muted-foreground">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <p className="text-sm font-mono">Loading...</p>
+      <div className="relative min-h-screen bg-[#040506]">
+        <div className="relative z-10 flex min-h-screen flex-col items-center justify-center gap-3 text-white/60">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <p className="text-sm font-mono">Loading…</p>
+        </div>
       </div>
     );
   }
 
   if (requirePrivyLogin && !authenticated) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-background">
-        <p className="text-sm font-mono text-muted-foreground">Connect your wallet to continue</p>
-        <button
-          onClick={() => login()}
-          style={{
-            background: "#FFFFFF",
-            color: "#0B0F14",
-            fontFamily: "var(--font-mono)",
-            padding: "10px 24px",
-            borderRadius: "8px",
-            border: "none",
-            fontWeight: 500,
-            fontSize: "14px",
-            cursor: "pointer",
-          }}
-        >
-          Connect Wallet
-        </button>
-      </div>
+      <ConnectWalletGate
+        cta={
+          <button
+            type="button"
+            onClick={() => login()}
+            className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-white to-white/90 px-6 font-semibold text-[#05080d] shadow-[0_18px_60px_rgba(0,0,0,0.55)] ring-1 ring-white/15 transition-transform active:scale-[0.99]"
+            style={{ fontFamily: "var(--font-landing-section)" }}
+          >
+            <span>Connect Wallet</span>
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </button>
+        }
+      />
     );
   }
 

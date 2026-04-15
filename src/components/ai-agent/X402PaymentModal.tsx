@@ -7,6 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useX402Payment, priceUsdcFor, type PremiumServicePath } from '@/hooks/useX402Payment';
 import { formatPremiumResult } from '@/lib/formatPremiumResult';
 import { cn } from '@/lib/utils';
+import { arsweepApi } from '@/services/arsweepApi';
+import { useAswpAccess } from '@/hooks/useAswpAccess';
 
 interface X402PaymentModalProps {
   isOpen: boolean;
@@ -32,6 +34,7 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
     refreshBalances,
     minSolLamports,
   } = useX402Payment();
+  const aswp = useAswpAccess(publicKey);
   const [result, setResult] = useState<any>(null);
   const [acknowledged, setAcknowledged] = useState(false);
 
@@ -72,8 +75,9 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
       setResult(null);
       setAcknowledged(false);
       void refreshBalances();
+      void aswp.refresh();
     }
-  }, [isOpen, refreshBalances]);
+  }, [isOpen, refreshBalances, aswp.refresh]);
 
   const usdcOk = usdcBalance != null && usdcBalance + 1e-9 >= priceUsdc;
   const walletReady = !!publicKey && !!signTransaction && connected;
@@ -87,6 +91,26 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
     onPaidSuccess?.(data);
   };
 
+  const canRunFree = walletReady && aswp.isUnlocked(serviceType);
+
+  const handleRunFree = async () => {
+    if (!publicKey) return;
+    // Run via /premium/* (no x402 payment) — intended for ASWP holder access.
+    const walletAddress = publicKey.toString();
+    const data =
+      serviceType === 'analyze'
+        ? await arsweepApi.x402Analyze({ walletAddress })
+        : serviceType === 'report'
+          ? await arsweepApi.x402Report({ walletAddress })
+          : serviceType === 'roast'
+            ? await arsweepApi.x402Roast({ walletAddress })
+            : serviceType === 'rugcheck'
+              ? await arsweepApi.x402Rugcheck({ walletAddress })
+              : await arsweepApi.x402Planner({ walletAddress });
+    setResult(data);
+    onPaidSuccess?.(data);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
@@ -95,7 +119,7 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
           'sm:rounded-2xl',
         )}
       >
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" aria-hidden />
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/30 to-transparent" aria-hidden />
 
         <DialogTitle className="sr-only">Payment Modal</DialogTitle>
         <DialogDescription className="sr-only">
@@ -104,13 +128,13 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
 
         <div className="relative px-6 pb-2 pt-6">
           <div className="flex items-start gap-4 pr-8">
-            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/25 via-sky-600/15 to-slate-800/40 ring-1 ring-cyan-500/25 shadow-lg shadow-cyan-500/10">
-              <Sparkles className="h-6 w-6 text-cyan-200" strokeWidth={1.75} />
+            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-white/20 via-white/10 to-slate-800/40 ring-1 ring-white/25 shadow-lg shadow-black/20">
+              <Sparkles className="h-6 w-6 text-white/85" strokeWidth={1.75} />
             </div>
             <div className="min-w-0 flex-1 space-y-1">
               <h3 className="text-lg font-semibold leading-snug tracking-tight text-white">{title}</h3>
               <p className="flex items-center gap-1.5 text-xs text-white/45">
-                <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-cyan-400/70" />
+                <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-white/65" />
                 <span>Powered by x402 · Solana mainnet</span>
               </p>
             </div>
@@ -120,25 +144,34 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
         <div className="space-y-4 px-6 pb-6">
           <p className="text-sm leading-relaxed text-white/55">{description}</p>
 
-          <div className="rounded-xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/[0.07] via-white/[0.02] to-transparent p-4 shadow-inner shadow-black/20 ring-1 ring-white/[0.04]">
+          <div className="rounded-xl border border-white/20 bg-gradient-to-br from-white/[0.07] via-white/[0.02] to-transparent p-4 shadow-inner shadow-black/20 ring-1 ring-white/[0.04]">
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-white/45">Price</span>
-              <span className="text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-sky-200 to-white">
-                {priceDisplay}
+              <span className="text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/60">
+                {canRunFree ? 'Free (ASWP holder)' : priceDisplay}
               </span>
             </div>
             <p className="mt-3 border-t border-white/[0.06] pt-3 text-xs leading-relaxed text-white/45">
-              Pembayaran USDC di <strong className="text-white/70">Solana mainnet</strong> dari wallet Anda. Setelah
-              mengonfirmasi, wallet akan meminta tanda tangan transaksi sebelum fitur dijalankan.
+              {canRunFree ? (
+                <>
+                  Akses gratis karena wallet Anda memenuhi tier ASWP{' '}
+                  <strong className="text-white/70">{aswp.tierLabel ?? 'holder'}</strong>. Tidak ada pembayaran USDC.
+                </>
+              ) : (
+                <>
+                  Pembayaran USDC di <strong className="text-white/70">Solana mainnet</strong> dari wallet Anda. Setelah
+                  mengonfirmasi, wallet akan meminta tanda tangan transaksi sebelum fitur dijalankan.
+                </>
+              )}
             </p>
           </div>
 
           {!connected || !publicKey ? (
-            <p className="rounded-lg border border-sky-500/20 bg-sky-500/[0.06] px-3 py-2.5 text-sm text-sky-200/90">
+            <p className="rounded-lg border border-white/20 bg-white/[0.06] px-3 py-2.5 text-sm text-white/85">
               Hubungkan wallet terlebih dahulu.
             </p>
           ) : !signTransaction ? (
-            <p className="rounded-lg border border-sky-500/20 bg-sky-500/[0.06] px-3 py-2.5 text-sm text-sky-200/90">
+            <p className="rounded-lg border border-white/20 bg-white/[0.06] px-3 py-2.5 text-sm text-white/85">
               Wallet ini tidak mengekspos penandatanganan transaksi tunggal. Coba Phantom / Solflare di desktop.
             </p>
           ) : (
@@ -146,7 +179,7 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
               <p className="font-medium text-white/90">Saldo mainnet (untuk pembayaran)</p>
               {balanceLoading ? (
                 <p className="flex items-center gap-2 text-white/45">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-cyan-400/80" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-white/70" />
                   Memuat saldo USDC…
                 </p>
               ) : (
@@ -163,7 +196,7 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
                       {solLamports != null ? (solLamports / 1e9).toFixed(6) : '—'}
                     </span>
                     {solLamports != null && solLamports < minSolLamports ? (
-                      <span className="text-sky-400/85">
+                      <span className="text-white/70">
                         {' '}
                         · Biaya jaringan biasanya ditanggung facilitator; jika gagal, tambah sedikit SOL.
                       </span>
@@ -196,27 +229,37 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
             <Checkbox
               checked={acknowledged}
               onCheckedChange={(v) => setAcknowledged(v === true)}
-              disabled={!walletReady || !usdcOk || balanceLoading}
+              disabled={canRunFree || !walletReady || !usdcOk || balanceLoading}
               className={cn(
                 'mt-0.5 h-4 w-4 rounded border-white/25 bg-white/[0.04]',
-                'data-[state=checked]:border-cyan-400 data-[state=checked]:bg-cyan-500 data-[state=checked]:text-[#042018]',
-                'focus-visible:ring-cyan-500/40 focus-visible:ring-offset-0 focus-visible:ring-offset-[#0a0c10]',
+                'data-[state=checked]:border-white/50 data-[state=checked]:bg-white data-[state=checked]:text-[#0a0a0a]',
+                'focus-visible:ring-white/40 focus-visible:ring-offset-0 focus-visible:ring-offset-[#0a0c10]',
               )}
             />
             <span className="leading-snug">
-              Saya mengerti bahwa saya akan <strong className="text-white/85">menandatangani</strong> transaksi pembayaran
-              USDC sebesar {priceDisplay} di Solana mainnet, dan fitur premium hanya berjalan setelah pembayaran berhasil.
+              {canRunFree ? (
+                <>
+                  Saya mengerti fitur ini gratis karena tier ASWP, dan permintaan akan dijalankan atas wallet saya.
+                </>
+              ) : (
+                <>
+                  Saya mengerti bahwa saya akan <strong className="text-white/85">menandatangani</strong> transaksi pembayaran
+                  USDC sebesar {priceDisplay} di Solana mainnet, dan fitur premium hanya berjalan setelah pembayaran berhasil.
+                </>
+              )}
             </span>
           </label>
 
           <Button
-            onClick={handlePay}
-            disabled={!canSignAndPay}
+            onClick={canRunFree ? handleRunFree : handlePay}
+            disabled={canRunFree ? !walletReady || isProcessing : !canSignAndPay}
             className={cn(
+              // Keep contrast high on the brand gradient (text needs to be dark).
               'h-12 w-full rounded-xl font-semibold shadow-lg transition-all',
-              'bg-gradient-to-r from-cyan-600 via-sky-600 to-cyan-700 text-white',
-              'hover:from-cyan-500 hover:via-sky-500 hover:to-cyan-600 hover:shadow-cyan-500/20',
-              'disabled:from-white/10 disabled:via-white/10 disabled:to-white/10 disabled:text-white/35 disabled:shadow-none',
+              'gradient-bg gradient-bg-hover text-[#05080d]',
+              'hover:shadow-black/30',
+              // Shadcn button base applies disabled:opacity-50; override to avoid text vanishing.
+              'disabled:opacity-100 disabled:bg-white/[0.08] disabled:text-white/45 disabled:shadow-none',
             )}
           >
             {isProcessing ? (
@@ -225,7 +268,7 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
                 Menunggu tanda tangan / memproses…
               </>
             ) : (
-              `Tanda tangani & bayar ${priceDisplay}`
+              canRunFree ? `Jalankan gratis (ASWP)` : `Tanda tangani & bayar ${priceDisplay}`
             )}
           </Button>
         </div>

@@ -53,7 +53,9 @@ const ActionBar = ({
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="fixed bottom-0 left-0 right-0 sm:inset-auto sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 z-[50] sm:w-[calc(100%-2rem)] sm:max-w-xl flex items-end sm:items-stretch"
         >
-          <div style={{ background: "rgba(11,15,20,0.95)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px", padding: "20px", width: "100%", boxShadow: "0 -8px 40px rgba(0,0,0,0.4)" }} className="rounded-t-2xl sm:rounded-2xl">
+          <div
+            className="surface-premium w-full rounded-t-2xl sm:rounded-2xl p-5 shadow-premium-lg"
+          >
             <div className="flex flex-col gap-3">
               <div className="text-sm text-foreground space-y-2 flex-1">
                 <p>

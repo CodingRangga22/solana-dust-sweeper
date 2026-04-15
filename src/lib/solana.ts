@@ -10,7 +10,7 @@ export const PROGRAM_ID = new PublicKey(
 
 // ✅ Treasury wallet
 export const TREASURY = new PublicKey(
-  "J7ApX8Y3vp6WcsGD99kyTTQyLuxxhsT8zBfNTqcFW9qi"
+  "BfqfpTe6yv5TTTGrcNVRPVfQ3h6FwzhC78LGbGAN5NkT"
 );
 
 // ✅ Pakai RPC dari env (devnet/mainnet otomatis)

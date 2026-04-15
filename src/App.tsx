@@ -33,6 +33,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { usePrivyWalletSync } from "./hooks/usePrivyWalletSync";
 import TokenPage from "./pages/Token";
 import X402Resources from "./pages/X402Resources";
+import BottomMarqueeDock from "./components/BottomMarqueeDock";
 
 const queryClient = new QueryClient();
 
@@ -82,23 +83,28 @@ const AppContent = ({
     }
   }, [isInTelegram, actionFromTwa]);
 
-  return (
-    <div
-      style={{ paddingTop: bannerHeight }}
-      className="min-h-screen transition-[padding] duration-200"
-    >
-      <TwaBanner />
-      <TwaWalletGuide />
+  const RouteAwareShell = () => {
+    const { pathname } = useLocation();
+    const path = pathname.replace(/\/$/, "") || "/";
+    const showDock = path !== "/agent";
+    const paddingBottom = showDock ? "var(--arsweep-dock-safe)" : 0;
 
-      <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider wallets={[]} autoConnect={false}>
-          <WalletSyncInner />
-          <QueryClientProvider client={queryClient}>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <SidebarProvider>
-                <BrowserRouter>
+    return (
+      <div
+        style={{ paddingTop: bannerHeight, paddingBottom }}
+        className="min-h-screen transition-[padding] duration-200"
+      >
+        <TwaBanner />
+        <TwaWalletGuide />
+
+        <ConnectionProvider endpoint={endpoint}>
+          <WalletProvider wallets={[]} autoConnect={false}>
+            <WalletSyncInner />
+            <QueryClientProvider client={queryClient}>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <SidebarProvider>
                   <BannerRouteSync />
                   <Routes>
                     <Route
@@ -147,13 +153,21 @@ const AppContent = ({
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                   <Sidebar />
-                </BrowserRouter>
-              </SidebarProvider>
-            </TooltipProvider>
-          </QueryClientProvider>
-        </WalletProvider>
-      </ConnectionProvider>
-    </div>
+                </SidebarProvider>
+              </TooltipProvider>
+            </QueryClientProvider>
+          </WalletProvider>
+        </ConnectionProvider>
+
+        {showDock ? <BottomMarqueeDock /> : null}
+      </div>
+    );
+  };
+
+  return (
+    <BrowserRouter>
+      <RouteAwareShell />
+    </BrowserRouter>
   );
 };
 

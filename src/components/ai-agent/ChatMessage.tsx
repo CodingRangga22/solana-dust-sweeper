@@ -62,7 +62,7 @@ export function ChatMessage({
         <div
           className={`flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border ${
             assistantUseArsweepLogo
-              ? 'border-cyan-500/20 bg-gradient-to-br from-white/[0.12] to-white/[0.04] shadow-md shadow-cyan-500/10 ring-1 ring-cyan-500/15'
+              ? 'border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.04] shadow-md shadow-white/10 ring-1 ring-white/15'
               : 'border-white/15 bg-white/10'
           }`}
         >
@@ -85,7 +85,7 @@ export function ChatMessage({
             {toolsUsed.map((name) => (
               <span
                 key={name}
-                className="inline-flex items-center rounded-md border border-cyan-500/25 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-mono font-medium uppercase tracking-wide text-cyan-300/90"
+                className="inline-flex items-center rounded-md border border-white/25 bg-white/10 px-2 py-0.5 text-[10px] font-mono font-medium uppercase tracking-wide text-white/80"
               >
                 🔧 TOOL USED: {name}
               </span>

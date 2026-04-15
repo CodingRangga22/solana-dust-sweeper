@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { usePrivy } from '@privy-io/react-auth';
 import { useWallets } from '@privy-io/react-auth/solana';
@@ -68,28 +68,42 @@ export function useX402Payment() {
 
   const mainnetConn = useMemo(() => getPremiumMainnetConnection(), []);
 
+  const inFlightRef = useRef<Promise<void> | null>(null);
+  const lastFetchMsRef = useRef<number>(0);
+  const TTL_MS = 15_000;
+
   const refreshBalances = useCallback(async () => {
     if (!publicKey) {
       setUsdcBalance(null);
       setSolLamports(null);
       return;
     }
+    const now = Date.now();
+    if (inFlightRef.current) return inFlightRef.current;
+    if (now - lastFetchMsRef.current < TTL_MS && usdcBalance != null && solLamports != null) return;
     setBalanceLoading(true);
-    try {
-      const owner = new PublicKey(publicKey.toBase58());
-      const [usdc, sol] = await Promise.all([
-        getMainnetUsdcUiAmount(mainnetConn, owner),
-        getSolBalanceLamports(mainnetConn, owner),
-      ]);
-      setUsdcBalance(usdc);
-      setSolLamports(sol);
-    } catch {
-      setUsdcBalance(null);
-      setSolLamports(null);
-    } finally {
-      setBalanceLoading(false);
-    }
-  }, [publicKey, mainnetConn]);
+    const p = (async () => {
+      try {
+        const owner = new PublicKey(publicKey.toBase58());
+        const [usdc, sol] = await Promise.all([
+          getMainnetUsdcUiAmount(mainnetConn, owner),
+          getSolBalanceLamports(mainnetConn, owner),
+        ]);
+        setUsdcBalance(usdc);
+        setSolLamports(sol);
+        lastFetchMsRef.current = Date.now();
+      } catch {
+        setUsdcBalance(null);
+        setSolLamports(null);
+        lastFetchMsRef.current = Date.now();
+      } finally {
+        setBalanceLoading(false);
+        inFlightRef.current = null;
+      }
+    })();
+    inFlightRef.current = p;
+    return p;
+  }, [publicKey, mainnetConn, usdcBalance, solLamports]);
 
   async function requestPremium(walletAddress: string, premiumPath: PremiumServicePath) {
     if (!publicKey || !signTransaction || !connected) {

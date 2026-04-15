@@ -2,7 +2,7 @@
 
 ## Is Arsweep safe?
 
-Yes. Arsweep only uses the standard SPL CloseAccount instruction.
+Yes. Arsweep uses standard Solana instructions (SPL Token burn/close + an explicit fee transfer). You review and sign every transaction in your wallet.
 
 ## Does Arsweep control my funds?
 
@@ -10,7 +10,7 @@ No. Arsweep is non-custodial.
 
 ## What accounts can be closed?
 
-Only empty SPL token accounts.
+Zero-balance token accounts can always be closed. Accounts with a dust balance may be burned+closed only when the token is confirmed worthless (no liquidity route + $0 value).
 
 ## Can I reverse a closed account?
 

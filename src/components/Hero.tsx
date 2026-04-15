@@ -22,19 +22,20 @@ const Hero = ({ scanning = false, scanned = false, onScan, onRescan, sweeping = 
   };
 
   return (
-    <section style={{ paddingTop: 96, paddingBottom: 48, paddingLeft: 24, paddingRight: 24, textAlign: "center" }}>
+    <section className="relative px-6 pt-24 pb-12 text-center sm:px-8">
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(34,211,238,0.08),transparent_55%)]" aria-hidden />
 
-      <div style={{ ...M, fontSize: 11, color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)", borderRadius: 999, padding: "5px 16px", display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, letterSpacing: "0.08em" }}>
-        <Sparkles size={11} style={{ color: "rgba(255,255,255,0.4)" }} />
+      <div className="surface-premium mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-white/55 shadow-premium-sm">
+        <Sparkles size={12} className="text-white/55" />
         Solana Wallet Cleaner
       </div>
 
-      <h1 style={{ fontSize: "clamp(28px,4.5vw,52px)", fontWeight: 800, lineHeight: 1.08, letterSpacing: "-0.025em", color: "#FFFFFF", margin: "0 auto 16px", maxWidth: 600 }}>
+      <h1 className="mx-auto mb-4 max-w-[600px] text-[clamp(28px,4.5vw,52px)] font-extrabold leading-[1.08] tracking-[-0.025em] text-white">
         Clean your wallet,{" "}
         <span style={{ color: "rgba(255,255,255,0.55)" }}>reclaim your Sol.</span>
       </h1>
 
-      <p style={{ fontSize: 15, color: "rgba(255,255,255,0.4)", maxWidth: 400, margin: "0 auto 36px", lineHeight: 1.75 }}>
+      <p className="mx-auto mb-9 max-w-[400px] text-[15px] leading-relaxed text-white/45">
         Find dust tokens and empty accounts. Close them and get your rent deposits back instantly.
       </p>
 

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
 import { motion } from "framer-motion";
-import { Wallet } from "lucide-react";
+import { Lock, ShieldCheck, Sparkles, Wallet } from "lucide-react";
 import WalletMenu from "@/components/WalletMenu";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
@@ -32,6 +32,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useWallets } from "@privy-io/react-auth/solana";
 import { useTelegramWebApp } from "@/hooks/useTelegramWebApp";
 import { useTwaSweepCallback } from "@/components/TwaBanner";
+import ConnectWalletGate from "@/components/ConnectWalletGate";
 
 /** Fallback when rentLamports missing — prefer per-account rent from scan */
 const RENT_PER_ACCOUNT = 0.002042;
@@ -492,80 +493,24 @@ const Dashboard = () => {
   // Not connected
   if (!connected && !authenticated) {
     return (
-      <div className="arsweep-page-shell relative overflow-hidden font-sans">
-        <div className="arsweep-dot-grid" aria-hidden />
-        <div className="arsweep-vignette-fade" aria-hidden />
-        {/* Noise */}
-        <div
-          className="pointer-events-none fixed inset-0 z-0"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-            backgroundSize: "200px",
-            opacity: 0.028,
-            mixBlendMode: "overlay",
-          }}
-        />
-        <Header onChangeWallet={handleChangeWallet} onDisconnect={handleDisconnect} walletMismatch={walletMismatch} />
-        <ChangeWalletInstructionModal
-          open={showChangeWalletModal}
-          onOpenChange={setShowChangeWalletModal}
-          onDisconnect={handleDisconnectAndReconnect}
-        />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 flex flex-col items-center justify-center min-h-[70vh] px-4 pt-20"
-        >
-          <div
-            className="rounded-3xl p-10 max-w-lg w-full text-center"
-            style={{
-              background: "rgba(6,9,11,0.92)",
-              border: "1px solid rgba(34,211,238,0.12)",
-              boxShadow: "0 24px 64px rgba(0,0,0,0.45), 0 0 48px rgba(34,211,238,0.04)",
-              backdropFilter: "blur(20px)",
-            }}
-          >
-            <div
-              className="w-20 h-20 rounded-2xl mx-auto mb-6 shadow-lg flex items-center justify-center"
-              style={{
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.10)",
-              }}
-            >
-              <Wallet className="w-10 h-10" style={{ color: "rgba(255,255,255,0.85)" }} />
-            </div>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: 36, fontWeight: 600, color: "#FFFFFF", marginBottom: 8 }}>
-              Connect Your Wallet
-            </h2>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: "rgba(255,255,255,0.45)", marginBottom: 22, lineHeight: 1.7, maxWidth: 420, marginInline: "auto" }}>
-              Scan your Solana wallet for empty token accounts and reclaim locked SOL — takes under 5 seconds.
-            </p>
-            <div className="flex flex-wrap justify-center gap-3 mb-8" style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
-              <span className="px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>🔒 Read-only scan</span>
-              <span className="px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>✅ Non-custodial</span>
-              <span className="px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>⚡ Free to scan</span>
-            </div>
-            <WalletMenu
-              variant="hero"
-              onChangeWallet={handleChangeWallet}
-              onDisconnect={handleDisconnect}
-              walletMismatch={walletMismatch}
-            />
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(255,255,255,0.30)", marginTop: 14 }}>
-              Sign in with Privy and connect a Solana wallet to scan and sign transactions
-            </p>
-          </div>
-        </motion.div>
-        <PremiumFooter />
-        <ChatWidget />
-      </div>
+      <ConnectWalletGate
+        cta={
+          <WalletMenu
+            variant="hero"
+            onChangeWallet={handleChangeWallet}
+            onDisconnect={handleDisconnect}
+            walletMismatch={walletMismatch}
+          />
+        }
+        helperText="Sign in with Privy, then connect a Solana wallet to scan and sign transactions."
+      />
     );
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden" style={{ background: "transparent" }}>
-      <div className="orb w-[600px] h-[600px] bg-primary/10 top-1/3 -right-60 animate-float" />
-      <div className="orb w-[500px] h-[500px] bg-secondary/10 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
+    <div className="relative min-h-screen overflow-hidden arsweep-bg-ambient">
+      <div className="orb w-[600px] h-[600px] bg-primary/12 top-1/3 -right-60 animate-float" />
+      <div className="orb w-[520px] h-[520px] bg-secondary/12 bottom-0 -left-40 animate-float" style={{ animationDelay: "3s" }} />
 
       <Header onChangeWallet={handleChangeWallet} onDisconnect={handleDisconnect} walletMismatch={walletMismatch} />
       <Hero scanning={scanning} scanned={scanned} onScan={handleScan} onRescan={handleRescan} sweeping={sweeping} accountsFound={sweepableAccounts.length} />

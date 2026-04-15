@@ -1,6 +1,7 @@
 import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { NETWORK } from "@/config/env";
+import { getRugcheckSummary, type RugcheckResult } from "@/lib/rugcheck";
 
 // ── Thresholds ────────────────────────────────────────────────────────
 const DUST_AMOUNT_THRESHOLD = BigInt(1_000);
@@ -35,6 +36,7 @@ export interface TokenAccountInfo {
   rentLamports: number;
   isSweepable: boolean;
   hasValueWarning: boolean;
+  rugcheck: RugcheckResult | null;
   eligibilityReasons: EligibilityReason[];
   usdValueCents: number;
   hasLiquidityPool: boolean;
@@ -233,6 +235,15 @@ export async function fetchAllTokenAccounts(
 
     const usdValueCents = computeTotalUsdCents(pricePerToken, amount, decimals);
 
+    // RugCheck (only when it matters: balance/value/liquidity/flags)
+    const shouldRugcheck =
+      amount > BigInt(0) ||
+      usdValueCents > 0 ||
+      hasLiquidityPool ||
+      !!mintFlags.freezeAuthority ||
+      !!mintFlags.mintAuthority;
+    const rugcheck = shouldRugcheck ? await getRugcheckSummary(mintStr) : null;
+
     // ── Eligibility Scoring ──────────────────────────────────────────
     const reasons: EligibilityReason[] = [];
 
@@ -278,6 +289,7 @@ export async function fetchAllTokenAccounts(
       rentLamports,
       isSweepable,
       hasValueWarning,
+      rugcheck,
       eligibilityReasons: reasons,
       usdValueCents,
       hasLiquidityPool,

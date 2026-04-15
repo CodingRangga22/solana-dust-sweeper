@@ -30,16 +30,14 @@ const StatsBar = ({
 
   return (
     <section className="px-4 pb-8">
-      <div className="container mx-auto grid grid-cols-3 gap-2 sm:gap-4 max-w-3xl">
+      <div className="container mx-auto grid grid-cols-3 gap-3 sm:gap-4 max-w-3xl">
         {stats.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 + i * 0.1, duration: 0.5 }}
-            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: "16px 20px", textAlign: "center", transition: "border-color 0.2s, background 0.2s" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.15)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; }}
+            className="surface-premium rounded-2xl px-4 py-4 sm:px-5 text-center ring-1 ring-white/[0.04] transition-[box-shadow,background] duration-300 hover:ring-cyan-400/15 hover:shadow-glow"
           >
             <stat.icon style={{ width: 18, height: 18, margin: "0 auto 8px", color: "rgba(255,255,255,0.45)" }} />
             <AnimatedCounter value={stat.value} style={{ fontSize: "clamp(16px,2.5vw,22px)", fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.01em", fontFamily: "var(--font-mono)" }} />

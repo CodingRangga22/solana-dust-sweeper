@@ -3,6 +3,7 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Link, Outlet } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import ArsweepLogo from "@/components/ArsweepLogo";
+import BrandWordmark from "@/components/BrandWordmark";
 const M: React.CSSProperties = { fontFamily: "var(--font-mono)" };
 export default function DocsLayout(_props?: { children?: React.ReactNode }) {
   useScrollReveal();
@@ -18,7 +19,7 @@ export default function DocsLayout(_props?: { children?: React.ReactNode }) {
   const SidebarContent = () => (
     <>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
-        <span style={{ ...M, fontSize: 13, fontWeight: 600, color: "#FFFFFF", letterSpacing: "0.06em" }}>ARSWEEP DOCS</span>
+        <BrandWordmark size="sm">ARSWEEP DOCS</BrandWordmark>
         <button onClick={closeDrawer} className="md:hidden" style={{ background: "none", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", padding: 4 }}>
           <X size={18} />
         </button>
@@ -41,9 +42,19 @@ export default function DocsLayout(_props?: { children?: React.ReactNode }) {
     </>
   );
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#0B0F14", color: "#FFFFFF", fontFamily: "'Inter', sans-serif" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: "var(--ar-base)",
+        backgroundImage: "var(--ar-ambient-gradients)",
+        color: "#FFFFFF",
+        fontFamily: "'Inter', sans-serif",
+      }}
+    >
       {/* Mobile Header */}
-      <div className="md:hidden" style={{ position: "sticky", top: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", background: "rgba(11,15,20,0.98)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="md:hidden" style={{ position: "sticky", top: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", background: "rgba(2,6,15,0.96)", backdropFilter: "blur(16px)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <ArsweepLogo className="w-6 h-6" />
           <span style={{ ...M, fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>DOCS</span>
@@ -62,7 +73,7 @@ export default function DocsLayout(_props?: { children?: React.ReactNode }) {
         {/* Mobile Drawer */}
         <aside className="md:hidden" style={{
           position: "fixed", left: drawerOpen ? 0 : -260, top: 0, bottom: 0, zIndex: 50,
-          width: 240, background: "rgba(11,15,20,0.99)", borderRight: "1px solid rgba(255,255,255,0.06)",
+          width: 240, background: "rgba(2,6,15,0.99)", borderRight: "1px solid rgba(255,255,255,0.06)",
           padding: "32px 24px", transition: "left 0.3s ease", overflowY: "auto",
         }}>
           <SidebarContent />
@@ -72,7 +83,7 @@ export default function DocsLayout(_props?: { children?: React.ReactNode }) {
         <aside className="hidden md:flex" style={{
           width: 240, flexShrink: 0, flexDirection: "column",
           borderRight: "1px solid rgba(255,255,255,0.06)",
-          background: "rgba(11,15,20,0.98)", padding: "32px 24px",
+          background: "rgba(2,6,15,0.92)", padding: "32px 24px",
           position: "sticky", top: 0, height: "100vh", overflowY: "auto",
         }}>
           <SidebarContent />

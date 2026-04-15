@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ExternalLink, Loader2 } from "lucide-react";
 import ArsweepLogo from "@/components/ArsweepLogo";
+import BrandWordmark from "@/components/BrandWordmark";
+import AswpPremiumNotice from "@/components/AswpPremiumNotice";
 import { useBanner } from "@/components/BannerProvider";
 import type { X402HealthResponse } from "@/services/arsweepApi";
 import { priceUsdcFor } from "@/hooks/useX402Payment";
@@ -201,7 +203,7 @@ export default function X402Resources() {
           zIndex: 50,
           top: bannerHeight,
           borderBottom: "1px solid rgba(255,255,255,0.06)",
-          background: "rgba(4,5,6,0.88)",
+          background: "rgba(2,6,15,0.88)",
           backdropFilter: "blur(20px)",
         }}
       >
@@ -216,11 +218,9 @@ export default function X402Resources() {
             justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => navigate("/")}>
-            <ArsweepLogo className="w-6 h-6" />
-            <span style={{ ...M, fontSize: 14, fontWeight: 600, color: "#FFFFFF", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              ARSWEEP
-            </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => navigate("/")}>
+            <ArsweepLogo className="h-7 w-7 shrink-0" />
+            <BrandWordmark />
           </div>
           <div className="hidden sm:flex" style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", alignItems: "center", gap: 8 }}>
             {[
@@ -306,7 +306,7 @@ export default function X402Resources() {
           </h1>
           <p className="mt-5 max-w-[34rem] text-[15px] leading-[1.7] text-white/42">
             Each call below is billed per request through the{" "}
-            <a className="text-cyan-300/90 underline-offset-[5px] hover:underline" href="https://www.x402.org/" target="_blank" rel="noreferrer">
+            <a className="text-white/75 underline-offset-[5px] hover:underline" href="https://www.x402.org/" target="_blank" rel="noreferrer">
               x402
             </a>{" "}
             payment flow on mainnet (USDC). Trigger them from{" "}
@@ -320,7 +320,7 @@ export default function X402Resources() {
               href={X402SCAN_SERVER_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-cyan-300/85 transition-colors hover:text-cyan-200"
+              className="inline-flex items-center gap-1.5 text-white/70 transition-colors hover:text-white"
             >
               Registry: x402scan
               <ExternalLink className="h-3.5 w-3.5 opacity-70" aria-hidden />
@@ -330,8 +330,12 @@ export default function X402Resources() {
           </div>
         </header>
 
+        <div className="mb-10">
+          <AswpPremiumNotice />
+        </div>
+
         {/* CTA strip — narrow rail, not a fat marketplace banner */}
-        <div className="mb-10 flex flex-col gap-3 border-l-2 border-cyan-500/35 bg-white/[0.02] py-3 pl-4 pr-4 sm:flex-row sm:items-center sm:justify-between sm:pl-5">
+        <div className="mb-10 flex flex-col gap-3 border-l-2 border-white/20 bg-white/[0.02] py-3 pl-4 pr-4 sm:flex-row sm:items-center sm:justify-between sm:pl-5">
           <p className="text-[14px] leading-relaxed text-white/55">
             Ready to run a tool? Agent holds the wallet session and signs the USDC leg for you.
           </p>
@@ -390,7 +394,7 @@ export default function X402Resources() {
                     </p>
                     <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-white">{c.title}</h2>
                     <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-white/42">{c.description}</p>
-                    <code className="mt-4 block text-[12px] leading-relaxed text-cyan-400/55" style={M}>
+                    <code className="mt-4 block text-[12px] leading-relaxed text-white/45" style={M}>
                       {c.method} {API_BASE}
                       {c.pathDisplay.startsWith("/") ? c.pathDisplay : `/${c.pathDisplay}`}
                     </code>
@@ -401,7 +405,7 @@ export default function X402Resources() {
                     </span>
                     <Link
                       to="/agent"
-                      className="text-[13px] text-cyan-400/90 transition-colors hover:text-cyan-300"
+                      className="text-[13px] text-white/80 transition-colors hover:text-white"
                       style={M}
                     >
                       Use in Agent →
@@ -420,11 +424,11 @@ export default function X402Resources() {
           <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-white/42">
             The server may respond with <code className="rounded bg-white/[0.06] px-1 py-0.5 text-[12px] text-white/65" style={M}>402 Payment Required</code>{" "}
             and instructions; after USDC settles on Solana you retry with the proof header. Base{" "}
-            <code className="rounded bg-white/[0.06] px-1 py-0.5 text-[12px] text-cyan-200/75" style={M}>
+            <code className="rounded bg-white/[0.06] px-1 py-0.5 text-[12px] text-white/70" style={M}>
               {API_BASE}
             </code>
             , paid routes under{" "}
-            <code className="rounded bg-white/[0.06] px-1 py-0.5 text-[12px] text-cyan-200/75" style={M}>
+            <code className="rounded bg-white/[0.06] px-1 py-0.5 text-[12px] text-white/70" style={M}>
               {prefix}
             </code>
             .
@@ -435,7 +439,7 @@ export default function X402Resources() {
               href={X402SCAN_SERVER_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-cyan-400/85 underline-offset-4 hover:underline"
+              className="inline-flex items-center gap-1 text-white/75 underline-offset-4 hover:underline"
             >
               Arsweep on x402scan
               <ExternalLink className="h-3 w-3 opacity-70" aria-hidden />

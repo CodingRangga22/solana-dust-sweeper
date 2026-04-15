@@ -10,8 +10,9 @@ All transactions are signed locally by the user's wallet.
 
 Arsweep only requests permission to:
 
-- Close empty SPL token accounts
-- Transfer 1.5% of reclaimed rent as service fee
+- Close token accounts to reclaim rent (SPL Token / Token-2022)
+- Burn dust balances only when they are confirmed worthless (no liquidity route + $0 value)
+- Transfer 1.5% of reclaimed rent as a service fee (separate System Program transfer)
 
 It does not transfer main SOL balance or tokens with value.
 
@@ -23,6 +24,8 @@ All logic runs inside the browser using:
 
 - @solana/web3.js
 - @solana/spl-token
+
+Premium/agent endpoints are requested explicitly by the user and may call the Arsweep API; they still never require your private keys.
 
 ## Transparent Codebase
 

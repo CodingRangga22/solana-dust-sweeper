@@ -98,8 +98,8 @@ const milestones = [
     desc: "Future",
     detail: "Developer API and SDK to integrate Arsweep features into any dApp or wallet.",
     icon: Code2,
-    color: "text-cyan-400",
-    bg: "bg-cyan-400/10",
+    color: "text-white/80",
+    bg: "bg-white/10",
     ring: "",
   },
 ];

@@ -8,6 +8,12 @@
 
 
 @layer base {
+  :root {
+    /* Bottom integration dock (marquee) safe offset for all pages */
+    --arsweep-dock-height: 44px;
+    --arsweep-dock-safe: calc(var(--arsweep-dock-height) + env(safe-area-inset-bottom));
+  }
+
   /* Light mode - clean white/slate (#F9FAFB bg, #111827 text) */
   :root,
   .light {
@@ -134,6 +140,156 @@
 }
 
 @layer components {
+  .ar-container {
+    @apply mx-auto w-full max-w-[1200px] px-5 sm:px-8;
+  }
+
+  .ar-h1 {
+    @apply text-white font-extrabold tracking-[-0.03em] leading-[1.02];
+    font-size: clamp(34px, 4.6vw, 62px);
+  }
+
+  .ar-subtitle {
+    @apply text-white/55 leading-relaxed;
+    font-size: clamp(15px, 1.2vw, 17px);
+  }
+
+  .ar-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-[12px] px-4 py-2.5 text-[13px] font-semibold transition-colors;
+    font-family: var(--font-mono);
+  }
+
+  .ar-btn-primary {
+    @apply ar-btn bg-white text-[#05080d] border border-white/20 shadow-[0_10px_40px_rgba(0,0,0,0.35)];
+  }
+
+  .ar-btn-primary:hover {
+    @apply bg-white/95;
+  }
+
+  .ar-btn-secondary {
+    @apply ar-btn bg-white/[0.06] text-white border border-white/15;
+  }
+
+  .ar-btn-secondary:hover {
+    @apply bg-white/[0.09] border-white/30;
+  }
+
+  .ar-btn-ghost {
+    @apply ar-btn bg-transparent text-white/60 border border-white/10;
+  }
+
+  .ar-btn-ghost:hover {
+    @apply text-white border-white/25 bg-white/[0.04];
+  }
+
+  .ar-section-kicker {
+    @apply text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45;
+  }
+
+  .ar-section {
+    @apply relative z-[2] py-16 sm:py-20;
+  }
+
+  /* Marquee (Griffin-style) */
+  .ar-marquee {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.86);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+  }
+
+  .ar-marquee--dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .ar-marquee-dock__inner {
+    padding-top: 10px;
+  }
+
+  .ar-marquee__track {
+    display: flex;
+    width: 200%;
+    will-change: transform;
+    animation: arMarquee var(--marquee-duration, 22s) linear infinite;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .ar-marquee__group {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    width: 50%;
+    flex: 0 0 50%;
+  }
+
+  .ar-marquee__item {
+    flex: 0 0 auto;
+  }
+
+  .ar-marquee__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.7);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Dock variant: make it compact so it doesn't cover page content */
+  .ar-marquee--dock .ar-marquee__group {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .ar-marquee--dock .ar-marquee__pill {
+    padding: 8px 10px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  @media (max-width: 480px) {
+    .ar-marquee--dock .ar-marquee__sub {
+      display: none;
+    }
+  }
+
+  .ar-marquee__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.25);
+  }
+
+  .ar-marquee__label {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .ar-marquee__sub {
+    color: rgba(255, 255, 255, 0.38);
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
   .glass {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -213,7 +369,7 @@
 
   .arsweep-wallet-button.wallet-adapter-button:hover {
     background: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(34, 211, 238, 0.28) !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
   }
 }
 
@@ -222,25 +378,25 @@
   content: attr(data-brand);
 }
 
-/* ── Arsweep brand (aligned with /agent ambient) ── */
+/* ── Arsweep brand — Orbit-inverted: black canvas + white blueprint grid (no cyan) ── */
 :root {
-  --ar-base: #040506;
-  --ar-teal: #22d3ee;
-  /* Scroll / heading accent — sky-mint, replaces neon lime */
-  --ar-yellow: #7dd3fc;
-  --ar-white: #fafafa;
+  --ar-base: #000000;
+  /* Monochrome accents (replace former teal/cyan) */
+  --ar-teal: #ffffff;
+  --ar-yellow: #e5e5e5;
+  --ar-white: #f4f6f8;
   --ar-gray1: rgba(255,255,255,0.55);
   --ar-gray2: rgba(255,255,255,0.35);
   --ar-gray3: rgba(255,255,255,0.2);
-  --ar-border: rgba(255,255,255,0.07);
-  --ar-border2: rgba(255,255,255,0.12);
-  --ar-surface: rgba(255,255,255,0.03);
-  --ar-teal-soft: rgba(34, 211, 238, 0.12);
-  --ar-teal-ring: rgba(34, 211, 238, 0.28);
-  --ar-ambient-gradients:
-    radial-gradient(ellipse 90% 55% at 50% -15%, rgba(56, 189, 248, 0.1), transparent 52%),
-    radial-gradient(ellipse 55% 45% at 100% 35%, rgba(34, 211, 238, 0.08), transparent 48%),
-    radial-gradient(ellipse 45% 35% at 0% 75%, rgba(148, 163, 184, 0.06), transparent 42%);
+  --ar-border: rgba(255,255,255,0.08);
+  --ar-border2: rgba(255,255,255,0.14);
+  --ar-surface: rgba(255,255,255,0.04);
+  --ar-teal-soft: rgba(255, 255, 255, 0.1);
+  --ar-teal-ring: rgba(255, 255, 255, 0.22);
+  /* Background (requested): pure black, no grid */
+  --ar-ambient-gradients: none;
+  --ar-page-bg-image: none;
+  --ar-page-bg-size: auto;
   --font-display: 'DM Serif Display', serif;
   /** Section titles on Landing — same voice as hero (Inter, bold, tight), not serif */
   --font-landing-section: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -256,26 +412,65 @@
   color: #ffffff;
 }
 
+/* Full-viewport ambient — grid comes from `body`; avoid stacking a second grid */
+.arsweep-bg-ambient {
+  background-color: transparent;
+}
+
 /* Shared full-page shell (Landing, Token, pre-wallet Dashboard) */
 .arsweep-page-shell {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
   color: var(--ar-white);
-  background-color: var(--ar-base);
-  background-image: var(--ar-ambient-gradients);
+  background-color: transparent;
 }
 
-.arsweep-dot-grid {
+/* Top nav — used by Landing inline header + can mirror Header */
+.arsweep-premium-nav {
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.arsweep-premium-nav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
   pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.55;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.038) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 35%, black 12%, transparent 68%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 35%, black 12%, transparent 68%);
+}
+
+/* Elevated surfaces — cards, modals */
+.surface-premium {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Legacy layer — grid is on `body` only (was doubling lines if left on) */
+.arsweep-dot-grid {
+  display: none;
+}
+
+/* Agent previously stacked an extra grid — `body` already paints the blueprint */
+.arsweep-mesh-grid {
+  display: none;
 }
 
 .arsweep-vignette-fade {
@@ -283,26 +478,60 @@
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(to bottom, transparent 0%, transparent 52%, var(--ar-base) 100%);
+  background:
+    radial-gradient(ellipse 120% 85% at 50% 45%, transparent 0%, rgba(0, 0, 0, 0.35) 100%),
+    linear-gradient(to bottom, transparent 0%, transparent 48%, var(--ar-base) 100%);
 }
 
-/* Global backdrop — matches /agent */
+/* Global backdrop — Orbit-inverted grid */
 body {
   background-color: var(--ar-base);
-  background-image: var(--ar-ambient-gradients);
+  background-image: none;
+  background-size: auto;
+  position: relative;
 }
 
+/* Edge soften so grid fades like reference (body grid stays; this dims borders toward viewport edge) */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.55;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.038) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 35%, black 12%, transparent 68%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 35%, black 12%, transparent 68%);
+  background: radial-gradient(ellipse 100% 85% at 50% 40%, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+/* Ambient animated layer — disabled for clean black look */
+body::after {
+  content: none;
+}
+
+@keyframes arAmbientDrift {
+  0% {
+    transform: translate3d(-1.5%, -1.2%, 0) scale(1.02);
+  }
+  50% {
+    transform: translate3d(1.8%, 1.4%, 0) scale(1.04);
+  }
+  100% {
+    transform: translate3d(-1.5%, -1.2%, 0) scale(1.02);
+  }
+}
+
+@keyframes arMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after {
+    animation: none;
+    opacity: 0.35;
+  }
 }
 
 /* Fade in up animation for cards */
@@ -358,34 +587,11 @@ body::before {
   transition: color 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .yr-active .yellow-reveal {
-  color: var(--ar-yellow) !important;
+  color: #ffffff !important;
 }
 
 /* ── Mobile Responsive Fixes ── */
 @media (max-width: 768px) {
-  /* Landing hero grid */
-  section[style*="gridTemplateColumns: 1fr 1fr"] {
-    grid-template-columns: 1fr !important;
-    padding: 80px 24px 60px !important;
-  }
-
-  /* All 3-col grids → 1 col on mobile */
-  div[style*="repeat(3,1fr)"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* 2-col grids → 1 col on mobile */  
-  div[style*="1fr 1fr"] {
-    grid-template-columns: 1fr !important;
-    gap: 24px !important;
-  }
-
-  /* Landing padding fix */
-  section {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-  }
-
   /* Docs layout fix */
   .docs-layout {
     flex-direction: column !important;
