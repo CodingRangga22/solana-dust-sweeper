@@ -58,7 +58,21 @@ const MagneticIcon = ({ children, href, label }: { children: React.ReactNode; hr
       aria-label={label}
       onMouseMove={handleMouse}
       onMouseLeave={reset}
-      style={{ x: springX, y: springY, width: 40, height: 40, borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.45)", transition: "border-color 0.2s, color 0.2s", cursor: "pointer" }}
+      style={{
+        x: springX,
+        y: springY,
+        width: 40,
+        height: 40,
+        borderRadius: 10,
+        background: "var(--glass-bg)",
+        border: "1px solid var(--glass-border)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "hsl(var(--muted-foreground))",
+        transition: "border-color 0.2s, color 0.2s, background 0.2s",
+        cursor: "pointer",
+      }}
       whileTap={{ scale: 0.9 }}
     >
       {children}
@@ -82,26 +96,30 @@ const PremiumFooter = () => {
 
   return (
     <footer
+      className="text-foreground"
       style={{
         position: "relative",
-        borderTop: "1px solid rgba(255,255,255,0.08)",
-        backgroundColor: "#040506",
+        borderTop: "1px solid hsl(var(--border))",
+        backgroundColor: "hsl(var(--background))",
         backgroundImage:
-          "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,255,0.06), transparent 60%), radial-gradient(ellipse 55% 55% at 15% 40%, rgba(255,255,255,0.03), transparent 62%), radial-gradient(ellipse 55% 55% at 85% 55%, rgba(255,255,255,0.025), transparent 64%)",
+          // Light: subtle ink vignette. Dark: keep tech-noir bloom.
+          "radial-gradient(ellipse 80% 60% at 50% 0%, color-mix(in oklab, hsl(var(--foreground)) 8%, transparent), transparent 62%), radial-gradient(ellipse 55% 55% at 15% 40%, color-mix(in oklab, hsl(var(--foreground)) 6%, transparent), transparent 68%), radial-gradient(ellipse 55% 55% at 85% 55%, color-mix(in oklab, hsl(var(--foreground)) 5%, transparent), transparent 70%)",
       }}
     >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-px"
         style={{
-          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)",
+          background:
+            "linear-gradient(90deg, transparent, color-mix(in oklab, hsl(var(--foreground)) 14%, transparent), transparent)",
         }}
       />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-20"
         style={{
-          background: "radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255,255,255,0.06), transparent 70%)",
+          background:
+            "radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in oklab, hsl(var(--foreground)) 8%, transparent), transparent 72%)",
         }}
       />
       <div style={{ padding: "64px 32px" }}>
@@ -118,7 +136,7 @@ const PremiumFooter = () => {
                   animate={{
                     filter: [
                       "brightness(1) drop-shadow(0 0 0px transparent)",
-                      "brightness(1.18) drop-shadow(0 0 16px rgba(255,255,255,0.18))",
+                      "brightness(1.12) drop-shadow(0 0 16px color-mix(in oklab, hsl(var(--foreground)) 18%, transparent))",
                       "brightness(1) drop-shadow(0 0 0px transparent)",
                     ],
                   }}
@@ -128,7 +146,7 @@ const PremiumFooter = () => {
                 </motion.div>
                 <BrandWordmark />
               </div>
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", lineHeight: 1.7 }}>
+              <p style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", lineHeight: 1.7 }}>
                 The most trusted Solana wallet cleaner. Reclaim hidden SOL from dust accounts.
               </p>
               <form onSubmit={handleSubscribe} className="space-y-2 relative z-10">
@@ -170,7 +188,7 @@ const PremiumFooter = () => {
                     <button
                       type="button"
                       onClick={item.onClick}
-                      style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}
+                      style={{ fontSize: 13, color: "hsl(var(--muted-foreground))" }}
                       className="hover:text-primary transition-colors duration-200 text-left w-full"
                     >
                       {item.label}
@@ -197,7 +215,7 @@ const PremiumFooter = () => {
                       {...(item.href.startsWith("http")
                         ? { target: "_blank", rel: "noopener noreferrer" }
                         : {})}
-                      style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}
+                      style={{ fontSize: 13, color: "hsl(var(--muted-foreground))" }}
                       className="hover:text-primary transition-colors duration-200 flex items-center gap-1.5 group"
                     >
                       {item.label}
@@ -238,10 +256,10 @@ const PremiumFooter = () => {
 
           {/* Bottom bar */}
           <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(255,255,255,0.2)" }}>
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "hsl(var(--muted-foreground))" }}>
               © 2026 Arsweep. All rights reserved.
             </p>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(255,255,255,0.2)" }}>
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "hsl(var(--muted-foreground))" }}>
               Built with ❤️ by Arsweep Team. <span className="text-primary">Secure</span> & <span className="text-primary">Open Source</span>.
             </p>
           </div>

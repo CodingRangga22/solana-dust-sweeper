@@ -32,7 +32,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
           <button
             onClick={() => isApp ? setOpen(true) : setMobileOpen(p => !p)}
             className="sm:hidden"
-            style={{ background: "none", border: "none", color: "rgba(255,255,255,0.6)", cursor: "pointer", padding: 6 }}
+            style={{ background: "none", border: "none", color: "hsl(var(--muted-foreground))", cursor: "pointer", padding: 6 }}
           >
             {mobileOpen && !isApp ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -48,7 +48,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
         <nav className="hidden sm:flex absolute left-1/2 -translate-x-1/2 items-center gap-1" aria-label="Main">
           {[["Docs","/docs"],["$ASWP","/token"],["Agent","/agent"],["x402","/x402"]].map(([l,p])=>(
             <Link key={p} to={p}
-              className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors duration-200"
+              className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-foreground/60 hover:text-foreground hover:bg-muted/60 transition-colors duration-200"
               style={{ textDecoration: "none" }}
             >{l}</Link>
           ))}
@@ -67,20 +67,20 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
 
       {/* Mobile Menu Dropdown (landing only) */}
       {mobileOpen && !isApp && (
-        <div className="sm:hidden border-b border-white/[0.06] bg-[rgba(5,8,13,0.96)] backdrop-blur-xl shadow-premium-sm" style={{
+        <div className="sm:hidden border-b border-border bg-background/90 backdrop-blur-xl shadow-premium-sm" style={{
           padding: "8px 20px 20px",
         }}>
           {[["Docs","/docs"],["$ASWP","/token"],["Agent","/agent"],["x402","/x402"]].map(([l,p])=>(
             <Link key={p} to={p} onClick={() => setMobileOpen(false)}
-              style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", textDecoration: "none", padding: "12px 8px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "block" }}
+              style={{ fontSize: 15, color: "hsl(var(--foreground))", textDecoration: "none", padding: "12px 8px", borderBottom: "1px solid hsl(var(--border))", display: "block" }}
             >{l}</Link>
           ))}
           <a href="https://discord.gg/D2rtvK3fBs" target="_blank" rel="noopener noreferrer"
             onClick={() => setMobileOpen(false)}
-            style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", textDecoration: "none", padding: "12px 8px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "block" }}
+            style={{ fontSize: 15, color: "hsl(var(--foreground))", textDecoration: "none", padding: "12px 8px", borderBottom: "1px solid hsl(var(--border))", display: "block" }}
           >Discord</a>
           <div style={{ paddingTop: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>Theme</span>
+            <span style={{ fontSize: 13, color: "hsl(var(--muted-foreground))" }}>Theme</span>
             <ThemeToggle />
           </div>
         </div>

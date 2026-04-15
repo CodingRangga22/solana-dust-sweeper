@@ -67,7 +67,7 @@ export function ChatMessage({
           }`}
         >
           {assistantUseArsweepLogo ? (
-            <ArsweepLogo className="h-5 w-5 drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]" />
+            <ArsweepLogo className="h-5 w-5 drop-shadow-[0_0_10px_rgba(148,163,184,0.28)]" />
           ) : (
             <Sparkles className="h-4 w-4 text-white" />
           )}
@@ -153,7 +153,7 @@ export function ChatMessage({
                   ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
                   li: ({ children }) => <li className="mb-1">{children}</li>,
                   a: ({ children, href }) => (
-                    <a href={href} target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:underline">
+                    <a href={href} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground hover:underline">
                       {children}
                     </a>
                   ),

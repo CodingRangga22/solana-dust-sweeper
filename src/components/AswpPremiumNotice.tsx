@@ -21,62 +21,62 @@ export default function AswpPremiumNotice({
   return (
     <section
       className={[
-        "rounded-2xl border border-white/[0.10] bg-white/[0.03] shadow-lg shadow-black/30 backdrop-blur-xl",
+        "rounded-2xl border border-border bg-card/85 shadow-[var(--shadow-elevated)] backdrop-blur-xl",
         compact ? "p-4" : "p-5",
       ].join(" ")}
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-white/[0.12] to-white/[0.04] ring-1 ring-white/[0.10]">
-          <Crown className="h-5 w-5 text-white/85" strokeWidth={1.8} />
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted ring-1 ring-border">
+          <Crown className="h-5 w-5 text-foreground/85" strokeWidth={1.8} />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/55">ASWP holder access</p>
-          <p className="mt-1 text-sm text-white/80">
-            Pemegang <span className="font-semibold text-white">$ASWP</span> dapat akses fitur Premium Agent{" "}
-            <span className="font-semibold text-white">gratis</span> lewat beberapa tier kepemilikan.
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">ASWP holder access</p>
+          <p className="mt-1 text-sm text-foreground">
+            Hold <span className="font-semibold">$ASWP</span> to unlock <span className="font-semibold">Premium Agent</span>{" "}
+            access for <span className="font-semibold">free</span> across multiple tiers.
           </p>
-          <p className="mt-2 text-[12px] leading-relaxed text-white/45">
-            Semakin besar holding, semakin banyak fitur Premium yang terbuka. Detail tier ditampilkan di dalam Agent saat kamu menjalankan fitur Premium.
+          <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
+            The more you hold, the more premium features unlock. Your current tier is shown inside the Agent when you run a premium tool.
           </p>
         </div>
       </div>
 
-      <div className="mt-4 rounded-xl border border-white/[0.08] bg-black/25 px-4 py-3">
+      <div className="mt-4 rounded-xl border border-border bg-background/60 px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="inline-flex items-center gap-2 text-xs text-white/65">
-            <Sparkles className="h-4 w-4 text-white/60" />
-            Status wallet kamu
+          <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+            <Sparkles className="h-4 w-4 text-muted-foreground" />
+            Wallet status
           </div>
           {aswp.loading ? (
-            <span className="text-[11px] text-white/45">Mengecek ASWP…</span>
+            <span className="text-[11px] text-muted-foreground">Checking ASWP…</span>
           ) : owner ? (
-            <span className="text-[11px] text-white/60">
+            <span className="text-[11px] text-muted-foreground">
               {aswp.aswpUsdValue == null ? (
                 <>
                   {aswp.aswpUiAmount != null && aswp.aswpUiAmount > 0 ? (
                     <>
-                      Tier: <span className="font-semibold text-white">{aswp.tierLabel ?? "ASWP Holder"}</span>
+                      Tier: <span className="font-semibold text-foreground">{aswp.tierLabel ?? "ASWP Holder"}</span>
                     </>
                   ) : (
-                    <>Harga belum terbaca · tier tidak bisa dihitung</>
+                    <>No ASWP detected</>
                   )}
                 </>
               ) : (
                 <>
                   {aswp.unlocked.size > 0 ? (
                     <>
-                      Akses Premium: <span className="font-semibold text-white">aktif</span>
+                      Premium access: <span className="font-semibold text-foreground">active</span>
                     </>
                   ) : (
                     <>
-                      Akses Premium: <span className="text-white/55">belum aktif</span>
+                      Premium access: <span className="text-muted-foreground">inactive</span>
                     </>
                   )}
                 </>
               )}
             </span>
           ) : (
-            <span className="text-[11px] text-white/45">Hubungkan wallet untuk cek tier</span>
+            <span className="text-[11px] text-muted-foreground">Connect a wallet to check your tier</span>
           )}
         </div>
       </div>

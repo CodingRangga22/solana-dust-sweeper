@@ -215,9 +215,9 @@ const WalletMenu = ({
           variant === "hero" ? "px-4 py-3" : "px-3 py-2",
         )}
         style={{
-          background: "rgba(255,255,255,0.08)",
-          border: "1px solid rgba(255,255,255,0.12)",
-          color: "#FFFFFF",
+          background: "var(--glass-bg)",
+          border: "1px solid var(--glass-border)",
+          color: "hsl(var(--foreground))",
           fontFamily: "IBM Plex Mono, monospace",
         }}
       >

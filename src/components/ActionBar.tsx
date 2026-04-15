@@ -59,7 +59,10 @@ const ActionBar = ({
             <div className="flex flex-col gap-3">
               <div className="text-sm text-foreground space-y-2 flex-1">
                 <p>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "rgba(255,255,255,0.5)" }}>Selected:</span>{" "}<span style={{ fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 600, color: "#FFFFFF" }}>{count} accounts</span>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "hsl(var(--muted-foreground))" }}>Selected:</span>{" "}
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 600, color: "hsl(var(--foreground))" }}>
+                    {count} accounts
+                  </span>
                 </p>
                 <div className="text-xs space-y-0.5 border-l-2 border-primary/30 pl-3">
                   <p className="font-semibold text-foreground">Transaction Summary</p>

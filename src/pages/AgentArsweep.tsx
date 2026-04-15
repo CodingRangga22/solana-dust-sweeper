@@ -32,6 +32,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from '@/components/ai-agent/ChatMessage';
 import { X402PaymentModal } from '@/components/ai-agent/X402PaymentModal';
+import ThemeToggle from '@/components/ThemeToggle';
 import { executeSweepNative, SweepAccount } from '@/lib/sweepNative';
 import { arsweepApi } from '@/services/arsweepApi';
 import { extractSolscanTxUrl, formatPremiumResult } from '@/lib/formatPremiumResult';
@@ -646,10 +647,10 @@ export default function AgentArsweep() {
         key={s.id}
         type="button"
         whileTap={{ scale: 0.98 }}
-        className="group w-full rounded-xl border border-white/[0.07] bg-white/[0.03] px-2.5 py-2.5 text-left shadow-sm shadow-black/20 transition-all hover:border-white/20 hover:bg-white/[0.06] hover:shadow-md hover:shadow-white/5"
+        className="group w-full rounded-xl border border-border bg-card/70 px-2.5 py-2.5 text-left shadow-sm transition-all hover:bg-muted/50"
         title={s.preview}
       >
-        <p className="truncate text-[11px] leading-snug text-white/65 transition-colors group-hover:text-white/85">
+        <p className="truncate text-[11px] leading-snug text-muted-foreground transition-colors group-hover:text-foreground">
           {s.preview}
         </p>
       </motion.button>
@@ -657,14 +658,14 @@ export default function AgentArsweep() {
 
   return (
     <div
-      className="relative flex overflow-hidden bg-[#040506]"
+      className="relative flex overflow-hidden bg-background text-foreground dark:bg-[#040506]"
       style={{ height: '100dvh' }}
     >
       <AgentAmbientBackground />
 
       {/* Desktop sidebar 240px */}
-      <aside className="relative z-10 hidden h-screen w-[260px] shrink-0 flex-col border-r border-white/[0.07] bg-gradient-to-b from-[#0a0c10]/95 via-[#06080b]/98 to-[#040506] shadow-[inset_-1px_0_0_0_rgba(255,255,255,0.04)] backdrop-blur-2xl md:flex">
-        <div className="border-b border-white/[0.06] bg-gradient-to-b from-white/[0.04] to-transparent p-4">
+      <aside className="relative z-10 hidden h-screen w-[260px] shrink-0 flex-col border-r border-border bg-card/70 backdrop-blur-2xl md:flex dark:border-white/[0.07] dark:bg-gradient-to-b dark:from-[#0a0c10]/95 dark:via-[#06080b]/98 dark:to-[#040506]">
+        <div className="border-b border-border bg-background/40 p-4 dark:border-white/[0.06] dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-transparent">
           <a href="/" className="mb-4 flex items-center gap-3 transition-opacity hover:opacity-90">
             <div className="relative">
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-white/15 via-transparent to-white/5 blur-md" />
@@ -673,21 +674,21 @@ export default function AgentArsweep() {
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                 className="relative"
               >
-                <ArsweepLogo className="h-8 w-8 drop-shadow-[0_0_14px_rgba(56,189,248,0.25)]" />
+                <ArsweepLogo className="h-8 w-8" />
               </motion.div>
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-bold tracking-tight text-white">Arsweep</p>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/55">AI Agent</p>
+              <p className="truncate text-sm font-bold tracking-tight text-foreground dark:text-white">Arsweep</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground dark:text-white/55">AI Agent</p>
             </div>
           </a>
           <motion.button
             type="button"
             whileTap={{ scale: 0.98 }}
             onClick={handleNewChat}
-            className="relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl border border-white/[0.1] bg-white/[0.06] text-sm font-semibold text-white/95 shadow-lg shadow-black/30 transition-all hover:border-white/25 hover:bg-white/[0.09] hover:shadow-white/10"
+            className="relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl border border-border bg-foreground text-background text-sm font-semibold shadow-lg transition-all hover:opacity-90 dark:border-white/[0.1] dark:bg-white/[0.06] dark:text-white/95 dark:hover:border-white/25 dark:hover:bg-white/[0.09]"
           >
-            <span className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-slate-500/10 opacity-80" />
+            <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-transparent to-white/0 opacity-0 dark:from-white/10 dark:to-slate-500/10 dark:opacity-80" />
             <Plus className="relative h-4 w-4" />
             <span className="relative">New Chat</span>
           </motion.button>
@@ -697,7 +698,7 @@ export default function AgentArsweep() {
           <div className="space-y-5 pr-1">
             {sessionsToday.length > 0 && (
               <div>
-                <p className="mb-2.5 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">
+                <p className="mb-2.5 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground dark:text-white/40">
                   Today
                 </p>
                 <div className="space-y-2">{renderSessionList(sessionsToday)}</div>
@@ -705,30 +706,32 @@ export default function AgentArsweep() {
             )}
             {sessionsPrev.length > 0 && (
               <div>
-                <p className="mb-2.5 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">
+                <p className="mb-2.5 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground dark:text-white/40">
                   Previous 7 days
                 </p>
                 <div className="space-y-2">{renderSessionList(sessionsPrev)}</div>
               </div>
             )}
             {sessionsToday.length === 0 && sessionsPrev.length === 0 && (
-              <p className="rounded-xl border border-dashed border-white/[0.08] bg-white/[0.02] px-3 py-6 text-center text-[11px] leading-relaxed text-white/35">
+              <p className="rounded-xl border border-dashed border-border bg-card/60 px-3 py-6 text-center text-[11px] leading-relaxed text-muted-foreground dark:border-white/[0.08] dark:bg-white/[0.02] dark:text-white/35">
                 No chat history yet — start below
               </p>
             )}
           </div>
         </ScrollArea>
 
-        <div className="border-t border-white/[0.06] bg-gradient-to-t from-black/40 to-transparent p-3">
+        <div className="border-t border-border bg-gradient-to-t from-muted/40 to-transparent p-3 dark:border-white/[0.06] dark:from-black/40">
           <div className="mb-3 flex items-center gap-2 px-0.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-white/15 to-slate-800/40 ring-1 ring-white/15">
-              <Crown className="h-3.5 w-3.5 text-white/85" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted ring-1 ring-border dark:bg-gradient-to-br dark:from-white/15 dark:to-slate-800/40 dark:ring-white/15">
+              <Crown className="h-3.5 w-3.5 text-foreground/85 dark:text-white/85" />
             </div>
             <div className="min-w-0 flex-1">
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">Premium</span>
-              <p className="text-[9px] text-white/35">Paid tools · x402</p>
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/80 dark:text-white/70">
+                Premium
+              </span>
+              <p className="text-[9px] text-muted-foreground dark:text-white/35">Paid tools · x402</p>
             </div>
-            <Zap className="h-3.5 w-3.5 shrink-0 text-white/45" />
+            <Zap className="h-3.5 w-3.5 shrink-0 text-muted-foreground dark:text-white/45" />
           </div>
           <div className="space-y-2">
             {premiumFeatures.map((f) => (
@@ -740,16 +743,16 @@ export default function AgentArsweep() {
                   setPaymentType(f.type);
                   setShowPayment(true);
                 }}
-                className="group flex w-full items-center gap-2.5 rounded-xl border border-white/[0.07] bg-white/[0.04] px-2.5 py-2.5 text-left shadow-sm shadow-black/25 transition-all hover:border-white/22 hover:bg-white/[0.07]"
+                className="group flex w-full items-center gap-2.5 rounded-xl border border-border bg-card/80 px-2.5 py-2.5 text-left shadow-sm transition-all hover:bg-muted/50 dark:border-white/[0.07] dark:bg-white/[0.04] dark:shadow-black/25 dark:hover:border-white/22 dark:hover:bg-white/[0.07]"
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.02] ring-1 ring-white/[0.08] transition-transform group-hover:scale-[1.02]">
-                  <f.Icon className="h-3.5 w-3.5 text-white/80" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted ring-1 ring-border transition-transform group-hover:scale-[1.02] dark:bg-gradient-to-br dark:from-white/[0.08] dark:to-white/[0.02] dark:ring-white/[0.08]">
+                  <f.Icon className="h-3.5 w-3.5 text-foreground/80 dark:text-white/80" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold text-white/90">{f.label}</p>
-                  <p className="truncate text-[9px] text-white/38">{f.desc}</p>
+                  <p className="text-[11px] font-semibold text-foreground dark:text-white/90">{f.label}</p>
+                  <p className="truncate text-[9px] text-muted-foreground dark:text-white/38">{f.desc}</p>
                 </div>
-                <span className="shrink-0 rounded-md bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white/85 ring-1 ring-white/15">
+                <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-foreground ring-1 ring-border dark:bg-white/[0.08] dark:text-white/85 dark:ring-white/15">
                   {f.price}
                 </span>
               </motion.button>
@@ -759,14 +762,14 @@ export default function AgentArsweep() {
       </aside>
 
       {/* Main */}
-      <div className="relative z-10 flex min-w-0 flex-1 flex-col bg-gradient-to-b from-transparent via-[#050608]/80 to-[#040506]">
-        <header className="relative flex h-[3.75rem] shrink-0 items-center justify-between border-b border-white/[0.07] bg-[#050608]/75 px-4 shadow-[0_1px_0_0_rgba(255,255,255,0.04)] backdrop-blur-xl md:px-5">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col bg-background/60 dark:bg-gradient-to-b dark:from-transparent dark:via-[#050608]/80 dark:to-[#040506]">
+        <header className="relative flex h-[3.75rem] shrink-0 items-center justify-between border-b border-border bg-background/70 px-4 backdrop-blur-xl md:px-5 dark:border-white/[0.07] dark:bg-[#050608]/75 dark:shadow-[0_1px_0_0_rgba(255,255,255,0.04)]">
           <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
             <motion.button
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={() => setShowMobileSidebar(true)}
-              className="rounded-xl p-2 text-white/45 transition-colors hover:bg-white/[0.08] hover:text-white md:hidden"
+              className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground md:hidden dark:text-white/45 dark:hover:bg-white/[0.08] dark:hover:text-white"
             >
               <Menu className="h-5 w-5" />
             </motion.button>
@@ -783,23 +786,23 @@ export default function AgentArsweep() {
               className={`inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider sm:px-2.5 sm:py-1 sm:text-[10px] ${
                 isDevnet
                   ? 'border-emerald-500/35 bg-emerald-500/[0.12] text-emerald-200/95 shadow-[0_0_20px_rgba(52,211,153,0.12)]'
-                  : 'border-sky-500/35 bg-sky-500/[0.12] text-sky-100/95 shadow-[0_0_20px_rgba(56,189,248,0.1)]'
+                  : 'border-border bg-card/80 text-muted-foreground'
               }`}
             >
               {isDevnet ? 'Devnet' : 'Mainnet'}
             </span>
             {publicKey ? (
               <span
-                className="flex max-w-[min(100vw-12rem,220px)] items-center gap-2 rounded-full border border-emerald-500/30 bg-gradient-to-r from-emerald-500/[0.12] to-emerald-600/[0.06] px-2.5 py-1 text-[11px] font-mono text-emerald-100/95 shadow-sm shadow-emerald-500/10"
+                className="flex max-w-[min(100vw-12rem,220px)] items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[11px] font-mono text-foreground shadow-sm dark:border-emerald-500/30 dark:bg-gradient-to-r dark:from-emerald-500/[0.12] dark:to-emerald-600/[0.06] dark:text-emerald-100/95 dark:shadow-emerald-500/10"
                 title={publicKey.toBase58()}
               >
-                <span className="relative inline-flex h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                <span className="relative inline-flex h-2 w-2 shrink-0 rounded-full bg-foreground shadow-[0_0_6px_rgba(0,0,0,0.25)] dark:bg-emerald-400 dark:shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
                 <span className="truncate">
                   {publicKey.toBase58().slice(0, 4)}…{publicKey.toBase58().slice(-4)}
                 </span>
               </span>
             ) : (
-              <span className="flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-2.5 py-1 text-[11px] text-white/45">
+              <span className="flex items-center gap-2 rounded-full border border-border bg-card/70 px-2.5 py-1 text-[11px] text-muted-foreground dark:border-white/[0.1] dark:bg-white/[0.04] dark:text-white/45">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/15 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-white/30" />
@@ -813,7 +816,7 @@ export default function AgentArsweep() {
               {needsPrivySolanaWallet ? (
                 <div className="flex flex-col items-end gap-1">
                   {showSwitchFromEvmHint ? (
-                    <span className="max-w-[210px] text-right text-[9px] leading-tight text-sky-200/85">
+                    <span className="max-w-[210px] text-right text-[9px] leading-tight text-muted-foreground dark:text-sky-200/85">
                       Arsweep pakai Solana. Hubungkan wallet Solana (Phantom, …).
                     </span>
                   ) : null}
@@ -824,7 +827,7 @@ export default function AgentArsweep() {
                       setAgentPrivyConnectBusy(true);
                       void connectSolana().finally(() => setAgentPrivyConnectBusy(false));
                     }}
-                    className="flex h-9 items-center gap-2 rounded-xl border border-white/12 bg-white/[0.08] px-3 text-xs font-medium text-white/85 transition-colors hover:bg-white/[0.12] disabled:opacity-60"
+                    className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted/60 disabled:opacity-60 dark:border-white/12 dark:bg-white/[0.08] dark:text-white/85 dark:hover:bg-white/[0.12]"
                     title="Hubungkan wallet Solana lewat Privy"
                   >
                     {agentPrivyConnectBusy ? (
@@ -839,7 +842,7 @@ export default function AgentArsweep() {
                 <button
                   type="button"
                   onClick={() => login()}
-                  className="flex h-9 items-center gap-2 rounded-xl border border-white/12 bg-white/[0.08] px-3 text-xs font-medium text-white/85 transition-colors hover:bg-white/[0.12]"
+                  className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted/60 dark:border-white/12 dark:bg-white/[0.08] dark:text-white/85 dark:hover:bg-white/[0.12]"
                 >
                   <span className="font-mono">Log in</span>
                 </button>
@@ -847,7 +850,7 @@ export default function AgentArsweep() {
                 <button
                   type="button"
                   onClick={() => setWalletMenuOpen((v) => !v)}
-                  className="flex h-9 items-center gap-2 rounded-xl border border-white/12 bg-white/[0.08] px-3 text-xs font-medium text-white/85 transition-colors hover:bg-white/[0.12]"
+                  className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted/60 dark:border-white/12 dark:bg-white/[0.08] dark:text-white/85 dark:hover:bg-white/[0.12]"
                   title="Wallet menu"
                 >
                   <span className="font-mono text-xs">
@@ -858,8 +861,8 @@ export default function AgentArsweep() {
               ) : null}
 
               {publicKey && walletMenuOpen && (
-                <div className="absolute right-0 top-full z-[70] mt-2 w-56 overflow-hidden rounded-xl border border-white/10 bg-black/90 shadow-xl backdrop-blur-md">
-                  <p className="truncate border-b border-white/10 px-4 py-2.5 font-mono text-[11px] text-white/45">
+                <div className="absolute right-0 top-full z-[70] mt-2 w-56 overflow-hidden rounded-xl border border-border bg-card shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-black/90">
+                  <p className="truncate border-b border-border px-4 py-2.5 font-mono text-[11px] text-muted-foreground dark:border-white/10 dark:text-white/45">
                     {publicKey.toBase58()}
                   </p>
 
@@ -875,9 +878,9 @@ export default function AgentArsweep() {
                         setWalletMenuOpen(false);
                       }
                     }}
-                    className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-white/85 transition-colors hover:bg-white/10"
+                    className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-muted/60 dark:text-white/85 dark:hover:bg-white/10"
                   >
-                    <Copy className="h-4 w-4 text-white/50" />
+                    <Copy className="h-4 w-4 text-muted-foreground dark:text-white/50" />
                     Copy Address
                   </button>
 
@@ -901,12 +904,15 @@ export default function AgentArsweep() {
                 </div>
               )}
             </div>
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
             <Button
               type="button"
               variant="ghost"
               size="icon"
               onClick={bumpFetchAndClear}
-              className="h-9 w-9 text-white/35 hover:bg-white/10 hover:text-white/70"
+              className="h-9 w-9 text-muted-foreground hover:bg-muted/60 hover:text-foreground dark:text-white/35 dark:hover:bg-white/10 dark:hover:text-white/70"
               title="Clear thread"
             >
               <Trash2 className="h-4 w-4" />
@@ -926,34 +932,34 @@ export default function AgentArsweep() {
                   <motion.div
                     animate={{ scale: [1, 1.4, 1], opacity: [0.18, 0.05, 0.18] }}
                     transition={{ duration: 4, repeat: Infinity }}
-                    className="absolute inset-0 rounded-full bg-white/12 blur-3xl"
+                    className="absolute inset-0 rounded-full bg-foreground/10 blur-3xl dark:bg-white/12"
                   />
                   <motion.div
                     animate={{ scale: [1, 1.25, 1], opacity: [0.12, 0.04, 0.12] }}
                     transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
-                    className="absolute inset-4 rounded-full bg-white/10 blur-2xl"
+                    className="absolute inset-4 rounded-full bg-foreground/5 blur-2xl dark:bg-white/10"
                   />
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
-                    className="absolute inset-3 rounded-full border border-dashed border-white/[0.12]"
+                    className="absolute inset-3 rounded-full border border-dashed border-border/80 dark:border-white/[0.12]"
                   />
                   <motion.div
                     animate={{ scale: [1, 1.03, 1] }}
                     transition={{ duration: 3.5, repeat: Infinity }}
-                    className="absolute inset-7 flex items-center justify-center rounded-2xl border border-white/[0.12] bg-gradient-to-br from-[#0c0f14]/95 to-black/90 shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_0_rgba(255,255,255,0.06)]"
+                    className="absolute inset-7 flex items-center justify-center rounded-2xl border border-border bg-card shadow-[0_10px_40px_rgba(0,0,0,0.18)] dark:border-white/[0.12] dark:bg-gradient-to-br dark:from-[#0c0f14]/95 dark:to-black/90 dark:shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_0_rgba(255,255,255,0.06)]"
                   >
-                    <ArsweepLogo className="h-11 w-11 drop-shadow-[0_0_22px_rgba(56,189,248,0.3)]" />
+                    <ArsweepLogo className="h-11 w-11" />
                   </motion.div>
                 </div>
-                <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/45">
-                  <Sparkles className="h-3 w-3 text-white/70" />
+                <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/45">
+                  <Sparkles className="h-3 w-3 text-muted-foreground dark:text-white/70" />
                   Solana-native
                 </p>
-                <h2 className="mb-2 bg-gradient-to-br from-white via-white to-white/55 bg-clip-text text-3xl font-bold tracking-tight text-transparent md:text-[2rem] md:leading-tight">
+                <h2 className="mb-2 text-3xl font-bold tracking-tight text-foreground md:text-[2rem] md:leading-tight dark:bg-gradient-to-br dark:from-white dark:via-white dark:to-white/55 dark:bg-clip-text dark:text-transparent">
                   Arsweep AI
                 </h2>
-                <p className="mx-auto mb-10 max-w-md font-mono text-xs leading-relaxed text-white/42">
+                <p className="mx-auto mb-10 max-w-md font-mono text-xs leading-relaxed text-muted-foreground dark:text-white/42">
                   Your intelligent Solana wallet assistant
                 </p>
                 <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3 px-1 sm:grid-cols-3">
@@ -967,16 +973,16 @@ export default function AgentArsweep() {
                       whileHover={{ scale: 1.02, y: -3 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={s.action}
-                      className="group relative overflow-hidden rounded-2xl border border-white/[0.1] bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-4 text-left shadow-lg shadow-black/40 transition-all hover:border-white/25 hover:shadow-xl hover:shadow-white/10"
+                      className="group relative overflow-hidden rounded-2xl border border-border bg-card/85 p-4 text-left shadow-lg transition-all hover:bg-muted/40 dark:border-white/[0.1] dark:bg-gradient-to-br dark:from-white/[0.07] dark:to-white/[0.02] dark:shadow-black/40 dark:hover:border-white/25 dark:hover:shadow-white/10"
                     >
-                      <span className="absolute inset-0 bg-gradient-to-br from-white/0 via-transparent to-slate-400/0 opacity-0 transition-opacity group-hover:opacity-100 group-hover:from-white/10 group-hover:to-slate-500/5" />
-                      <div className="relative mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-white/12 to-white/[0.04] ring-1 ring-white/[0.1]">
-                        <s.Icon className="h-5 w-5 text-white/90" strokeWidth={2} />
+                      <span className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-transparent opacity-0 transition-opacity dark:from-white/0 dark:to-slate-400/0 group-hover:opacity-100 dark:group-hover:from-white/10 dark:group-hover:to-slate-500/5" />
+                      <div className="relative mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-muted ring-1 ring-border dark:bg-gradient-to-br dark:from-white/12 dark:to-white/[0.04] dark:ring-white/[0.1]">
+                        <s.Icon className="h-5 w-5 text-foreground dark:text-white/90" strokeWidth={2} />
                       </div>
-                      <p className="relative mb-1 text-xs font-semibold tracking-tight text-white/92">
+                      <p className="relative mb-1 text-xs font-semibold tracking-tight text-foreground dark:text-white/92">
                         {s.text}
                       </p>
-                      <p className="relative text-[10px] leading-relaxed text-white/40">{s.desc}</p>
+                      <p className="relative text-[10px] leading-relaxed text-foreground dark:text-white/40">{s.desc}</p>
                     </motion.button>
                   ))}
                 </div>
@@ -1033,13 +1039,13 @@ export default function AgentArsweep() {
           </div>
         </div>
 
-        <div className="relative shrink-0 border-t border-white/[0.07] bg-[#050608]/90 p-3 shadow-[0_-12px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/15 before:to-transparent md:px-6 md:pb-5 md:pt-4 mb-[calc(env(safe-area-inset-bottom)+8px)]">
+        <div className="relative shrink-0 border-t border-border bg-background/80 p-3 backdrop-blur-xl md:px-6 md:pb-5 md:pt-4 mb-[calc(env(safe-area-inset-bottom)+8px)] dark:border-white/[0.07] dark:bg-[#050608]/90 dark:shadow-[0_-12px_40px_rgba(0,0,0,0.45)] before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-foreground/15 before:to-transparent dark:before:via-white/15">
           <form
             onSubmit={handleSubmit}
             className="mx-auto w-full max-w-3xl pb-[env(safe-area-inset-bottom)]"
           >
-            <div className="relative rounded-2xl bg-gradient-to-br from-white/15 via-white/[0.05] to-white/[0.02] p-px shadow-2xl shadow-black/50 ring-1 ring-white/[0.08]">
-              <div className="relative rounded-[15px] bg-[#0a0c10]/95">
+            <div className="relative rounded-2xl bg-border p-px shadow-xl">
+              <div className="relative rounded-[15px] bg-card">
                 <Textarea
                   ref={textareaRef}
                   value={input}
@@ -1047,18 +1053,18 @@ export default function AgentArsweep() {
                   onKeyDown={handleKeyDown}
                   placeholder="Ask about your wallet, tokens, or Solana…"
                   disabled={isLoading}
-                  className="min-h-[56px] max-h-36 resize-none rounded-[15px] border-0 bg-transparent px-4 py-3.5 pr-16 text-sm text-white/92 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] placeholder:text-white/28 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="min-h-[56px] max-h-36 resize-none rounded-[15px] border-0 bg-transparent px-4 py-3.5 pr-16 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-white/92 dark:placeholder:text-white/28"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isLoading}
-                  className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-300 text-slate-900 shadow-lg shadow-black/30 transition-all hover:from-white hover:to-slate-200 disabled:opacity-30 disabled:shadow-none"
+                  className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-xl bg-foreground text-background shadow-lg transition-all hover:opacity-90 disabled:opacity-30 disabled:shadow-none dark:bg-gradient-to-br dark:from-slate-100 dark:to-slate-300 dark:text-slate-900 dark:hover:from-white dark:hover:to-slate-200"
                 >
                   <Send className="h-4 w-4" strokeWidth={2.25} />
                 </button>
               </div>
             </div>
-            <p className="mt-2.5 text-center font-mono text-[10px] tracking-wide text-white/32">
+            <p className="mt-2.5 text-center font-mono text-[10px] tracking-wide text-muted-foreground dark:text-white/32">
               Enter to send · Shift+Enter new line
             </p>
           </form>

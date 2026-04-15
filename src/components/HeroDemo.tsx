@@ -31,6 +31,19 @@ export default function HeroDemo() {
     { r: 160, speed: 0.6, size: 4, op: 0.14 },
   ];
 
+  const strokeSoft = "color-mix(in oklab, hsl(var(--foreground)) 16%, transparent)";
+  const strokeRing = "color-mix(in oklab, hsl(var(--foreground)) 26%, transparent)";
+  const strokeTick = "color-mix(in oklab, hsl(var(--foreground)) 38%, transparent)";
+
+  // Orb palette: red / green / yellow (requested).
+  const orbPalette = ["#ef4444", "#22c55e", "#eab308"]; // red-500, green-500, yellow-500
+  const orbFill = (i: number) => orbPalette[i % orbPalette.length];
+  const orbGlow = (i: number) => orbPalette[i % orbPalette.length];
+  const orbSoft = (i: number) => orbPalette[i % orbPalette.length];
+  const pillFill = "color-mix(in oklab, hsl(var(--background)) 78%, transparent)";
+  const pillStroke = "color-mix(in oklab, hsl(var(--foreground)) 18%, transparent)";
+  const pillText = "color-mix(in oklab, hsl(var(--foreground)) 50%, transparent)";
+
   return (
     <div className="relative mx-auto flex h-full min-h-[280px] w-full max-w-[520px] items-center justify-center overflow-visible py-2 sm:min-h-[320px] sm:py-4">
       <svg
@@ -49,7 +62,7 @@ export default function HeroDemo() {
               cx={CX}
               cy={CY}
               r={r}
-              stroke={i === 2 ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.045)"}
+              stroke={i === 2 ? strokeRing : strokeSoft}
               strokeWidth="1"
             />
           ))}
@@ -65,7 +78,7 @@ export default function HeroDemo() {
                 y1={CY + Math.sin(a) * 256}
                 x2={CX + Math.cos(a) * 264}
                 y2={CY + Math.sin(a) * 264}
-                stroke={i % 4 === 0 ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.05)"}
+                stroke={i % 4 === 0 ? strokeTick : strokeSoft}
                 strokeWidth={i % 4 === 0 ? 1.5 : 0.5}
               />
             );
@@ -78,8 +91,15 @@ export default function HeroDemo() {
           const y = CY + Math.sin(a) * orb.r;
           return (
             <g key={i}>
-              <circle cx={x} cy={y} r={orb.size * 2} fill={`rgba(255,255,255,${orb.op * 0.08})`} />
-              <circle cx={x} cy={y} r={orb.size} fill={`rgba(255,255,255,${orb.op})`} />
+              <circle cx={x} cy={y} r={orb.size * 2.2} fill={orbSoft(i)} opacity={Math.min(0.18, orb.op * 0.55)} />
+              <circle
+                cx={x}
+                cy={y}
+                r={orb.size}
+                fill={orbFill(i)}
+                opacity={Math.min(0.95, 0.55 + orb.op)}
+                style={{ filter: `drop-shadow(0 0 10px ${orbGlow(i)})` }}
+              />
             </g>
           );
         })}
@@ -89,7 +109,7 @@ export default function HeroDemo() {
             cx={CX}
             cy={CY}
             r={82 + Math.sin(t * 1.5) * 7}
-            stroke="rgba(255,255,255,0.06)"
+            stroke={strokeSoft}
             strokeWidth="1"
             fill="none"
           />
@@ -111,8 +131,8 @@ export default function HeroDemo() {
                   width={88}
                   height={20}
                   rx={10}
-                  fill="rgba(255,255,255,0.04)"
-                  stroke="rgba(255,255,255,0.08)"
+                  fill={pillFill}
+                  stroke={pillStroke}
                   strokeWidth="0.5"
                 />
                 <text
@@ -120,7 +140,7 @@ export default function HeroDemo() {
                   y={y + 4}
                   textAnchor="middle"
                   fontSize="10"
-                  fill="rgba(255,255,255,0.3)"
+                  fill={pillText}
                   fontFamily="IBM Plex Mono, monospace"
                 >
                   {text}

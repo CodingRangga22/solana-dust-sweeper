@@ -15,10 +15,11 @@ export default function BrandWordmark({ children = "ARSWEEP", className = "", si
   const sizeClass = size === "sm" ? "text-[13px] leading-tight" : "text-[15px] sm:text-[16px]";
   return (
     <span
-      className={`inline-block font-sans font-extrabold uppercase leading-none tracking-[-0.03em] text-white antialiased ${sizeClass} ${className}`}
+      className={`inline-block font-sans font-extrabold uppercase leading-none tracking-[-0.03em] antialiased text-foreground dark:text-white ${sizeClass} ${className}`}
       style={{
         fontFamily: "var(--font-landing-section)",
-        textShadow: "0 1px 2px rgba(0,0,0,0.9), 0 0 20px rgba(255,255,255,0.06)",
+        // Keep dark mode wordmark pure white; light mode gets subtle cyan sheen.
+        textShadow: "0 1px 0 rgba(255,255,255,0.35), 0 0 18px hsla(220,9%,46%,0.18)",
       }}
     >
       {children}

@@ -16,7 +16,17 @@ interface DailyData {
 
 const M: React.CSSProperties = { fontFamily: "var(--font-mono)" };
 
-function MiniChart({ data, color = "#FFFFFF" }: { data: number[]; color?: string }) {
+const C = {
+  fg: "hsl(var(--foreground))",
+  muted: "hsl(var(--muted-foreground))",
+  border: "hsl(var(--border))",
+  card: "hsl(var(--card))",
+  bg: "hsl(var(--background))",
+  teal: "var(--ar-teal)",
+  liveDot: "#22c55e",
+};
+
+function MiniChart({ data, color = C.fg }: { data: number[]; color?: string }) {
   if (data.length < 2) return null;
   const max = Math.max(...data, 0.001);
   const w = 200;
@@ -62,26 +72,26 @@ function RecentActivity({ items }: { items: SweepStat[] }) {
           <div key={i} style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "10px 0",
-            borderBottom: i < 5 ? "1px solid rgba(255,255,255,0.04)" : "none",
+            borderBottom: i < 5 ? `1px solid ${C.border}` : "none",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{
                 width: 6, height: 6, borderRadius: "50%",
-                background: "var(--ar-teal)",
-                boxShadow: "0 0 6px var(--ar-teal)",
+                background: C.teal,
+                boxShadow: `0 0 10px ${C.teal}`,
                 animation: i === 0 ? "pulse 2s infinite" : "none",
                 flexShrink: 0,
               }} />
-              <span style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{short}</span>
+              <span style={{ ...M, fontSize: 12, color: C.muted }}>{short}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <span style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
+              <span style={{ ...M, fontSize: 12, color: C.muted }}>
                 {item.total_accounts_swept} accounts
               </span>
-              <span style={{ ...M, fontSize: 12, color: "#FFFFFF", fontWeight: 500 }}>
+              <span style={{ ...M, fontSize: 12, color: C.fg, fontWeight: 600 }}>
                 +{item.total_sol_reclaimed.toFixed(4)} SOL
               </span>
-              <span style={{ ...M, fontSize: 10, color: "rgba(255,255,255,0.2)" }}>{time}</span>
+              <span style={{ ...M, fontSize: 10, color: C.muted }}>{time}</span>
             </div>
           </div>
         );
@@ -146,7 +156,7 @@ export default function LiveStatsSection() {
     const el = document.getElementById('yr-activity');
     if (!el) return;
     const obs = new IntersectionObserver(([entry]) => {
-      el.style.color = entry.isIntersecting ? 'var(--ar-yellow)' : '#FFFFFF';
+      el.style.color = entry.isIntersecting ? 'var(--ar-teal)' : C.fg;
     }, { threshold: 0.5, rootMargin: '0px 0px -80px 0px' });
     obs.observe(el);
     return () => obs.disconnect();
@@ -161,27 +171,27 @@ export default function LiveStatsSection() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 64 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--ar-teal)", boxShadow: "0 0 8px var(--ar-teal)", display: "inline-block" }} />
-            <span style={{ ...M, fontSize: 11, color: "var(--ar-teal)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Live</span>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.liveDot, boxShadow: `0 0 12px ${C.liveDot}`, display: "inline-block" }} />
+            <span style={{ ...M, fontSize: 11, color: C.teal, letterSpacing: "0.12em", textTransform: "uppercase" }}>Live</span>
           </div>
           <h2 className="ar-landing-section-title" style={{ fontSize: "clamp(28px,4vw,48px)", marginBottom: 12 }}>
-            Real-time <span id="yr-activity" style={{color:"#FFFFFF",transition:"color 0.6s ease"}}>Activity</span>
+            Real-time <span id="yr-activity" style={{color:C.fg,transition:"color 0.6s ease"}}>Activity</span>
           </h2>
-          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.6 }}>
             SOL being reclaimed across the Solana ecosystem right now.
           </p>
         </div>
 
         {/* Top stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, overflow: "hidden", marginBottom: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 1, background: C.border, border: `1px solid ${C.border}`, borderRadius: 16, overflow: "hidden", marginBottom: 24 }}>
           {[
             { label: "Total SOL Reclaimed", value: loading ? "..." : totals.sol.toFixed(4) + " SOL" },
             { label: "Accounts Closed", value: loading ? "..." : totals.accounts.toLocaleString() },
             { label: "Wallets Cleaned", value: loading ? "..." : totals.wallets.toLocaleString() },
           ].map(({ label, value }) => (
-            <div key={label} style={{ padding: "20px 16px", background: "rgba(11,15,20,0.95)", textAlign: "center" }}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.02em", marginBottom: 6 }}>{value}</div>
-              <div style={{ ...M, fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.06em", textTransform: "uppercase" }}>{label}</div>
+            <div key={label} style={{ padding: "20px 16px", background: C.card, textAlign: "center" }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: C.fg, letterSpacing: "-0.02em", marginBottom: 6 }}>{value}</div>
+              <div style={{ ...M, fontSize: 11, color: C.muted, letterSpacing: "0.06em", textTransform: "uppercase" }}>{label}</div>
             </div>
           ))}
         </div>
@@ -190,13 +200,13 @@ export default function LiveStatsSection() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
 
           {/* SOL Chart */}
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 16, padding: "28px 28px 20px" }}>
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: "28px 28px 20px", boxShadow: "var(--shadow-elevated)" }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
               <div>
-                <div style={{ ...M, fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>SOL Reclaimed (7 days)</div>
-                <div style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
+                <div style={{ ...M, fontSize: 11, color: C.muted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>SOL Reclaimed (7 days)</div>
+                <div style={{ fontSize: 26, fontWeight: 800, color: C.fg, letterSpacing: "-0.02em" }}>
                   {loading ? "..." : totals.sol.toFixed(4)}
-                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontWeight: 400, marginLeft: 6 }}>SOL</span>
+                  <span style={{ fontSize: 13, color: C.muted, fontWeight: 600, marginLeft: 6 }}>SOL</span>
                 </div>
               </div>
             </div>
@@ -211,7 +221,7 @@ export default function LiveStatsSection() {
                     <div key={d.date} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                       <div style={{
                         width: "100%", height: Math.max(pct * 0.72, 2),
-                        background: isLast ? "#FFFFFF" : "rgba(255,255,255,0.15)",
+                        background: isLast ? C.fg : "color-mix(in oklab, hsl(var(--foreground)) 18%, transparent)",
                         borderRadius: "3px 3px 0 0",
                         transition: "height 0.3s ease",
                         position: "relative",
@@ -219,13 +229,13 @@ export default function LiveStatsSection() {
                         {pct > 10 && (
                           <div style={{
                             position: "absolute", top: -18, left: "50%", transform: "translateX(-50%)",
-                            ...M, fontSize: 9, color: "rgba(255,255,255,0.5)", whiteSpace: "nowrap",
+                            ...M, fontSize: 9, color: C.muted, whiteSpace: "nowrap",
                           }}>
                             {d.sol > 0 ? d.sol.toFixed(2) : ""}
                           </div>
                         )}
                       </div>
-                      <span style={{ ...M, fontSize: 9, color: "rgba(255,255,255,0.25)" }}>{d.date.split(" ")[1]}</span>
+                      <span style={{ ...M, fontSize: 9, color: C.muted }}>{d.date.split(" ")[1]}</span>
                     </div>
                   );
                 })}
@@ -234,23 +244,23 @@ export default function LiveStatsSection() {
 
             {/* Line chart overlay */}
             <div style={{ marginTop: 8 }}>
-              <MiniChart data={solData} color="#FFFFFF" />
+              <MiniChart data={solData} color={C.teal} />
             </div>
           </div>
 
           {/* Recent Activity */}
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 16, padding: "28px" }}>
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: "28px", boxShadow: "var(--shadow-elevated)" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-              <div style={{ ...M, fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Recent Sweeps</div>
+              <div style={{ ...M, fontSize: 11, color: C.muted, letterSpacing: "0.08em", textTransform: "uppercase" }}>Recent Sweeps</div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--ar-teal)", display: "inline-block", animation: "pulse 2s infinite" }} />
-                <span style={{ ...M, fontSize: 10, color: "var(--ar-teal)" }}>LIVE</span>
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: C.teal, display: "inline-block", animation: "pulse 2s infinite" }} />
+                <span style={{ ...M, fontSize: 10, color: C.teal }}>LIVE</span>
               </div>
             </div>
             {loading ? (
-              <div style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.3)", textAlign: "center", padding: "20px 0" }}>Loading...</div>
+              <div style={{ ...M, fontSize: 12, color: C.muted, textAlign: "center", padding: "20px 0" }}>Loading...</div>
             ) : stats.length === 0 ? (
-              <div style={{ ...M, fontSize: 12, color: "rgba(255,255,255,0.3)", textAlign: "center", padding: "20px 0" }}>No activity yet</div>
+              <div style={{ ...M, fontSize: 12, color: C.muted, textAlign: "center", padding: "20px 0" }}>No activity yet</div>
             ) : (
               <RecentActivity items={stats} />
             )}

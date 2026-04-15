@@ -227,7 +227,7 @@ function AnalyzeView({ data }: { data: unknown }) {
                     return [fmtNum(v), full ?? ''];
                   }}
                 />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="#38bdf8" />
+                <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="rgba(148,163,184,0.9)" />
               </BarChart>
             </ResponsiveContainer>
           </div>

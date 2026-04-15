@@ -17,8 +17,8 @@ export interface Token {
 
 const SkeletonRow = () => (
   <div style={{ display: "flex", alignItems: "center", gap: 16, padding: 16 }} className="animate-pulse">
-    <div style={{ width: 18, height: 18, borderRadius: 4, background: "rgba(255,255,255,0.06)" }} />
-    <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.06)", flexShrink: 0 }} />
+    <div style={{ width: 18, height: 18, borderRadius: 4, background: "hsl(var(--muted))" }} />
+    <div style={{ width: 40, height: 40, borderRadius: "50%", background: "hsl(var(--muted))", flexShrink: 0 }} />
     <div className="flex-1 space-y-2">
       <div className="h-4 w-32 bg-muted rounded" />
       <div className="h-3 w-24 bg-muted rounded" />
@@ -35,7 +35,23 @@ const TokenLogo = ({ src, symbol }: { src: string | null; symbol: string }) => {
 
   if (!src || failed) {
     return (
-      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", flexShrink: 0, fontFamily: "var(--font-mono)" }}>
+      <div
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          background: "hsl(var(--muted))",
+          border: "1px solid hsl(var(--border))",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 12,
+          fontWeight: 600,
+          color: "hsl(var(--muted-foreground))",
+          flexShrink: 0,
+          fontFamily: "var(--font-mono)",
+        }}
+      >
         {symbol.slice(0, 2).toUpperCase()}
       </div>
     );
@@ -46,7 +62,15 @@ const TokenLogo = ({ src, symbol }: { src: string | null; symbol: string }) => {
       src={src}
       alt={symbol}
       onError={() => setFailed(true)}
-      style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)" }}
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: "50%",
+        objectFit: "cover",
+        flexShrink: 0,
+        border: "1px solid hsl(var(--border))",
+        background: "hsl(var(--muted))",
+      }}
     />
   );
 };
@@ -93,9 +117,22 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
               </div>
             )}
 
-            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, overflow: "hidden" }}>
+            <div className="surface-premium" style={{ borderRadius: 14, overflow: "hidden" }}>
               {/* Table header */}
-              <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", fontFamily: "var(--font-mono)", fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 16,
+                  padding: "12px 16px",
+                  borderBottom: "1px solid hsl(var(--border))",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 10,
+                  color: "hsl(var(--muted-foreground))",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                }}
+              >
                 <button
                   onClick={onSelectAll}
                   disabled={isDisabled || sweepableCount === 0}
@@ -143,20 +180,20 @@ const TokenList = ({ tokenAccounts, selectedIds, onToggle, onSelectAll, loading 
                         onClick={() => account.isSweepable && !isDisabled && onToggle(id)}
                         className={`flex items-center gap-3 px-4 py-3.5 transition-all duration-200 border-b-0 ${
                           account.isSweepable ? (isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer") : "cursor-default"
-                        } ${!isDisabled && account.isSweepable && (selected ? "bg-primary/5" : "hover:bg-muted/30 hover:shadow-[inset_0_0_30px_hsla(162,93%,51%,0.04)]")}`}
+                        } ${!isDisabled && account.isSweepable && (selected ? "bg-primary/5" : "hover:bg-muted/30")}`}
                       >
                         {/* Checkbox */}
                         <div className="w-5 h-5 shrink-0 flex items-center justify-center">
                           {account.isSweepable ? (
                             <div
                               className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 ${
-                                selected ? "bg-white/15 border-white/40" : "border-border"
+                                selected ? "bg-muted border-border" : "border-border"
                               }`}
                             >
                               {selected && <Check className="w-3 h-3 text-primary-foreground" />}
                             </div>
                           ) : (
-                            <div style={{ width: 18, height: 18, borderRadius: 4, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.04)" }} />
+                            <div style={{ width: 18, height: 18, borderRadius: 4, border: "1px solid hsl(var(--border))", background: "hsl(var(--muted))" }} />
                           )}
                         </div>
 

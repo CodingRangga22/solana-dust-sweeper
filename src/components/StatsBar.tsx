@@ -37,12 +37,31 @@ const StatsBar = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 + i * 0.1, duration: 0.5 }}
-            className="surface-premium rounded-2xl px-4 py-4 sm:px-5 text-center ring-1 ring-white/[0.04] transition-[box-shadow,background] duration-300 hover:ring-cyan-400/15 hover:shadow-glow"
+            className="surface-premium rounded-2xl px-4 py-4 sm:px-5 text-center ring-1 ring-border transition-[box-shadow,background] duration-300 hover:ring-ring/20 hover:shadow-glow"
           >
-            <stat.icon style={{ width: 18, height: 18, margin: "0 auto 8px", color: "rgba(255,255,255,0.45)" }} />
-            <AnimatedCounter value={stat.value} style={{ fontSize: "clamp(16px,2.5vw,22px)", fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.01em", fontFamily: "var(--font-mono)" }} />
+            <stat.icon className="mx-auto mb-2 h-[18px] w-[18px] text-muted-foreground" />
+            <AnimatedCounter
+              value={stat.value}
+              style={{
+                fontSize: "clamp(16px,2.5vw,22px)",
+                fontWeight: 700,
+                color: "hsl(var(--foreground))",
+                letterSpacing: "-0.01em",
+                fontFamily: "var(--font-mono)",
+              }}
+            />
             <div className="flex items-center justify-center gap-1 mt-1">
-              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-mono)", letterSpacing: "0.04em", marginTop: 4 }}>{stat.label}</p>
+              <p
+                style={{
+                  fontSize: 11,
+                  color: "hsl(var(--muted-foreground))",
+                  fontFamily: "var(--font-mono)",
+                  letterSpacing: "0.04em",
+                  marginTop: 4,
+                }}
+              >
+                {stat.label}
+              </p>
               {stat.hasTooltip && (
                 <div className="relative">
                   <Info

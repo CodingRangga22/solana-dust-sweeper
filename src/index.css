@@ -14,11 +14,11 @@
     --arsweep-dock-safe: calc(var(--arsweep-dock-height) + env(safe-area-inset-bottom));
   }
 
-  /* Light mode - clean white/slate (#F9FAFB bg, #111827 text) */
+  /* Light mode - clean pure white (high contrast) */
   :root,
   .light {
-    --background: 210 20% 98%; /* #F9FAFB */
-    --foreground: 222 47% 11%; /* #111827 */
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 222 47% 8%; /* near-black */
 
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
@@ -26,14 +26,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 162 93% 41%;
+    /* Neutral primary (gray) */
+    --primary: 220 9% 46%; /* ~slate-500 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 271 100% 55%;
-    --secondary-foreground: 0 0% 100%;
+    /* Dark ink secondary to push black/cyan */
+    --secondary: 222 47% 11%;
+    --secondary-foreground: 210 20% 98%;
 
-    --muted: 210 20% 94%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 18% 34%;
 
     --accent: 271 100% 55%;
     --accent-foreground: 0 0% 100%;
@@ -41,30 +43,47 @@
     --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 214 20% 90%;
-    --input: 214 20% 90%;
-    --ring: 162 93% 41%;
+    --border: 214 18% 86%;
+    --input: 214 18% 86%;
+    --ring: 220 9% 46%;
 
     --radius: 1rem;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 162 93% 41%;
+    --sidebar-primary: 220 9% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 20% 94%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 20% 90%;
-    --sidebar-ring: 162 93% 41%;
+    --sidebar-ring: 220 9% 46%;
 
-    /* Light mode glass - subtle, light-tinted */
-    --glass-bg: hsla(0, 0%, 0%, 0.03);
-    --glass-border: hsla(0, 0%, 0%, 0.06);
-    --glass-hover: hsla(0, 0%, 0%, 0.06);
-    --gradient-primary: linear-gradient(135deg, hsl(162 93% 41%), hsl(271 100% 55%));
-    --gradient-primary-hover: linear-gradient(135deg, hsl(162 93% 38%), hsl(271 100% 50%));
-    --glow-primary: 0 0 40px hsla(162, 93%, 51%, 0.2);
-    --glow-secondary: 0 0 40px hsla(271, 100%, 63%, 0.2);
-    --shadow-elevated: 0 8px 32px hsla(0, 0%, 0%, 0.08);
+    /* Light mode glass - crisp white glass */
+    --glass-bg: hsla(0, 0%, 100%, 0.72);
+    --glass-border: hsla(222, 47%, 8%, 0.10);
+    --glass-hover: hsla(0, 0%, 100%, 0.86);
+    /* Gradient: ink + gray (no cyan) */
+    --gradient-primary: linear-gradient(135deg, hsl(222 47% 11%), hsl(220 9% 46%));
+    --gradient-primary-hover: linear-gradient(135deg, hsl(222 47% 9%), hsl(220 9% 42%));
+    --glow-primary: 0 0 40px hsla(220, 9%, 46%, 0.22);
+    --glow-secondary: 0 0 28px hsla(222, 47%, 11%, 0.12);
+    --shadow-elevated: 0 18px 60px hsla(222, 47%, 8%, 0.10);
+
+    /* Arsweep canvas base for light theme */
+    --ar-base: #ffffff;
+
+    /* Brand accents for light (higher contrast) */
+    --ar-white: #0b1220;
+    --ar-yellow: #0b1220;
+    --ar-gray1: rgba(15, 23, 42, 0.64);
+    --ar-gray2: rgba(15, 23, 42, 0.44);
+    --ar-gray3: rgba(15, 23, 42, 0.22);
+    --ar-border: rgba(2, 6, 23, 0.08);
+    --ar-border2: rgba(2, 6, 23, 0.12);
+    --ar-surface: rgba(255,255,255,0.92);
+    --ar-teal: hsl(220 9% 46%);
+    --ar-teal-soft: hsla(220, 9%, 46%, 0.12);
+    --ar-teal-ring: hsla(220, 9%, 46%, 0.22);
   }
 
   /* Dark mode - tech-noir (default) */
@@ -78,7 +97,8 @@
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 162 93% 51%;
+    /* Neutral primary (gray) */
+    --primary: 220 9% 70%; /* brighter in dark */
     --primary-foreground: 0 0% 2%;
 
     --secondary: 271 100% 63%;
@@ -95,26 +115,43 @@
 
     --border: 0 0% 14%;
     --input: 0 0% 14%;
-    --ring: 162 93% 51%;
+    --ring: 220 9% 70%;
 
     --sidebar-background: 0 0% 4%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 162 93% 51%;
+    --sidebar-primary: 220 9% 70%;
     --sidebar-primary-foreground: 0 0% 2%;
     --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 14%;
-    --sidebar-ring: 162 93% 51%;
+    --sidebar-ring: 220 9% 70%;
 
     /* Dark mode glass - darker, more opaque */
     --glass-bg: hsla(0, 0%, 100%, 0.04);
     --glass-border: hsla(0, 0%, 100%, 0.08);
     --glass-hover: hsla(0, 0%, 100%, 0.08);
-    --gradient-primary: linear-gradient(135deg, hsl(162 93% 51%), hsl(271 100% 63%));
-    --gradient-primary-hover: linear-gradient(135deg, hsl(162 93% 45%), hsl(271 100% 55%));
-    --glow-primary: 0 0 40px hsla(162, 93%, 51%, 0.15);
-    --glow-secondary: 0 0 40px hsla(271, 100%, 63%, 0.15);
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 92%), hsl(220 9% 70%));
+    --gradient-primary-hover: linear-gradient(135deg, hsl(0 0% 88%), hsl(220 9% 64%));
+    --glow-primary: 0 0 40px hsla(220, 9%, 70%, 0.14);
+    --glow-secondary: 0 0 40px hsla(0, 0%, 100%, 0.08);
     --shadow-elevated: 0 8px 32px hsla(0, 0%, 0%, 0.4);
+
+    /* Arsweep canvas base for dark theme */
+    --ar-base: #000000;
+
+    /* Brand accents for dark */
+    /* "teal" accent becomes neutral gray in dark too */
+    --ar-teal: hsl(220 9% 76%);
+    --ar-yellow: #e5e5e5;
+    --ar-white: #f4f6f8;
+    --ar-gray1: rgba(255,255,255,0.55);
+    --ar-gray2: rgba(255,255,255,0.35);
+    --ar-gray3: rgba(255,255,255,0.2);
+    --ar-border: rgba(255,255,255,0.08);
+    --ar-border2: rgba(255,255,255,0.14);
+    --ar-surface: rgba(255,255,255,0.04);
+    --ar-teal-soft: hsla(220, 9%, 76%, 0.10);
+    --ar-teal-ring: hsla(220, 9%, 76%, 0.22);
   }
 }
 
@@ -145,12 +182,12 @@
   }
 
   .ar-h1 {
-    @apply text-white font-extrabold tracking-[-0.03em] leading-[1.02];
+    @apply text-foreground font-extrabold tracking-[-0.03em] leading-[1.02];
     font-size: clamp(34px, 4.6vw, 62px);
   }
 
   .ar-subtitle {
-    @apply text-white/55 leading-relaxed;
+    @apply text-muted-foreground leading-relaxed;
     font-size: clamp(15px, 1.2vw, 17px);
   }
 
@@ -160,31 +197,31 @@
   }
 
   .ar-btn-primary {
-    @apply ar-btn bg-white text-[#05080d] border border-white/20 shadow-[0_10px_40px_rgba(0,0,0,0.35)];
+    @apply ar-btn bg-foreground text-background border border-border shadow-[0_10px_40px_rgba(0,0,0,0.18)];
   }
 
   .ar-btn-primary:hover {
-    @apply bg-white/95;
+    @apply opacity-90;
   }
 
   .ar-btn-secondary {
-    @apply ar-btn bg-white/[0.06] text-white border border-white/15;
+    @apply ar-btn bg-muted text-foreground border border-border;
   }
 
   .ar-btn-secondary:hover {
-    @apply bg-white/[0.09] border-white/30;
+    @apply opacity-90;
   }
 
   .ar-btn-ghost {
-    @apply ar-btn bg-transparent text-white/60 border border-white/10;
+    @apply ar-btn bg-transparent text-muted-foreground border border-border;
   }
 
   .ar-btn-ghost:hover {
-    @apply text-white border-white/25 bg-white/[0.04];
+    @apply text-foreground bg-muted;
   }
 
   .ar-section-kicker {
-    @apply text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45;
+    @apply text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground;
   }
 
   .ar-section {
@@ -195,9 +232,9 @@
   .ar-marquee {
     position: relative;
     overflow: hidden;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(0, 0, 0, 0.86);
+    border-top: 1px solid hsl(var(--border));
+    border-bottom: 1px solid hsl(var(--border));
+    background: color-mix(in oklab, hsl(var(--background)) 88%, black 12%);
     backdrop-filter: blur(18px) saturate(160%);
     -webkit-backdrop-filter: blur(18px) saturate(160%);
   }
@@ -241,10 +278,10 @@
     gap: 10px;
     padding: 10px 14px;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    background: rgba(255, 255, 255, 0.04);
-    color: rgba(255, 255, 255, 0.7);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+    background: color-mix(in oklab, hsl(var(--card)) 75%, transparent);
+    color: color-mix(in oklab, hsl(var(--foreground)) 70%, transparent);
+    box-shadow: inset 0 1px 0 color-mix(in oklab, hsl(var(--foreground)) 12%, transparent);
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.12em;
@@ -274,18 +311,18 @@
     width: 6px;
     height: 6px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 0 14px rgba(255, 255, 255, 0.25);
+    background: color-mix(in oklab, hsl(var(--foreground)) 85%, transparent);
+    box-shadow: 0 0 14px color-mix(in oklab, hsl(var(--foreground)) 25%, transparent);
   }
 
   .ar-marquee__label {
-    color: rgba(255, 255, 255, 0.85);
+    color: color-mix(in oklab, hsl(var(--foreground)) 85%, transparent);
     font-weight: 700;
     letter-spacing: 0.08em;
   }
 
   .ar-marquee__sub {
-    color: rgba(255, 255, 255, 0.38);
+    color: color-mix(in oklab, hsl(var(--muted-foreground)) 90%, transparent);
     letter-spacing: 0.06em;
     font-weight: 600;
   }
@@ -355,9 +392,9 @@
 
   /* Wallet Adapter button override (match Landing "Launch App" style) */
   .arsweep-wallet-button.wallet-adapter-button {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    color: #ffffff !important;
+    background: var(--glass-bg) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: hsl(var(--foreground)) !important;
     font-family: var(--font-mono) !important;
     font-size: 13px !important;
     line-height: 1 !important;
@@ -368,8 +405,8 @@
   }
 
   .arsweep-wallet-button.wallet-adapter-button:hover {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(255, 255, 255, 0.28) !important;
+    background: var(--glass-hover) !important;
+    border-color: color-mix(in oklab, hsl(var(--ring)) 35%, var(--glass-border)) !important;
   }
 }
 
@@ -378,21 +415,8 @@
   content: attr(data-brand);
 }
 
-/* ── Arsweep brand — Orbit-inverted: black canvas + white blueprint grid (no cyan) ── */
+/* ── Arsweep brand — shared vars (theme-specific base is in .light/.dark above) ── */
 :root {
-  --ar-base: #000000;
-  /* Monochrome accents (replace former teal/cyan) */
-  --ar-teal: #ffffff;
-  --ar-yellow: #e5e5e5;
-  --ar-white: #f4f6f8;
-  --ar-gray1: rgba(255,255,255,0.55);
-  --ar-gray2: rgba(255,255,255,0.35);
-  --ar-gray3: rgba(255,255,255,0.2);
-  --ar-border: rgba(255,255,255,0.08);
-  --ar-border2: rgba(255,255,255,0.14);
-  --ar-surface: rgba(255,255,255,0.04);
-  --ar-teal-soft: rgba(255, 255, 255, 0.1);
-  --ar-teal-ring: rgba(255, 255, 255, 0.22);
   /* Background (requested): pure black, no grid */
   --ar-ambient-gradients: none;
   --ar-page-bg-image: none;
@@ -409,7 +433,7 @@
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.06;
-  color: #ffffff;
+  color: hsl(var(--foreground));
 }
 
 /* Full-viewport ambient — grid comes from `body`; avoid stacking a second grid */
@@ -422,19 +446,19 @@
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  color: var(--ar-white);
+  color: hsl(var(--foreground));
   background-color: transparent;
 }
 
 /* Top nav — used by Landing inline header + can mirror Header */
 .arsweep-premium-nav {
-  background: rgba(0, 0, 0, 0.72);
+  background: color-mix(in oklab, hsl(var(--background)) 92%, black 8%);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid hsl(var(--border));
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 10px 40px rgba(0, 0, 0, 0.10),
+    inset 0 1px 0 color-mix(in oklab, hsl(var(--foreground)) 6%, transparent);
 }
 
 .arsweep-premium-nav::after {
@@ -444,21 +468,17 @@
   right: 0;
   bottom: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, hsl(var(--foreground)) 12%, transparent), transparent);
   pointer-events: none;
 }
 
 /* Elevated surfaces — cards, modals */
 .surface-premium {
-  background: linear-gradient(
-    165deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(255, 255, 255, 0.02) 100%
-  );
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in oklab, hsl(var(--card)) 92%, transparent);
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 80%, transparent);
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 16px 56px rgba(0, 0, 0, 0.10),
+    inset 0 1px 0 color-mix(in oklab, hsl(var(--foreground)) 7%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -479,25 +499,33 @@
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 120% 85% at 50% 45%, transparent 0%, rgba(0, 0, 0, 0.35) 100%),
+    radial-gradient(ellipse 120% 85% at 50% 45%, transparent 0%, rgba(0, 0, 0, 0.12) 100%),
     linear-gradient(to bottom, transparent 0%, transparent 48%, var(--ar-base) 100%);
 }
 
-/* Global backdrop — Orbit-inverted grid */
+/* Global backdrop — theme-aware canvas (Syraa-like light, tech-noir dark) */
 body {
-  background-color: var(--ar-base);
+  background-color: hsl(var(--background));
   background-image: none;
   background-size: auto;
   position: relative;
 }
 
-/* Edge soften so grid fades like reference (body grid stays; this dims borders toward viewport edge) */
+.dark body {
+  background-color: var(--ar-base);
+}
+
+/* Edge soften */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  background: radial-gradient(ellipse 100% 85% at 50% 40%, transparent 0%, rgba(0, 0, 0, 0.06) 100%);
+}
+
+.dark body::before {
   background: radial-gradient(ellipse 100% 85% at 50% 40%, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
 }
 

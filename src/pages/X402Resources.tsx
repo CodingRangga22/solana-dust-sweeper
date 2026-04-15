@@ -7,6 +7,7 @@ import AswpPremiumNotice from "@/components/AswpPremiumNotice";
 import { useBanner } from "@/components/BannerProvider";
 import type { X402HealthResponse } from "@/services/arsweepApi";
 import { priceUsdcFor } from "@/hooks/useX402Payment";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const X402SCAN_SERVER_URL = "https://www.x402scan.com/server/02e3af55-8ecc-4d78-a82e-077fbc1cf790";
 
@@ -202,8 +203,8 @@ export default function X402Resources() {
           right: 0,
           zIndex: 50,
           top: bannerHeight,
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-          background: "rgba(2,6,15,0.88)",
+          borderBottom: "1px solid hsl(var(--border))",
+          background: "color-mix(in oklab, hsl(var(--background)) 92%, black 8%)",
           backdropFilter: "blur(20px)",
         }}
       >
@@ -235,8 +236,8 @@ export default function X402Resources() {
                 onClick={() => navigate(path)}
                 style={{
                   fontSize: 14,
-                  color: path === "/x402" ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.5)",
-                  background: path === "/x402" ? "rgba(255,255,255,0.08)" : "transparent",
+                  color: path === "/x402" ? "hsl(var(--foreground))" : "hsl(var(--muted-foreground))",
+                  background: path === "/x402" ? "hsl(var(--muted))" : "transparent",
                   border: "none",
                   borderRadius: 8,
                   padding: "6px 12px",
@@ -248,24 +249,27 @@ export default function X402Resources() {
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => navigate("/app")}
-            style={{
-              ...M,
-              fontSize: 13,
-              color: "#f4fbfb",
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(34,211,238,0.18)",
-              borderRadius: 8,
-              padding: "6px 14px",
-              cursor: "pointer",
-            }}
-          >
-            Launch App
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <button
+              type="button"
+              onClick={() => navigate("/app")}
+              style={{
+                ...M,
+                fontSize: 13,
+                color: "hsl(var(--foreground))",
+                background: "hsl(var(--card))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: 8,
+                padding: "6px 14px",
+                cursor: "pointer",
+              }}
+            >
+              Launch App
+            </button>
+            <ThemeToggle />
+          </div>
         </div>
-        <div className="flex gap-2 overflow-x-auto border-t border-white/[0.06] px-4 py-2.5 sm:hidden" style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div className="flex gap-2 overflow-x-auto border-t border-border px-4 py-2.5 sm:hidden" style={{ maxWidth: 1200, margin: "0 auto" }}>
           {[
             ["Docs", "/docs"],
             ["$ASWP", "/token"],
@@ -278,8 +282,8 @@ export default function X402Resources() {
               onClick={() => navigate(path)}
               className="shrink-0 rounded-lg px-3 py-1.5 text-[13px]"
               style={{
-                color: path === "/x402" ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.5)",
-                background: path === "/x402" ? "rgba(255,255,255,0.08)" : "transparent",
+                color: path === "/x402" ? "hsl(var(--foreground))" : "hsl(var(--muted-foreground))",
+                background: path === "/x402" ? "hsl(var(--muted))" : "transparent",
                 border: "none",
               }}
             >
@@ -294,39 +298,39 @@ export default function X402Resources() {
 
       <main className="relative z-[2] mx-auto max-w-[900px] px-5" style={{ paddingTop: `${88 + bannerHeight}px` }}>
         {/* Hero — serif + mono, distinct from generic “resources marketplace” pages */}
-        <header className="mb-12 border-b border-white/[0.07] pb-10">
-          <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-white/38" style={M}>
+        <header className="mb-12 border-b border-border pb-10">
+          <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-muted-foreground" style={M}>
             Solana · USDC · x402
           </p>
           <h1
-            className="text-[clamp(1.75rem,4.5vw,2.75rem)] font-normal leading-[1.12] text-white"
+            className="text-[clamp(1.75rem,4.5vw,2.75rem)] font-normal leading-[1.12] text-foreground"
             style={{ fontFamily: "var(--font-display), Georgia, serif" }}
           >
             Paid agent endpoints
           </h1>
-          <p className="mt-5 max-w-[34rem] text-[15px] leading-[1.7] text-white/42">
+          <p className="mt-5 max-w-[34rem] text-[15px] leading-[1.7] text-muted-foreground">
             Each call below is billed per request through the{" "}
-            <a className="text-white/75 underline-offset-[5px] hover:underline" href="https://www.x402.org/" target="_blank" rel="noreferrer">
+            <a className="text-foreground/80 underline-offset-[5px] hover:underline hover:text-foreground" href="https://www.x402.org/" target="_blank" rel="noreferrer">
               x402
             </a>{" "}
             payment flow on mainnet (USDC). Trigger them from{" "}
-            <button type="button" className="text-white/75 underline-offset-4 hover:underline" onClick={() => navigate("/agent")}>
+            <button type="button" className="text-foreground/80 underline-offset-4 hover:underline hover:text-foreground" onClick={() => navigate("/agent")}>
               Agent
             </button>{" "}
             once your wallet is connected — no separate “app store” checkout.
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-white/38" style={M}>
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-muted-foreground" style={M}>
             <a
               href={X402SCAN_SERVER_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-white/70 transition-colors hover:text-white"
+              className="inline-flex items-center gap-1.5 text-foreground/75 transition-colors hover:text-foreground"
             >
               Registry: x402scan
               <ExternalLink className="h-3.5 w-3.5 opacity-70" aria-hidden />
             </a>
-            <span className="hidden text-white/20 sm:inline">·</span>
-            <span className="text-white/30">Facilitator settles on-chain after 402 + proof</span>
+            <span className="hidden text-muted-foreground/40 sm:inline">·</span>
+            <span className="text-muted-foreground">Facilitator settles on-chain after 402 + proof</span>
           </div>
         </header>
 
@@ -335,22 +339,22 @@ export default function X402Resources() {
         </div>
 
         {/* CTA strip — narrow rail, not a fat marketplace banner */}
-        <div className="mb-10 flex flex-col gap-3 border-l-2 border-white/20 bg-white/[0.02] py-3 pl-4 pr-4 sm:flex-row sm:items-center sm:justify-between sm:pl-5">
-          <p className="text-[14px] leading-relaxed text-white/55">
+        <div className="mb-10 flex flex-col gap-3 border-l-2 border-border bg-muted/40 py-3 pl-4 pr-4 sm:flex-row sm:items-center sm:justify-between sm:pl-5">
+          <p className="text-[14px] leading-relaxed text-foreground/80">
             Ready to run a tool? Agent holds the wallet session and signs the USDC leg for you.
           </p>
           <button
             type="button"
             onClick={() => navigate("/agent")}
-            className="shrink-0 self-start rounded-lg px-4 py-2 text-[13px] font-medium text-[#040506] sm:self-auto"
-            style={{ ...M, background: "#e8fdf9", border: "1px solid rgba(34,211,238,0.35)" }}
+            className="shrink-0 self-start rounded-lg border border-border bg-card px-4 py-2 text-[13px] font-medium text-foreground shadow-sm transition-colors hover:bg-muted sm:self-auto"
+            style={M}
           >
             Go to Agent
           </button>
         </div>
 
         {/* Underline tabs — not pill chips */}
-        <div className="mb-2 flex flex-wrap gap-0 border-b border-white/[0.08]">
+        <div className="mb-2 flex flex-wrap gap-0 border-b border-border">
           {FILTERS.map((f) => (
             <button
               key={f.id}
@@ -359,8 +363,8 @@ export default function X402Resources() {
               className="-mb-px border-b-2 px-4 py-3 text-[13px] transition-colors sm:px-5"
               style={{
                 ...M,
-                borderColor: filter === f.id ? "rgba(34,211,238,0.75)" : "transparent",
-                color: filter === f.id ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0.38)",
+                borderColor: filter === f.id ? "hsl(var(--foreground))" : "transparent",
+                color: filter === f.id ? "hsl(var(--foreground))" : "hsl(var(--muted-foreground))",
                 fontWeight: filter === f.id ? 500 : 400,
               }}
             >
@@ -368,7 +372,7 @@ export default function X402Resources() {
             </button>
           ))}
           {healthLoading && (
-            <span className="ml-auto inline-flex items-center gap-1.5 self-center py-2 pr-1 text-[11px] text-white/30">
+            <span className="ml-auto inline-flex items-center gap-1.5 self-center py-2 pr-1 text-[11px] text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
               Refreshing…
             </span>
@@ -378,34 +382,34 @@ export default function X402Resources() {
         {healthError && <p className="mb-6 text-[12px] text-amber-200/65">{healthError}</p>}
 
         {/* Single-column list — not a 2-up card grid */}
-        <div className="overflow-hidden rounded-lg border border-white/[0.07] bg-[#050708]/90">
+        <div className="overflow-hidden rounded-lg border border-border bg-card/85 dark:bg-[#050708]/90">
           {visible.length === 0 ? (
-            <p className="px-5 py-10 text-center text-sm text-white/40">Nothing in this filter.</p>
+            <p className="px-5 py-10 text-center text-sm text-muted-foreground">Nothing in this filter.</p>
           ) : (
             visible.map((c, i) => (
               <article
                 key={c.id}
-                className={`border-b border-white/[0.06] px-5 py-7 last:border-b-0 ${i % 2 === 1 ? "bg-white/[0.015]" : ""}`}
+                className={`border-b border-border px-5 py-7 last:border-b-0 ${i % 2 === 1 ? "bg-muted/30 dark:bg-white/[0.015]" : ""}`}
               >
                 <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between md:gap-10">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[10px] uppercase tracking-[0.16em] text-white/32" style={M}>
+                    <p className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground" style={M}>
                       {c.filterLabel}
                     </p>
-                    <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-white">{c.title}</h2>
-                    <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-white/42">{c.description}</p>
-                    <code className="mt-4 block text-[12px] leading-relaxed text-white/45" style={M}>
+                    <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-foreground">{c.title}</h2>
+                    <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-muted-foreground">{c.description}</p>
+                    <code className="mt-4 block text-[12px] leading-relaxed text-muted-foreground" style={M}>
                       {c.method} {API_BASE}
                       {c.pathDisplay.startsWith("/") ? c.pathDisplay : `/${c.pathDisplay}`}
                     </code>
                   </div>
-                  <div className="flex shrink-0 flex-row items-baseline justify-between gap-6 border-t border-white/[0.05] pt-4 md:w-44 md:flex-col md:items-end md:border-t-0 md:pt-0">
-                    <span className="text-xl tabular-nums tracking-tight text-white/90" style={M}>
+                  <div className="flex shrink-0 flex-row items-baseline justify-between gap-6 border-t border-border pt-4 md:w-44 md:flex-col md:items-end md:border-t-0 md:pt-0">
+                    <span className="text-xl tabular-nums tracking-tight text-foreground" style={M}>
                       {c.priceLabel}
                     </span>
                     <Link
                       to="/agent"
-                      className="text-[13px] text-white/80 transition-colors hover:text-white"
+                      className="text-[13px] text-foreground/75 transition-colors hover:text-foreground"
                       style={M}
                     >
                       Use in Agent →
@@ -417,29 +421,32 @@ export default function X402Resources() {
           )}
         </div>
 
-        <section className="mt-12 border-t border-white/[0.07] pt-10">
-          <h3 className="text-base font-semibold text-white" style={{ fontFamily: "var(--font-display), Georgia, serif" }}>
+        <section className="mt-12 border-t border-border pt-10">
+          <h3 className="text-base font-semibold text-foreground" style={{ fontFamily: "var(--font-display), Georgia, serif" }}>
             Payment mechanics
           </h3>
-          <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-white/42">
-            The server may respond with <code className="rounded bg-white/[0.06] px-1 py-0.5 text-[12px] text-white/65" style={M}>402 Payment Required</code>{" "}
+          <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-muted-foreground">
+            The server may respond with{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-[12px] text-foreground" style={M}>
+              402 Payment Required
+            </code>{" "}
             and instructions; after USDC settles on Solana you retry with the proof header. Base{" "}
-            <code className="rounded bg-white/[0.06] px-1 py-0.5 text-[12px] text-white/70" style={M}>
+            <code className="rounded bg-muted px-1 py-0.5 text-[12px] text-foreground" style={M}>
               {API_BASE}
             </code>
             , paid routes under{" "}
-            <code className="rounded bg-white/[0.06] px-1 py-0.5 text-[12px] text-white/70" style={M}>
+            <code className="rounded bg-muted px-1 py-0.5 text-[12px] text-foreground" style={M}>
               {prefix}
             </code>
             .
           </p>
-          <p className="mt-4 text-[13px] text-white/38">
+          <p className="mt-4 text-[13px] text-muted-foreground">
             Public listing:{" "}
             <a
               href={X402SCAN_SERVER_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-white/75 underline-offset-4 hover:underline"
+              className="inline-flex items-center gap-1 text-foreground/80 underline-offset-4 hover:underline hover:text-foreground"
             >
               Arsweep on x402scan
               <ExternalLink className="h-3 w-3 opacity-70" aria-hidden />

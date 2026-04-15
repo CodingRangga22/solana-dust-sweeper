@@ -36,10 +36,10 @@ const formatRelative = (ts: number) => {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#0f1117] border border-white/10 rounded-xl px-3 py-2.5 text-xs shadow-2xl">
-      <p className="text-white/40 mb-1.5 font-mono">{label}</p>
+    <div className="rounded-xl border border-border bg-card px-3 py-2.5 text-xs shadow-2xl">
+      <p className="mb-1.5 font-mono text-muted-foreground">{label}</p>
       {payload.map((p: any) => (
-        <p key={p.name} className="font-semibold text-emerald-400">
+        <p key={p.name} className="font-semibold text-emerald-600 dark:text-emerald-400">
           {formatSOL(p.value)}
         </p>
       ))}
@@ -61,17 +61,17 @@ const StatCard = ({
     initial={{ opacity: 0, y: 12 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.4 }}
-    className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 flex flex-col gap-2"
+    className="surface-premium relative overflow-hidden rounded-2xl p-4 flex flex-col gap-2"
   >
     {/* Glow accent */}
     <div className={`absolute -top-6 -right-6 w-20 h-20 rounded-full blur-2xl opacity-20 ${color}`} />
     <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${color} bg-current/10`}>
-      <span className="text-white w-3.5 h-3.5">{icon}</span>
+      <span className="text-foreground w-3.5 h-3.5">{icon}</span>
     </div>
     <div>
-      <p className="text-[11px] text-white/40 uppercase tracking-widest font-medium">{label}</p>
-      <p className="text-xl font-extrabold text-white mt-0.5 font-mono tracking-tight">{value}</p>
-      {sub && <p className="text-[10px] text-white/30 mt-0.5">{sub}</p>}
+      <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-medium">{label}</p>
+      <p className="text-xl font-extrabold text-foreground mt-0.5 font-mono tracking-tight">{value}</p>
+      {sub && <p className="text-[10px] text-muted-foreground mt-0.5">{sub}</p>}
     </div>
   </motion.div>
 );
@@ -112,28 +112,28 @@ const AnalyticsPanel = ({ records, hideRecentList = false }: AnalyticsPanelProps
         </div>
 
         {/* Empty chart */}
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5 flex flex-col items-center justify-center min-h-[180px] gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-            <TrendingUp className="w-5 h-5 text-white/20" />
+        <div className="surface-premium rounded-2xl p-5 flex flex-col items-center justify-center min-h-[180px] gap-3">
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+            <TrendingUp className="w-5 h-5 text-muted-foreground" />
           </div>
           <div className="text-center">
-            <p className="text-sm font-semibold text-white/30">No data yet</p>
-            <p className="text-xs text-white/20 mt-1">Your sweep history will appear here</p>
+            <p className="text-sm font-semibold text-muted-foreground">No data yet</p>
+            <p className="text-xs text-muted-foreground mt-1">Your sweep history will appear here</p>
           </div>
         </div>
 
         {/* Empty history */}
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5">
-          <p className="text-xs font-semibold text-white/30 uppercase tracking-widest mb-4">Recent Sweeps</p>
+        <div className="surface-premium rounded-2xl p-5">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-4">Recent Sweeps</p>
           <div className="flex flex-col gap-2">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="flex items-center gap-3 animate-pulse">
-                <div className="w-8 h-8 rounded-lg bg-white/5" />
+                <div className="w-8 h-8 rounded-lg bg-muted" />
                 <div className="flex-1 space-y-1.5">
-                  <div className="h-3 w-24 bg-white/5 rounded" />
-                  <div className="h-2 w-16 bg-white/5 rounded" />
+                  <div className="h-3 w-24 bg-muted rounded" />
+                  <div className="h-2 w-16 bg-muted rounded" />
                 </div>
-                <div className="h-3 w-14 bg-white/5 rounded" />
+                <div className="h-3 w-14 bg-muted rounded" />
               </div>
             ))}
           </div>
@@ -185,11 +185,11 @@ const AnalyticsPanel = ({ records, hideRecentList = false }: AnalyticsPanelProps
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4"
+        className="surface-premium rounded-2xl p-4"
       >
         <div className="flex items-center justify-between mb-4">
-          <p className="text-[11px] font-semibold text-white/40 uppercase tracking-widest">SOL Reclaimed</p>
-          <span className="text-[10px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded-full">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">SOL Reclaimed</p>
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded-full">
             +{totalSOL.toFixed(4)} SOL
           </span>
         </div>
@@ -201,15 +201,15 @@ const AnalyticsPanel = ({ records, hideRecentList = false }: AnalyticsPanelProps
                 <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="color-mix(in oklab, hsl(var(--border)) 80%, transparent)" />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 9, fill: "rgba(255,255,255,0.25)", fontFamily: "monospace" }}
+              tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))", fontFamily: "monospace" }}
               tickLine={false}
               axisLine={false}
             />
             <YAxis
-              tick={{ fontSize: 9, fill: "rgba(255,255,255,0.25)", fontFamily: "monospace" }}
+              tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))", fontFamily: "monospace" }}
               tickLine={false}
               axisLine={false}
             />
@@ -232,9 +232,9 @@ const AnalyticsPanel = ({ records, hideRecentList = false }: AnalyticsPanelProps
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.38 }}
-        className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4"
+        className="surface-premium rounded-2xl p-4"
       >
-        <p className="text-[11px] font-semibold text-white/40 uppercase tracking-widest mb-4">
+        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-4">
           Recent Sweeps
         </p>
 
@@ -250,7 +250,7 @@ const AnalyticsPanel = ({ records, hideRecentList = false }: AnalyticsPanelProps
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.38 + i * 0.05 }}
-                className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.06] transition-colors group"
+                className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/20 border border-border hover:bg-muted/40 transition-colors group"
               >
                 {/* Icon */}
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
@@ -260,13 +260,13 @@ const AnalyticsPanel = ({ records, hideRecentList = false }: AnalyticsPanelProps
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <p className="text-xs font-semibold text-white/80">
+                    <p className="text-xs font-semibold text-foreground">
                       {r.accountsClosed} account{r.accountsClosed > 1 ? "s" : ""} closed
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <Clock className="w-2.5 h-2.5 text-white/20" />
-                    <p className="text-[10px] text-white/30 font-mono">
+                    <Clock className="w-2.5 h-2.5 text-muted-foreground" />
+                    <p className="text-[10px] text-muted-foreground font-mono">
                       {formatRelative(r.timestamp)} · {formatTime(r.timestamp)}
                     </p>
                   </div>
@@ -274,10 +274,10 @@ const AnalyticsPanel = ({ records, hideRecentList = false }: AnalyticsPanelProps
 
                 {/* SOL amount + link */}
                 <div className="flex flex-col items-end gap-1 shrink-0">
-                  <p className="text-xs font-extrabold text-emerald-400 font-mono">
+                  <p className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
                     +{r.totalSolReclaimed.toFixed(4)}
                   </p>
-                  <p className="text-[9px] text-white/20">SOL</p>
+                  <p className="text-[9px] text-muted-foreground">SOL</p>
                 </div>
 
                 {r.signature && (
@@ -286,7 +286,7 @@ const AnalyticsPanel = ({ records, hideRecentList = false }: AnalyticsPanelProps
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity text-white/30 hover:text-white/70"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
                   >
                     <ExternalLink className="w-3 h-3" />
                   </a>
@@ -297,7 +297,7 @@ const AnalyticsPanel = ({ records, hideRecentList = false }: AnalyticsPanelProps
 
           {/* Fade-out bottom mask */}
           {records.length > 4 && (
-            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#0a0a0f] to-transparent pointer-events-none rounded-b-xl" />
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent pointer-events-none rounded-b-xl" />
           )}
         </div>
       </motion.div>
