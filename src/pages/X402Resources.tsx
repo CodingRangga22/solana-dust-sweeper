@@ -1,13 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ExternalLink, Loader2 } from "lucide-react";
-import ArsweepLogo from "@/components/ArsweepLogo";
-import BrandWordmark from "@/components/BrandWordmark";
 import AswpPremiumNotice from "@/components/AswpPremiumNotice";
 import { useBanner } from "@/components/BannerProvider";
 import type { X402HealthResponse } from "@/services/arsweepApi";
 import { priceUsdcFor } from "@/hooks/useX402Payment";
-import ThemeToggle from "@/components/ThemeToggle";
+import Header from "@/components/Header";
 
 const X402SCAN_SERVER_URL = "https://www.x402scan.com/server/02e3af55-8ecc-4d78-a82e-077fbc1cf790";
 
@@ -196,107 +194,12 @@ export default function X402Resources() {
 
   return (
     <div className="arsweep-page-shell font-sans antialiased pb-28">
-      <header
-        style={{
-          position: "fixed",
-          left: 0,
-          right: 0,
-          zIndex: 50,
-          top: bannerHeight,
-          borderBottom: "1px solid hsl(var(--border))",
-          background: "color-mix(in oklab, hsl(var(--background)) 92%, black 8%)",
-          backdropFilter: "blur(20px)",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 1200,
-            margin: "0 auto",
-            padding: "0 20px",
-            height: 56,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => navigate("/")}>
-            <ArsweepLogo className="h-7 w-7 shrink-0" />
-            <BrandWordmark />
-          </div>
-          <div className="hidden sm:flex" style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", alignItems: "center", gap: 8 }}>
-            {[
-              ["Docs", "/docs"],
-              ["$ASWP", "/token"],
-              ["Agent", "/agent"],
-              ["x402", "/x402"],
-            ].map(([label, path]) => (
-              <button
-                key={path}
-                type="button"
-                onClick={() => navigate(path)}
-                style={{
-                  fontSize: 14,
-                  color: path === "/x402" ? "hsl(var(--foreground))" : "hsl(var(--muted-foreground))",
-                  background: path === "/x402" ? "hsl(var(--muted))" : "transparent",
-                  border: "none",
-                  borderRadius: 8,
-                  padding: "6px 12px",
-                  cursor: "pointer",
-                  transition: "background 0.2s, color 0.2s",
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <button
-              type="button"
-              onClick={() => navigate("/app")}
-              style={{
-                ...M,
-                fontSize: 13,
-                color: "hsl(var(--foreground))",
-                background: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: 8,
-                padding: "6px 14px",
-                cursor: "pointer",
-              }}
-            >
-              Launch App
-            </button>
-            <ThemeToggle />
-          </div>
-        </div>
-        <div className="flex gap-2 overflow-x-auto border-t border-border px-4 py-2.5 sm:hidden" style={{ maxWidth: 1200, margin: "0 auto" }}>
-          {[
-            ["Docs", "/docs"],
-            ["$ASWP", "/token"],
-            ["Agent", "/agent"],
-            ["x402", "/x402"],
-          ].map(([label, path]) => (
-            <button
-              key={path}
-              type="button"
-              onClick={() => navigate(path)}
-              className="shrink-0 rounded-lg px-3 py-1.5 text-[13px]"
-              style={{
-                color: path === "/x402" ? "hsl(var(--foreground))" : "hsl(var(--muted-foreground))",
-                background: path === "/x402" ? "hsl(var(--muted))" : "transparent",
-                border: "none",
-              }}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </header>
+      <Header />
 
       <div className="arsweep-dot-grid" aria-hidden />
       <div className="arsweep-vignette-fade" aria-hidden />
 
-      <main className="relative z-[2] mx-auto max-w-[900px] px-5" style={{ paddingTop: `${88 + bannerHeight}px` }}>
+      <main className="relative z-[2] mx-auto max-w-[900px] px-5" style={{ paddingTop: `${96 + bannerHeight}px` }}>
         {/* Hero — serif + mono, distinct from generic “resources marketplace” pages */}
         <header className="mb-12 border-b border-border pb-10">
           <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-muted-foreground" style={M}>

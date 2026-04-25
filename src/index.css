@@ -301,6 +301,30 @@
     letter-spacing: 0.1em;
   }
 
+  /* Mobile: make dock thinner + less noisy */
+  @media (max-width: 640px) {
+    :root {
+      /* Keep this in sync with the dock visual height */
+      --arsweep-dock-height: 40px;
+    }
+    .ar-marquee-dock__inner {
+      padding-top: 6px;
+    }
+    .ar-marquee--dock .ar-marquee__group {
+      padding: 8px 10px;
+      gap: 8px;
+    }
+    .ar-marquee--dock .ar-marquee__pill {
+      padding: 6px 8px;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+    }
+    .ar-marquee--dock .ar-marquee__dot {
+      width: 5px;
+      height: 5px;
+    }
+  }
+
   @media (max-width: 480px) {
     .ar-marquee--dock .ar-marquee__sub {
       display: none;

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Share2, ExternalLink } from "lucide-react";
+import { CheckCircle2, Share2, ExternalLink, Copy } from "lucide-react";
 import confetti from "canvas-confetti";
 import {
   Dialog,
@@ -10,6 +10,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { isDevnet } from "@/config/env";
+import { TREASURY } from "@/lib/sweepNative";
 
 const EXPLORER_BASE = "https://solscan.io/tx";
 
@@ -102,6 +103,18 @@ const SweepSuccessModal = ({ open, onOpenChange, count, totalSol, signature, wal
     `🧹 Just reclaimed ${totalSol.toFixed(4)} SOL from ${count} ghost accounts in my Solana wallet — rent I did not even know was locked!\n\nTook 5 seconds. No seed phrase needed.\n\nIf you have ever used Solana, you probably have hidden SOL too 👇\n\narsweep.fun\n\n#Solana #Web3 @Arsweep_AI`
   );
   const shareUrl = `https://x.com/intent/tweet?text=${shareText}`;
+  const tgText = encodeURIComponent(
+    `🧹 Reclaimed ${totalSol.toFixed(4)} SOL from ${count} empty token accounts.\n\nTry it: arsweep.fun`
+  );
+  const tgUrl = `https://t.me/share/url?url=${encodeURIComponent("https://arsweep.fun")}&text=${tgText}`;
+
+  const receiptText =
+    `Arsweep receipt\n` +
+    `- Wallet: ${walletAddress ?? "—"}\n` +
+    `- Closed accounts: ${count}\n` +
+    `- SOL reclaimed (net): ${totalSol.toFixed(5)}\n` +
+    `- Tx: ${signature ? `https://solscan.io/tx/${signature}` : "—"}\n` +
+    `- Treasury (fee destination): ${TREASURY.toBase58()}\n`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -134,6 +147,20 @@ const SweepSuccessModal = ({ open, onOpenChange, count, totalSol, signature, wal
             View Transaction on Solscan
           </a>
         )}
+
+        <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-left text-xs text-muted-foreground">
+          <p className="font-mono">
+            Treasury (fee destination):{" "}
+            <span className="text-foreground break-all">{TREASURY.toBase58()}</span>
+          </p>
+          <p className="mt-1">
+            Fee model is auditable on-chain.{" "}
+            <a href="/docs/fees#disclaimer" className="text-primary hover:underline">
+              Read disclaimer
+            </a>
+          </p>
+        </div>
+
         <a
           href={shareUrl}
           target="_blank"
@@ -143,6 +170,29 @@ const SweepSuccessModal = ({ open, onOpenChange, count, totalSol, signature, wal
           <Share2 className="w-4 h-4" />
           Share on X
         </a>
+        <a
+          href={tgUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl glass glass-hover text-foreground text-sm font-semibold transition-colors mt-2"
+        >
+          <Share2 className="w-4 h-4" />
+          Share on Telegram
+        </a>
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(receiptText);
+            } catch (e) {
+              console.error("Failed to copy receipt:", e);
+            }
+          }}
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl glass glass-hover text-foreground text-sm font-semibold transition-colors mt-2"
+        >
+          <Copy className="w-4 h-4" />
+          Copy receipt
+        </button>
       </DialogContent>
     </Dialog>
   );

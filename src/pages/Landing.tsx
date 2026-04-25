@@ -13,6 +13,7 @@ import BrandWordmark from "@/components/BrandWordmark";
 import { useWallets } from "@privy-io/react-auth/solana";
 import { PublicKey } from "@solana/web3.js";
 import { useAswpAccess } from "@/hooks/useAswpAccess";
+import { supabase } from "@/lib/supabase";
 
 
   const YellowReveal = ({ children }: { children: React.ReactNode }) => {
@@ -79,6 +80,13 @@ const Landing = () => {
   const [tokenAccounts, setTokenAccounts] = React.useState<number>(0);
   const [solPrice, setSolPrice] = React.useState<number>(130);
 
+  const [ecosystemProof, setEcosystemProof] = React.useState<{
+    loading: boolean;
+    wallets: number;
+    totalAccounts: number;
+    totalSol: number;
+  }>({ loading: true, wallets: 0, totalAccounts: 0, totalSol: 0 });
+
   // Global scroll reveal
   useEffect(() => {
     const style = document.createElement("style");
@@ -111,10 +119,66 @@ const Landing = () => {
     void aswp.refresh();
   }, [owner]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchEcosystemProof() {
+      // NOTE: Supabase can cap row returns; paginate to keep it correct and safe.
+      const PAGE = 1000;
+      const MAX_ROWS = 10_000;
+      let offset = 0;
+
+      let wallets = 0;
+      let totalAccounts = 0;
+      let totalSol = 0;
+
+      try {
+        while (offset < MAX_ROWS) {
+          const { data, error } = await supabase
+            .from("sweep_stats")
+            .select("total_accounts_swept, total_sol_reclaimed")
+            .range(offset, offset + PAGE - 1);
+
+          if (error) throw error;
+          if (!data || data.length === 0) break;
+
+          wallets += data.length;
+          for (const row of data as Array<{ total_accounts_swept: number | null; total_sol_reclaimed: number | null }>) {
+            totalAccounts += Number(row.total_accounts_swept ?? 0);
+            totalSol += Number(row.total_sol_reclaimed ?? 0);
+          }
+
+          if (data.length < PAGE) break;
+          offset += PAGE;
+        }
+      } catch (e) {
+        console.error("[Landing] Failed to fetch sweep_stats proof:", e);
+      }
+
+      if (cancelled) return;
+      setEcosystemProof({
+        loading: false,
+        wallets,
+        totalAccounts,
+        totalSol,
+      });
+    }
+
+    void fetchEcosystemProof();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
 
   const solLocked = tokenAccounts * SOL_PER;
   const usdValue = solLocked * solPrice;
   const pct = Math.min((tokenAccounts / MAX_T) * 100, 100);
+
+  const avgAccountsPerWallet =
+    ecosystemProof.wallets > 0 ? ecosystemProof.totalAccounts / ecosystemProof.wallets : 0;
+  const avgSolPerWallet =
+    ecosystemProof.wallets > 0 ? ecosystemProof.totalSol / ecosystemProof.wallets : 0;
 
   const M:React.CSSProperties = {fontFamily:"var(--font-mono)"};
   const D6:React.CSSProperties = {height:1,background:"hsl(var(--border))"};
@@ -136,7 +200,7 @@ const Landing = () => {
             </div>
           </div>
           <nav className="hidden sm:flex absolute left-1/2 -translate-x-1/2 items-center gap-0.5" aria-label="Main">
-            {[["Docs","/docs"],["Token","/token"],["Agent","/agent"],["x402","/x402"]].map(([l,p])=>(
+            {[["Docs","/docs"],["Stats","/stats"],["Token","/token"],["Agent","/agent"],["x402","/x402"],["Revoke","/revoke"]].map(([l,p])=>(
               <button key={p} type="button" onClick={()=>navigate(p)}
                 className="rounded-full px-3.5 py-2 text-[13px] font-medium text-foreground/70 hover:text-foreground hover:bg-muted/60 transition-colors duration-200 bg-transparent border-none cursor-pointer"
               >{l}</button>
@@ -178,7 +242,7 @@ const Landing = () => {
             <div style={{display:"flex",gap:8,marginBottom:12}}>
               <button type="button" onClick={()=>{ navigate("/app"); setMenuOpen(false); }} className="ar-btn-primary w-full flex-1">Launch App</button>
             </div>
-            {[["Agent","/agent"],["x402","/x402"],["Token","/token"],["Watch Demo","/demo"],["Simulation","/simulation"],["Docs","/docs"],["Telegram","https://t.me/arsweepalert"]].map(([l,p])=>(
+            {[["Agent","/agent"],["x402","/x402"],["Revoke","/revoke"],["Stats","/stats"],["Token","/token"],["Watch Demo","/demo"],["Simulation","/simulation"],["Docs","/docs"],["Telegram","https://t.me/arsweepalert"]].map(([l,p])=>(
               <span key={p} onClick={()=>{p.startsWith("http")?window.open(p,"_blank"):navigate(p);setMenuOpen(false);}}
                 style={{fontSize:14,color:"hsl(var(--foreground))",cursor:"pointer",padding:"12px 8px",borderBottom:"1px solid hsl(var(--border))",display:"block"}}
               >{l}</span>
@@ -218,9 +282,23 @@ const Landing = () => {
             </h1>
 
             <p className="ar-subtitle mb-10 max-w-[36rem]">
-              Every token interaction leaves empty accounts locking{" "}
-              <span className="font-semibold text-foreground">~0.002 SOL</span>{" "}
-              in rent. Arsweep closes them safely, on-chain, in minutes.
+              The average wallet we clean closes{" "}
+              <span className="font-semibold text-foreground">
+                {ecosystemProof.loading
+                  ? "—"
+                  : avgAccountsPerWallet > 0
+                    ? `~${Math.round(avgAccountsPerWallet)}`
+                    : "~0"}
+              </span>{" "}
+              dead accounts and recovers{" "}
+              <span className="font-semibold text-foreground">
+                {ecosystemProof.loading
+                  ? "—"
+                  : avgSolPerWallet > 0
+                    ? `~${avgSolPerWallet.toFixed(3)} SOL`
+                    : "~0 SOL"}
+              </span>
+              {" "}— in under 3 minutes. No custody, no private keys.
             </p>
 
             <div className="mb-10 flex flex-wrap gap-3">
@@ -236,7 +314,25 @@ const Landing = () => {
             </div>
 
             <div className="flex flex-wrap gap-6 border-t border-border pt-8">
-              {[{v:"~0.002 SOL",l:"per account"},{v:"< 5 sec",l:"to scan"},{v:"0",l:"private keys seen"}].map(({v,l})=>(
+              {[
+                { v: "~0.002 SOL", l: "rent per empty account" },
+                {
+                  v: ecosystemProof.loading
+                    ? "—"
+                    : ecosystemProof.totalSol > 0
+                      ? `${ecosystemProof.totalSol.toFixed(2)} SOL`
+                      : "—",
+                  l: "SOL reclaimed (tracked)",
+                },
+                {
+                  v: ecosystemProof.loading
+                    ? "—"
+                    : ecosystemProof.totalAccounts > 0
+                      ? ecosystemProof.totalAccounts.toLocaleString()
+                      : "—",
+                  l: "accounts closed (tracked)",
+                },
+              ].map(({v,l})=>(
                 <div key={l}>
                   <div className="text-lg font-bold tracking-tight text-foreground sm:text-xl">{v}</div>
                   <div className="mt-1 text-[11px] uppercase tracking-[0.08em] text-muted-foreground" style={M}>{l}</div>
@@ -318,6 +414,15 @@ const Landing = () => {
                   </span>
                 ))}
               </div>
+            </div>
+            <div className="mt-4">
+              <button
+                type="button"
+                className="ar-btn-secondary"
+                onClick={() => navigate("/stats")}
+              >
+                View ecosystem proof →
+              </button>
             </div>
           </div>
         </div>

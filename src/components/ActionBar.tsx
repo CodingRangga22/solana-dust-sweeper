@@ -51,7 +51,7 @@ const ActionBar = ({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="fixed bottom-0 left-0 right-0 sm:inset-auto sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 z-[50] sm:w-[calc(100%-2rem)] sm:max-w-xl flex items-end sm:items-stretch"
+          className="fixed bottom-[var(--arsweep-dock-safe)] left-0 right-0 sm:inset-auto sm:bottom-24 sm:right-6 sm:left-auto sm:translate-x-0 z-[50] sm:w-[420px] sm:max-w-[calc(100vw-3rem)] flex items-end sm:items-stretch"
         >
           <div
             className="surface-premium w-full rounded-t-2xl sm:rounded-2xl p-5 shadow-premium-lg"
@@ -96,7 +96,7 @@ const ActionBar = ({
                   />
                   <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
                     I have read the{" "}
-                    <Link to="/docs#disclaimer" className="text-primary hover:underline">
+                    <Link to="/docs/fees#disclaimer" className="text-primary hover:underline">
                       disclaimer
                     </Link>{" "}
                     and accept the risks. <span className="text-destructive">*</span>

@@ -10,7 +10,24 @@ import {
   createBurnInstruction,
 } from "@solana/spl-token";
 
-export const TREASURY = new PublicKey("BfqfpTe6yv5TTTGrcNVRPVfQ3h6FwzhC78LGbGAN5NkT");
+const DEFAULT_TREASURY = "BfqfpTe6yv5TTTGrcNVRPVfQ3h6FwzhC78LGbGAN5NkT";
+const treasuryFromEnv = (import.meta.env.VITE_TREASURY_ADDRESS ?? "").toString().trim();
+
+export const TREASURY = (() => {
+  const candidate = treasuryFromEnv || DEFAULT_TREASURY;
+  try {
+    return new PublicKey(candidate);
+  } catch {
+    // Fail loudly in dev to avoid silently sending fees somewhere unexpected.
+    if ((import.meta.env.DEV ?? false) === true) {
+      throw new Error(
+        `Invalid VITE_TREASURY_ADDRESS: "${candidate}". Please set a valid base58 public key.`,
+      );
+    }
+    return new PublicKey(DEFAULT_TREASURY);
+  }
+})();
+
 const FEE_BPS = 150;
 const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
 

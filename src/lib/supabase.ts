@@ -36,6 +36,12 @@ export interface SweepLeaderboardEntry {
   rank: number;
 }
 
+export type GlobalSweepTotals = {
+  wallets: number;
+  totalAccounts: number;
+  totalSol: number;
+};
+
 // ── Generate referral code unik 6 karakter ───────────────────────────
 export function generateReferralCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -182,6 +188,52 @@ export async function updateSweepStats(
       total_sol_reclaimed: solReclaimed,
     });
   }
+}
+
+/**
+ * Public traction counters.
+ *
+ * Notes:
+ * - Uses pagination to avoid Supabase row caps.
+ * - Aggregates across all seasons. If you want season-scoped totals, filter on season_id.
+ */
+export async function getGlobalSweepTotals(opts?: {
+  maxRows?: number;
+  pageSize?: number;
+  seasonId?: string;
+}): Promise<GlobalSweepTotals> {
+  const pageSize = Math.max(1, Math.min(2000, opts?.pageSize ?? 1000));
+  const maxRows = Math.max(0, opts?.maxRows ?? 10_000);
+  const seasonId = opts?.seasonId;
+
+  let offset = 0;
+  let wallets = 0;
+  let totalAccounts = 0;
+  let totalSol = 0;
+
+  while (offset < maxRows) {
+    let q = supabase
+      .from("sweep_stats")
+      .select("total_accounts_swept, total_sol_reclaimed", { count: "exact" })
+      .range(offset, offset + pageSize - 1);
+
+    if (seasonId) q = q.eq("season_id", seasonId);
+
+    const { data, error } = await q;
+    if (error) break;
+    if (!data || data.length === 0) break;
+
+    wallets += data.length;
+    for (const row of data as Array<{ total_accounts_swept: number | null; total_sol_reclaimed: number | null }>) {
+      totalAccounts += Number(row.total_accounts_swept ?? 0);
+      totalSol += Number(row.total_sol_reclaimed ?? 0);
+    }
+
+    if (data.length < pageSize) break;
+    offset += pageSize;
+  }
+
+  return { wallets, totalAccounts, totalSol };
 }
 
 // ── $SWEEP token reward per rank ──────────────────────────────────────

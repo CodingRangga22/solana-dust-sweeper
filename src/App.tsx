@@ -33,6 +33,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { usePrivyWalletSync } from "./hooks/usePrivyWalletSync";
 import TokenPage from "./pages/Token";
 import X402Resources from "./pages/X402Resources";
+import RevokePage from "./pages/Revoke";
+import Stats from "./pages/Stats";
 import BottomMarqueeDock from "./components/BottomMarqueeDock";
 
 const queryClient = new QueryClient();
@@ -148,6 +150,15 @@ const AppContent = ({
                     </Route>
                     <Route path="/token" element={<TokenPage />} />
                     <Route path="/x402" element={<X402Resources />} />
+                    <Route path="/stats" element={<Stats />} />
+                    <Route
+                      path="/revoke"
+                      element={
+                        <ProtectedRoute requirePrivyLogin={false}>
+                          <RevokePage />
+                        </ProtectedRoute>
+                      }
+                    />
                     <Route path="/privacy" element={<PrivacyPolicy />} />
                     <Route path="/terms" element={<TermsOfService />} />
                     <Route path="*" element={<NotFound />} />

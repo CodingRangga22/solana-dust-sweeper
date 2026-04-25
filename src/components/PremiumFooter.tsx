@@ -179,6 +179,7 @@ const PremiumFooter = () => {
                 {[
                   { label: "ASWP Token", onClick: () => navigate("/token") },
                   { label: "x402 APIs", onClick: () => navigate("/x402") },
+                  { label: "Stats (Proof)", onClick: () => navigate("/stats") },
                   { label: "Dashboard", onClick: () => navigate("/app") },
                   { label: "Simulation", onClick: () => navigate("/simulation") },
                   { label: "Direct Sweep", onClick: () => navigate("/app") },

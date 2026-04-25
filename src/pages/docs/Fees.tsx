@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { TREASURY } from "@/lib/sweepNative";
 
 export default function Fees() {
   return (
@@ -61,8 +62,21 @@ export default function Fees() {
         <span className="font-mono text-foreground">SystemProgram.transfer</span> to the public treasury address below, plus a Memo for easy auditing.
         You can verify the exact lamports sent to treasury on any sweep signature.
       </p>
-      <div className="bg-muted/50 border rounded-xl p-4 font-mono text-xs break-all mb-4">BfqfpTe6yv5TTTGrcNVRPVfQ3h6FwzhC78LGbGAN5NkT</div>
+      <div className="bg-muted/50 border rounded-xl p-4 font-mono text-xs break-all mb-4">{TREASURY.toBase58()}</div>
       <p className="text-sm text-muted-foreground">Verify any sweep on <a href="https://solscan.io/?cluster=devnet" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Solscan</a> to confirm exact fee and treasury destination.</p>
+
+      <div id="disclaimer" className="mt-12 scroll-mt-28">
+        <h2 className="text-2xl font-semibold mb-4">Disclaimer</h2>
+        <div className="bg-muted/40 border rounded-xl p-5 text-sm text-muted-foreground leading-relaxed">
+          <p className="text-foreground font-semibold mb-2">You always sign the transaction.</p>
+          <ul className="space-y-2">
+            <li>Arsweep is non-custodial and never asks for seed phrases.</li>
+            <li>Network fees and priority fees may vary depending on congestion.</li>
+            <li>Dust with value/liquidity should be swapped; Arsweep may skip tokens for safety.</li>
+            <li>Always review the treasury recipient and memo in your wallet before approving.</li>
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }

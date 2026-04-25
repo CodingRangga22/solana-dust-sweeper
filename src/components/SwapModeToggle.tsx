@@ -7,6 +7,7 @@ interface SwapModeToggleProps {
   hasLiquidity: boolean;
   disabled?: boolean;
   estimatedSol?: number | null;
+  disabledReason?: string;
 }
 
 const SwapModeToggle = ({
@@ -15,6 +16,7 @@ const SwapModeToggle = ({
   hasLiquidity,
   disabled = false,
   estimatedSol,
+  disabledReason,
 }: SwapModeToggleProps) => {
   if (!hasLiquidity) return null;
 
@@ -36,7 +38,13 @@ const SwapModeToggle = ({
           if (!disabled) onToggle();
         }}
         disabled={disabled}
-        title={isCloseOnly ? "This token has a liquidity pool. Swap first to recover value." : ""}
+        title={
+          disabled
+            ? (disabledReason || "Action disabled")
+            : isCloseOnly
+              ? "This token has a liquidity pool. Swap first to recover value."
+              : ""
+        }
         className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border ${
           mode === "swap"
             ? "bg-purple-500/20 border-purple-500/40 text-purple-300 hover:bg-purple-500/30"

@@ -33,6 +33,7 @@ import { useWallets } from "@privy-io/react-auth/solana";
 import { useTelegramWebApp } from "@/hooks/useTelegramWebApp";
 import { useTwaSweepCallback } from "@/components/TwaBanner";
 import ConnectWalletGate from "@/components/ConnectWalletGate";
+import { useSyraTokenRisk } from "@/hooks/useSyraTokenRisk";
 
 /** Fallback when rentLamports missing — prefer per-account rent from scan */
 const RENT_PER_ACCOUNT = 0.002042;
@@ -84,7 +85,7 @@ const Dashboard = () => {
     signature?: string;
   }>({ open: false, count: 0, totalSol: 0 });
 
-  const { tokenModes, toggleMode, resetModes } = useSwapMode();
+  const { tokenModes, toggleMode, resetModes, setMode } = useSwapMode();
   const [swapQuotes, setSwapQuotes] = useState<Record<string, number>>({});
   const [sweepHistory, setSweepHistory] = useState<SweepRecord[]>(() => {
     try {
@@ -159,6 +160,33 @@ const Dashboard = () => {
 
     fetchQuotes();
   }, [tokenModes, tokenAccounts]);
+
+  // Syra: fetch token risk for swap-eligible mints (so we can force close-only on high risk).
+  const syraRiskMints = useMemo(() => {
+    const m: string[] = [];
+    for (const a of tokenAccounts) {
+      if (!a.isSweepable) continue;
+      if (!a.hasLiquidityPool) continue;
+      if (a.amount <= BigInt(0)) continue;
+      m.push(a.mint.toBase58());
+    }
+    return m;
+  }, [tokenAccounts]);
+
+  const { risks: syraRisks, loadingMints: syraLoadingMints } = useSyraTokenRisk(syraRiskMints);
+
+  // Force close-only when Syra flags a mint as high risk.
+  useEffect(() => {
+    if (tokenAccounts.length === 0) return;
+    for (const a of tokenAccounts) {
+      const id = a.pubkey.toBase58();
+      const mint = a.mint.toBase58();
+      const risk = syraRisks[mint];
+      if (risk?.level === "high" && (tokenModes[id] ?? "close") === "swap") {
+        setMode(id, "close");
+      }
+    }
+  }, [syraRisks, tokenAccounts, tokenModes, setMode]);
 
   const handleToggle = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -533,6 +561,8 @@ const Dashboard = () => {
         tokenModes={tokenModes}
         onToggleMode={toggleMode}
         swapQuotes={swapQuotes}
+        syraRisks={syraRisks}
+        syraLoadingMints={syraLoadingMints}
         analyticsSlot={<AnalyticsPanel records={sweepHistory} hideRecentList />}
       />
       {publicKey && sweepHistory.length > 0 && (
