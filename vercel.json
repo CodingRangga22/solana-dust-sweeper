@@ -1,5 +1,9 @@
 {
   "rewrites": [
+    {
+      "source": "/syra/:path*",
+      "destination": "https://$ARSWEEP_AGENT_ORIGIN/syra/:path*"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
