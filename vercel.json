@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/syra/:path*",
-      "destination": "https://$ARSWEEP_AGENT_ORIGIN/syra/:path*"
+      "destination": "https://api.arsweep.fun/syra/:path*"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
