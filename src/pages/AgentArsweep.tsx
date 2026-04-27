@@ -38,6 +38,7 @@ import { PromptsLibrary } from '@/components/ai-agent/PromptsLibrary';
 import ThemeToggle from '@/components/ThemeToggle';
 import { executeSweepNative, SweepAccount } from '@/lib/sweepNative';
 import { arsweepApi } from '@/services/arsweepApi';
+import { saveSessionToSupabase, loadSessionFromSupabase, loadUserSessionsFromSupabase, refreshSessionExpiry } from '@/lib/agentConversations';
 import { extractSolscanTxUrl, formatPremiumResult } from '@/lib/formatPremiumResult';
 import { useAswpAccess } from '@/hooks/useAswpAccess';
 import { usePrivy, useLogin } from '@privy-io/react-auth';
@@ -90,6 +91,25 @@ function persistSessions(userId: string, sessions: ChatSession[]) {
   }
 }
 
+function messagesStorageKey(userId: string, sessionId: string) {
+  return `arsweep_msgs_${userId}_${sessionId}`;
+}
+function persistSessionMessages(userId: string, sessionId: string, messages: any[]) {
+  try {
+    const slim = messages.slice(-60).map((m: any) => ({
+      id: m.id, role: m.role, content: m.content, timestamp: m.timestamp,
+    }));
+    localStorage.setItem(messagesStorageKey(userId, sessionId), JSON.stringify(slim));
+  } catch { /* ignore */ }
+}
+function loadSessionMessages(userId: string, sessionId: string): any[] {
+  try {
+    const raw = localStorage.getItem(messagesStorageKey(userId, sessionId));
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.map((m: any) => ({ ...m, timestamp: new Date(m.timestamp) })) : [];
+  } catch { return []; }
+}
 function startOfTodayMs(): number {
   const d = new Date();
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
@@ -278,6 +298,7 @@ export default function AgentArsweep() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [paymentType, setPaymentType] = useState<'analyze' | 'report' | 'roast' | 'rugcheck' | 'planner'>('analyze');
   const [showSyraRisk, setShowSyraRisk] = useState(false);
+  const [syraPrefillMint, setSyraPrefillMint] = useState<string | null>(null);
   const [agentSection, setAgentSection] = useState<'chat' | 'prompts'>('chat');
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -372,6 +393,28 @@ export default function AgentArsweep() {
     return Array.from(byId.values()).slice(0, 10);
   }, [historyRows, sessions]);
 
+  // Auto-save messages per session ke localStorage + Supabase
+  useEffect(() => {
+    if (messages.length === 0 || !currentSessionIdRef.current) return;
+    const sessionId = currentSessionIdRef.current;
+    // Save ke localStorage
+    persistSessionMessages(userId, sessionId, messages);
+    // Update preview
+    const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user');
+    if (lastUserMsg) {
+      const preview = lastUserMsg.content.slice(0, 40) + (lastUserMsg.content.length > 40 ? '…' : '');
+      setSessions((prev) =>
+        prev.map((s) => s.id === sessionId ? { ...s, preview } : s),
+      );
+    }
+    // Debounce save ke Supabase (tiap 3 detik setelah messages berubah)
+    const timer = setTimeout(() => {
+      saveSessionToSupabase(userId, sessionId, messages).catch(() => {});
+      refreshSessionExpiry(userId, sessionId).catch(() => {});
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [messages, userId]);
+
   const { today: sessionsToday, previous7: sessionsPrev } = useMemo(
     () => groupSessionsByAge(sidebarSessions),
     [sidebarSessions],
@@ -439,18 +482,22 @@ export default function AgentArsweep() {
   const handleUsePrompt = useCallback(
     (p: ArsweepAgentPrompt) => {
       setAgentSection('chat');
-      setInput(p.prompt);
-      queueMicrotask(() => textareaRef.current?.focus());
-
+      // Premium tools open modals; don't prefill the chat box.
       if (p.tool === 'syraRisk') {
+        setInput('');
         setShowSyraRisk(true);
         return;
       }
-
       if (p.tool !== 'chat') {
+        setInput('');
         setPaymentType(p.tool);
         setShowPayment(true);
+        return;
       }
+
+      // Free chat template: prefill input.
+      setInput(p.prompt);
+      queueMicrotask(() => textareaRef.current?.focus());
     },
     [],
   );
@@ -463,9 +510,29 @@ export default function AgentArsweep() {
     // Premium intent routing (Syra-like upsell): if user asks for premium features, open payment first.
     const premiumIntent = (() => {
       const m = message.toLowerCase();
+      const maybeMint = detectWalletAddress(message);
+      const looksLikePumpMint = !!maybeMint && maybeMint.toLowerCase().endsWith('pump');
 
       // Allow explicit opt-out to use free scan flow.
       if (/\bfree\b|\bgratis\b|\btanpa\s*bayar\b|\bno\s*payment\b|\bscan\s*\(free\)\b/i.test(m)) return null;
+
+      // Syra token risk (premium): open Syra modal (mint optional; if present, prefill)
+      if (
+        /(syra|syraa)\s*(token\s*)?(risk|check)/i.test(m) ||
+        /\btoken\s*risk\b/i.test(m) ||
+        /\brisk\s*check\b/i.test(m) ||
+        // If user pastes a Pump.fun-style mint, default to token risk (not wallet scan)
+        (looksLikePumpMint && (message.trim() === maybeMint || /\b(anal(i|y)s(a|is)|analy(z|s)e|cek|check|risk|scam|rug|honeypot|phishing|deteksi|detect)\b/i.test(m))) ||
+        // Common ID/EN phrasing: "analisis token ini <mint>", "cek token ini <mint>"
+        (maybeMint != null &&
+          (/\b(token|koin|coin)\b/i.test(m) &&
+            /\b(risk|scam|rug|honeypot|phishing|cek|check|deteksi|detect|anal(i|y)s(a|is)|analy(z|s)e|review)\b/i.test(
+              m,
+            ))) ||
+        (maybeMint != null && /\b(syra|syraa|risk)\b/i.test(m))
+      ) {
+        return 'syraRisk';
+      }
 
       // Report / dust / empty accounts (ID + EN)
       if (
@@ -510,7 +577,7 @@ export default function AgentArsweep() {
         return 'analyze';
 
       return null;
-    })() as null | 'analyze' | 'report' | 'roast' | 'rugcheck' | 'planner';
+    })() as null | 'analyze' | 'report' | 'roast' | 'rugcheck' | 'planner' | 'syraRisk';
 
     if (premiumIntent) {
       setInput('');
@@ -533,6 +600,16 @@ export default function AgentArsweep() {
             timestamp: new Date(),
           },
         ]);
+        if (premiumIntent === 'syraRisk') {
+          setSyraPrefillMint(detectWalletAddress(message));
+          setShowSyraRisk(true);
+        }
+        return;
+      }
+
+      if (premiumIntent === 'syraRisk') {
+        setSyraPrefillMint(detectWalletAddress(message));
+        setShowSyraRisk(true);
         return;
       }
 
@@ -590,10 +667,15 @@ export default function AgentArsweep() {
       return;
     }
 
-    let detectedWallet = detectWalletAddress(message);
-    if (!detectedWallet && message.length >= 32 && message.length <= 44) detectedWallet = message;
-    if (!detectedWallet && publicKey && /my wallet|analyze|scan|check|sweep/i.test(message))
-      detectedWallet = publicKey.toString();
+    let detectedWallet: string | null = null;
+    const detectedAddr = detectWalletAddress(message);
+    const addrLooksLikePump = !!detectedAddr && detectedAddr.toLowerCase().endsWith('pump');
+    const walletIntent = /\b(wallet|dompet)\b/i.test(message) || /\bscan\b/i.test(message) || /\bsweep\b/i.test(message);
+
+    // Only treat a base58 address as a wallet when the user intent looks like "wallet scan".
+    // (Otherwise token mints—especially Pump.fun mints ending with "pump"—get misclassified.)
+    if (detectedAddr && walletIntent && !addrLooksLikePump) detectedWallet = detectedAddr;
+    if (!detectedWallet && publicKey && /\b(my wallet|wallet saya|dompet saya)\b/i.test(message)) detectedWallet = publicKey.toString();
     setInput('');
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
     try {
@@ -794,6 +876,36 @@ export default function AgentArsweep() {
     ]);
   };
 
+  const switchToSession = async (s: ChatSession) => {
+    // Coba load dari localStorage dulu
+    const stored = loadSessionMessages(userId, s.id);
+    if (stored.length > 0) {
+      currentSessionIdRef.current = s.id;
+      setMessages(stored);
+      setShowMobileSidebar(false);
+      return;
+    }
+    // Fallback: load dari Supabase
+    const fromDb = await loadSessionFromSupabase(userId, s.id);
+    if (fromDb.length > 0) {
+      currentSessionIdRef.current = s.id;
+      setMessages(fromDb);
+      // Cache ke localStorage
+      persistSessionMessages(userId, s.id, fromDb);
+      setShowMobileSidebar(false);
+      return;
+    }
+    // Fallback: scroll ke pesan yang matching di view sekarang
+    const msgs = document.querySelectorAll('[data-msg-preview]');
+    for (const el of msgs) {
+      const attr = el.getAttribute('data-msg-preview') ?? '';
+      if (s.preview.length > 0 && attr.startsWith(s.preview.slice(0, 20))) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        break;
+      }
+    }
+    setShowMobileSidebar(false);
+  };
   const renderSessionList = (list: ChatSession[]) =>
     list.map((s) => (
       <motion.button
@@ -801,6 +913,7 @@ export default function AgentArsweep() {
         type="button"
         whileTap={{ scale: 0.98 }}
         className="group w-full rounded-xl border border-border bg-card/70 px-2.5 py-2.5 text-left shadow-sm transition-all hover:bg-muted/50"
+        onClick={() => switchToSession(s)}
         title={s.preview}
       >
         <p className="truncate text-[11px] leading-snug text-muted-foreground transition-colors group-hover:text-foreground">
@@ -1191,8 +1304,11 @@ export default function AgentArsweep() {
             {messages.map((message) => {
               const scanData = (message as any).walletScan;
               return (
-                <ChatMessage
+                <div
                   key={message.id}
+                  data-msg-preview={message.content.slice(0, 40)}
+                >
+                <ChatMessage
                   role={message.role}
                   content={message.content}
                   timestamp={message.timestamp}
@@ -1207,6 +1323,7 @@ export default function AgentArsweep() {
                     setShowPayment(true);
                   }}
                 />
+                </div>
               );
             })}
 
@@ -1239,36 +1356,38 @@ export default function AgentArsweep() {
           </div>
         )}
 
-        <div className="relative shrink-0 border-t border-border bg-background/80 p-3 backdrop-blur-xl md:px-6 md:pb-5 md:pt-4 mb-[calc(env(safe-area-inset-bottom)+8px)] dark:border-white/[0.07] dark:bg-[#050608]/90 dark:shadow-[0_-12px_40px_rgba(0,0,0,0.45)] before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-foreground/15 before:to-transparent dark:before:via-white/15">
-          <form
-            onSubmit={handleSubmit}
-            className="mx-auto w-full max-w-3xl pb-[env(safe-area-inset-bottom)]"
-          >
-            <div className="relative rounded-2xl bg-border p-px shadow-xl">
-              <div className="relative rounded-[15px] bg-card">
-                <Textarea
-                  ref={textareaRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ask about your wallet, tokens, or Solana…"
-                  disabled={isLoading}
-                  className="min-h-[56px] max-h-36 resize-none rounded-[15px] border-0 bg-transparent px-4 py-3.5 pr-16 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-white/92 dark:placeholder:text-white/28"
-                />
-                <button
-                  type="submit"
-                  disabled={!input.trim() || isLoading}
-                  className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-xl bg-foreground text-background shadow-lg transition-all hover:opacity-90 disabled:opacity-30 disabled:shadow-none dark:bg-gradient-to-br dark:from-slate-100 dark:to-slate-300 dark:text-slate-900 dark:hover:from-white dark:hover:to-slate-200"
-                >
-                  <Send className="h-4 w-4" strokeWidth={2.25} />
-                </button>
+        {agentSection === 'chat' ? (
+          <div className="relative shrink-0 border-t border-border bg-background/80 p-3 backdrop-blur-xl md:px-6 md:pb-5 md:pt-4 mb-[calc(env(safe-area-inset-bottom)+8px)] dark:border-white/[0.07] dark:bg-[#050608]/90 dark:shadow-[0_-12px_40px_rgba(0,0,0,0.45)] before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-foreground/15 before:to-transparent dark:before:via-white/15">
+            <form
+              onSubmit={handleSubmit}
+              className="mx-auto w-full max-w-3xl pb-[env(safe-area-inset-bottom)]"
+            >
+              <div className="relative rounded-2xl bg-border p-px shadow-xl">
+                <div className="relative rounded-[15px] bg-card">
+                  <Textarea
+                    ref={textareaRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Ask about your wallet, tokens, or Solana…"
+                    disabled={isLoading}
+                    className="min-h-[56px] max-h-36 resize-none rounded-[15px] border-0 bg-transparent px-4 py-3.5 pr-16 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-white/92 dark:placeholder:text-white/28"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!input.trim() || isLoading}
+                    className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-xl bg-foreground text-background shadow-lg transition-all hover:opacity-90 disabled:opacity-30 disabled:shadow-none dark:bg-gradient-to-br dark:from-slate-100 dark:to-slate-300 dark:text-slate-900 dark:hover:from-white dark:hover:to-slate-200"
+                  >
+                    <Send className="h-4 w-4" strokeWidth={2.25} />
+                  </button>
+                </div>
               </div>
-            </div>
-            <p className="mt-2.5 text-center font-mono text-[10px] tracking-wide text-muted-foreground dark:text-white/32">
-              Enter to send · Shift+Enter new line
-            </p>
-          </form>
-        </div>
+              <p className="mt-2.5 text-center font-mono text-[10px] tracking-wide text-muted-foreground dark:text-white/32">
+                Enter to send · Shift+Enter new line
+              </p>
+            </form>
+          </div>
+        ) : null}
       </div>
 
       <AnimatePresence>
@@ -1314,6 +1433,39 @@ export default function AgentArsweep() {
                   <Plus className="h-4 w-4" />
                   New Chat
                 </motion.button>
+
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAgentSection('chat');
+                      setShowMobileSidebar(false);
+                    }}
+                    className={`flex h-10 items-center justify-center gap-2 rounded-xl border text-xs font-semibold transition-colors ${
+                      agentSection === 'chat'
+                        ? 'border-white/25 bg-white/[0.08] text-white/95'
+                        : 'border-white/[0.10] bg-white/[0.03] text-white/55 hover:bg-white/[0.06] hover:text-white/85'
+                    }`}
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Chat
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAgentSection('prompts');
+                      setShowMobileSidebar(false);
+                    }}
+                    className={`flex h-10 items-center justify-center gap-2 rounded-xl border text-xs font-semibold transition-colors ${
+                      agentSection === 'prompts'
+                        ? 'border-white/25 bg-white/[0.08] text-white/95'
+                        : 'border-white/[0.10] bg-white/[0.03] text-white/55 hover:bg-white/[0.06] hover:text-white/85'
+                    }`}
+                  >
+                    <LayoutList className="h-4 w-4" />
+                    Prompts
+                  </button>
+                </div>
               </div>
               <ScrollArea className="min-h-0 flex-1 p-4">
                 <div className="space-y-5">
@@ -1400,6 +1552,18 @@ export default function AgentArsweep() {
         isOpen={showSyraRisk}
         onClose={() => setShowSyraRisk(false)}
         onSuccess={onSyraRiskSuccess}
+        initialMint={syraPrefillMint}
+        onCancelPayment={() => {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `syra-cancel-${Date.now()}`,
+              role: 'assistant',
+              content: 'Payment cancelled.',
+              timestamp: new Date(),
+            },
+          ]);
+        }}
       />
     </div>
   );
