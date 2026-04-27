@@ -8,33 +8,33 @@ import { useX402Payment } from '@/hooks/useX402Payment';
 import { buildSyraTokenRiskQuestion, fetchSyraTokenRisk } from '@/lib/syraTokenRisk';
 
 function parseX402PriceUsdcFromHeaders(headers: Headers): number | null {
-  // Try common explicit header first.
-  const direct = headers.get('x402-price');
-  if (direct) {
-    const n = Number(direct);
-    if (Number.isFinite(n) && n > 0) return n;
-  }
+  const raw = headers.get('payment-required') || headers.get('PAYMENT-REQUIRED')
+    || headers.get('x402-price') || headers.get('x402-payment-required') || headers.get('x402-payment');
+  if (!raw) return null;
 
-  // Some servers encode requirements as JSON string in a single header.
-  const req = headers.get('x402-payment-required') || headers.get('x402-payment');
-  if (req) {
+  const attempts: string[] = [raw];
+  try { attempts.push(atob(raw)); } catch { /* not base64 */ }
+
+  for (const attempt of attempts) {
     try {
-      const json = JSON.parse(req);
-      const candidates = [
-        (json as any)?.price,
-        (json as any)?.amount,
-        (json as any)?.payment?.price,
-        (json as any)?.payment?.amount,
-        (json as any)?.requirements?.price,
-        (json as any)?.requirements?.amount,
-      ];
+      const json = JSON.parse(attempt);
+      const accepts = (json as any)?.accepts;
+      if (Array.isArray(accepts)) {
+        for (const a of accepts) {
+          if (typeof a?.network === 'string' && a.network.includes('solana')) {
+            const amt = Number(a?.amount);
+            if (Number.isFinite(amt) && amt > 0) return amt / 1_000_000;
+          }
+        }
+        const amt = Number(accepts[0]?.amount);
+        if (Number.isFinite(amt) && amt > 0) return amt / 1_000_000;
+      }
+      const candidates = [(json as any)?.price, (json as any)?.amount];
       for (const c of candidates) {
         const n = typeof c === 'string' ? Number(c) : typeof c === 'number' ? c : NaN;
-        if (Number.isFinite(n) && n > 0) return n;
+        if (Number.isFinite(n) && n > 0) return n > 1000 ? n / 1_000_000 : n;
       }
-    } catch {
-      // ignore
-    }
+    } catch { /* ignore */ }
   }
   return null;
 }
