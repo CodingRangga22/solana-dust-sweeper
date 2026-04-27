@@ -46,7 +46,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
 
         {/* Center — Nav desktop */}
         <nav className="hidden sm:flex absolute left-1/2 -translate-x-1/2 items-center gap-1" aria-label="Main">
-          {[["Docs","/docs"],["Stats","/stats"],["$ASWP","/token"],["Agent","/agent"],["x402","/x402"],["Revoke","/revoke"]].map(([l,p])=>(
+          {[["Docs","/docs"],["Stats","/stats"],["Token","/token"],["Agent","/agent"],["x402","/x402"],["Revoke","/revoke"]].map(([l,p])=>(
             <Link key={p} to={p}
               className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-foreground/60 hover:text-foreground hover:bg-muted/60 transition-colors duration-200"
               style={{ textDecoration: "none" }}
@@ -70,7 +70,7 @@ const Header = ({ onChangeWallet, onDisconnect, walletMismatch }: HeaderProps) =
         <div className="sm:hidden border-b border-border bg-background/90 backdrop-blur-xl shadow-premium-sm" style={{
           padding: "8px 20px 20px",
         }}>
-          {[["Docs","/docs"],["Stats","/stats"],["$ASWP","/token"],["Agent","/agent"],["x402","/x402"],["Revoke","/revoke"]].map(([l,p])=>(
+          {[["Docs","/docs"],["Stats","/stats"],["Token","/token"],["Agent","/agent"],["x402","/x402"],["Revoke","/revoke"]].map(([l,p])=>(
             <Link key={p} to={p} onClick={() => setMobileOpen(false)}
               style={{ fontSize: 15, color: "hsl(var(--foreground))", textDecoration: "none", padding: "12px 8px", borderBottom: "1px solid hsl(var(--border))", display: "block" }}
             >{l}</Link>

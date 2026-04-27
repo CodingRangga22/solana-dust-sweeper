@@ -91,7 +91,7 @@ const Hero = ({ scanning = false, scanned = false, onScan, onRescan, sweeping = 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginTop: 8 }}>
               <p style={{ ...M, fontSize: 11, color: "hsl(var(--muted-foreground))" }}>Your wallet is clean! Share it.</p>
               <div style={{ display: "flex", gap: 10 }}>
-                <a href="https://twitter.com/intent/tweet?text=Just+cleaned+my+Solana+wallet+with+@Arsweep_AI"
+                <a href="https://x.com/intent/tweet?text=Just+cleaned+my+Solana+wallet+with+@Arsweep_Agent"
                   target="_blank" rel="noopener noreferrer"
                   style={{ ...M, fontSize: 12, display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", borderRadius: 8, background: "hsl(var(--foreground))", border: "1px solid hsl(var(--border))", color: "hsl(var(--background))", textDecoration: "none" }}>
                   Share on X

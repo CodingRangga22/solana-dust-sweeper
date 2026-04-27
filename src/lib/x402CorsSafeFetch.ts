@@ -17,24 +17,9 @@ function stripMisplacedExposeHeaders(req: Request): Request {
   }
   if (!changed) return req;
 
-  const init: RequestInit = {
-    method: req.method,
-    headers,
-    mode: req.mode,
-    credentials: req.credentials,
-    cache: req.cache,
-    redirect: req.redirect,
-    referrer: req.referrer,
-    referrerPolicy: req.referrerPolicy,
-    integrity: req.integrity,
-    keepalive: req.keepalive,
-    signal: req.signal,
-  };
-  if (req.method !== 'GET' && req.method !== 'HEAD' && req.body != null) {
-    init.body = req.body;
-    (init as RequestInit & { duplex?: string }).duplex = 'half';
-  }
-  return new Request(req.url, init);
+  // Important: don't manually recompose RequestInit (can cause browser TypeError).
+  // Recreate the request by cloning the existing one and overriding headers only.
+  return new Request(req, { headers });
 }
 
 export function createCorsSafeFetchForX402(baseFetch: typeof fetch): typeof fetch {

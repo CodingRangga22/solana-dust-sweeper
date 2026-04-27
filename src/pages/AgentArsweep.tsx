@@ -8,7 +8,6 @@ import {
   Plus,
   Trash2,
   Zap,
-  Crown,
   ArrowLeft,
   Menu,
   Copy,
@@ -22,6 +21,8 @@ import {
   Flame,
   ShieldAlert,
   LayoutList,
+  LayoutDashboard,
+  BookOpenText,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ArsweepLogo from '@/components/ArsweepLogo';
@@ -32,6 +33,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from '@/components/ai-agent/ChatMessage';
 import { X402PaymentModal } from '@/components/ai-agent/X402PaymentModal';
+import { SyraRiskModal } from '@/components/ai-agent/SyraRiskModal';
+import { PromptsLibrary } from '@/components/ai-agent/PromptsLibrary';
 import ThemeToggle from '@/components/ThemeToggle';
 import { executeSweepNative, SweepAccount } from '@/lib/sweepNative';
 import { arsweepApi } from '@/services/arsweepApi';
@@ -42,6 +45,13 @@ import { useWallets } from '@privy-io/react-auth/solana';
 import { toast } from 'sonner';
 import { useArsweepWalletAuthUi } from '@/hooks/useArsweepWalletAuthUi';
 import { isDevnet } from '@/config/env';
+import {
+  createDefaultLibraryPrompts,
+  loadAgentPrompts,
+  saveAgentPrompts,
+  type ArsweepAgentPrompt,
+  type ArsweepPromptTool,
+} from '@/lib/agentPrompts';
 
 const ANON_STORAGE_KEY = 'arsweep_agent_anon_id';
 const sessionsStorageKey = (userId: string) => `arsweep_agent_sessions_${userId}`;
@@ -197,6 +207,45 @@ const AgentAmbientBackground = () => (
   </>
 );
 
+const XIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M4 4l11.733 16h4.267l-11.733 -16z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M4 20l6.768 -6.768"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M20 4l-6.768 6.768"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const TelegramIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M21.8 4.6L2.9 11.9c-1 .4-.9 1.9.1 2.2l4.7 1.5 1.8 5.3c.3.9 1.5 1.1 2.1.4l2.6-3.1 5 3.6c.8.6 2 .1 2.2-.9l2.8-15.4c.2-1.2-1-2.1-2.1-1.5z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
+    <path d="M8.1 15.4l11.6-8.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <path d="M7.8 15.5l4.5 3.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 export default function AgentArsweep() {
   const navigate = useNavigate();
   const { sendTransaction } = usePrivySendTransaction();
@@ -228,6 +277,8 @@ export default function AgentArsweep() {
   const [showPayment, setShowPayment] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [paymentType, setPaymentType] = useState<'analyze' | 'report' | 'roast' | 'rugcheck' | 'planner'>('analyze');
+  const [showSyraRisk, setShowSyraRisk] = useState(false);
+  const [agentSection, setAgentSection] = useState<'chat' | 'prompts'>('chat');
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const currentSessionIdRef = useRef<string>('');
@@ -235,6 +286,14 @@ export default function AgentArsweep() {
   const [walletMenuOpen, setWalletMenuOpen] = useState(false);
   const walletMenuRef = useRef<HTMLDivElement>(null);
   const aswp = useAswpAccess(publicKey);
+
+  const libraryPrompts = useMemo(() => createDefaultLibraryPrompts(), []);
+  const [myPrompts, setMyPrompts] = useState<ArsweepAgentPrompt[]>(() => loadAgentPrompts());
+
+  const persistMyPrompts = useCallback((next: ArsweepAgentPrompt[]) => {
+    setMyPrompts(next);
+    saveAgentPrompts(next);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -358,6 +417,43 @@ export default function AgentArsweep() {
     bumpFetchAndClear();
     setShowMobileSidebar(false);
   };
+
+  const handleCreatePrompt = useCallback(
+    (p: { title: string; description?: string; tool: ArsweepPromptTool; prompt: string }) => {
+      const now = Date.now();
+      const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `p-${now}-${Math.random().toString(36).slice(2, 9)}`;
+      const row: ArsweepAgentPrompt = {
+        id,
+        title: p.title,
+        description: p.description,
+        tool: p.tool,
+        prompt: p.prompt,
+        createdAt: now,
+        updatedAt: now,
+      };
+      persistMyPrompts([row, ...myPrompts].slice(0, 100));
+    },
+    [myPrompts, persistMyPrompts],
+  );
+
+  const handleUsePrompt = useCallback(
+    (p: ArsweepAgentPrompt) => {
+      setAgentSection('chat');
+      setInput(p.prompt);
+      queueMicrotask(() => textareaRef.current?.focus());
+
+      if (p.tool === 'syraRisk') {
+        setShowSyraRisk(true);
+        return;
+      }
+
+      if (p.tool !== 'chat') {
+        setPaymentType(p.tool);
+        setShowPayment(true);
+      }
+    },
+    [],
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -552,7 +648,7 @@ export default function AgentArsweep() {
           {
             id: Date.now().toString(),
             role: 'assistant',
-            content: 'Tidak ada akun kosong yang bisa di-sweep.',
+            content: 'No empty token accounts found to sweep.',
             timestamp: new Date(),
           },
         ]);
@@ -568,7 +664,7 @@ export default function AgentArsweep() {
         {
           id: Date.now().toString(),
           role: 'assistant',
-          content: `✅ Sweep berhasil!\n${totalClosed} akun ditutup\n${totalSOL.toFixed(4)} SOL direcovery\nSignature: ${results[0]?.signature}`,
+          content: `✅ Sweep successful!\n${totalClosed} accounts closed\n${totalSOL.toFixed(4)} SOL recovered\nSignature: ${results[0]?.signature}`,
           timestamp: new Date(),
         },
       ]);
@@ -578,7 +674,7 @@ export default function AgentArsweep() {
         {
           id: Date.now().toString(),
           role: 'assistant',
-          content: `❌ Sweep gagal: ${err instanceof Error ? err.message : 'Unknown error'}`,
+          content: `❌ Sweep failed: ${err instanceof Error ? err.message : 'Unknown error'}`,
           timestamp: new Date(),
         },
       ]);
@@ -613,19 +709,7 @@ export default function AgentArsweep() {
     },
   ];
 
-  const premiumFeatures: {
-    type: 'analyze' | 'report' | 'roast' | 'rugcheck' | 'planner';
-    label: string;
-    desc: string;
-    price: string;
-    Icon: typeof Sparkles;
-  }[] = [
-    { type: 'analyze', label: 'AI Analysis', desc: 'Deep wallet insights', price: '$0.10', Icon: Sparkles },
-    { type: 'report', label: 'Sweep Report', desc: 'Quick dust check', price: '$0.05', Icon: FileBarChart },
-    { type: 'roast', label: 'Wallet Roast', desc: 'Score + AI roast', price: '$0.05', Icon: Flame },
-    { type: 'rugcheck', label: 'Rug Detector', desc: 'Find dangerous tokens', price: '$0.10', Icon: ShieldAlert },
-    { type: 'planner', label: 'Sweep Planner', desc: 'Optimal sweep plan', price: '$0.05', Icon: LayoutList },
-  ];
+  // (removed sidebar "Premium" section; premium tools still available via Prompts & intent routing)
 
   const onPremiumPaid = (data: unknown) => {
     setMessages((prev) => [
@@ -639,6 +723,75 @@ export default function AgentArsweep() {
       },
     ]);
     setShowPayment(false);
+  };
+
+  const onSyraRiskSuccess = (data: unknown) => {
+    const rawText =
+      typeof (data as any)?.raw?.response === 'string'
+        ? String((data as any).raw.response)
+        : typeof (data as any)?.raw?.raw === 'string'
+          ? String((data as any).raw.raw)
+          : '';
+    const onchain = (data as any)?.onchain as
+      | undefined
+      | { name?: string | null; symbol?: string | null; image?: string | null; mutable?: boolean; updateAuthority?: string | null };
+    const syraMentionsMutable = /\bmutable\b/i.test(rawText);
+    const mutableMismatch =
+      typeof onchain?.mutable === 'boolean' && syraMentionsMutable ? (onchain.mutable ? null : 'Syra mentioned mutable metadata, but on-chain shows immutable.') : null;
+    const mint = String((data as any)?.mint ?? '').trim();
+    const verdict = typeof (data as any)?.level === 'string' ? String((data as any).level).toUpperCase() : '';
+    const reason = String((data as any)?.reason ?? '').trim();
+    const detailedReasonFromSyra = (() => {
+      // Try to extract "Reason: ..." line(s) from Syra free-text response.
+      if (!rawText) return '';
+      const m = rawText.match(/^\s*Reason:\s*(.+)\s*$/im);
+      return m?.[1]?.trim() ?? '';
+    })();
+    const summary =
+      /^Syra verdict:\s*/i.test(reason) ? (detailedReasonFromSyra || '') : reason;
+
+    const onchainLines = onchain
+      ? [
+          '**On-chain checks (Helius DAS / getAsset):**',
+          onchain.name || onchain.symbol
+            ? `- Token: **${String(onchain.name ?? '').trim() || '—'}**${onchain.symbol ? ` (\`${String(onchain.symbol)}\`)` : ''}`
+            : null,
+          typeof onchain.mutable === 'boolean' ? `- Metadata mutable: **${onchain.mutable ? 'YES' : 'NO'}**` : null,
+          typeof onchain.updateAuthority === 'string'
+            ? `- Update authority: \`${onchain.updateAuthority}\``
+            : onchain.updateAuthority === null
+              ? `- Update authority: (unknown)`
+              : null,
+          '\n**Listings / pages:**',
+          mint ? `- [Solscan](https://solscan.io/token/${mint})` : null,
+          mint ? `- [Birdeye](https://birdeye.so/token/${mint}?chain=solana)` : null,
+          mint ? `- [Jupiter](https://jup.ag/swap/SOL-${mint})` : null,
+          mutableMismatch ? `\n> Note: ${mutableMismatch}` : null,
+        ]
+          .filter(Boolean)
+          .join('\n')
+      : '';
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `syra-${Date.now()}`,
+        role: 'assistant',
+        content:
+          typeof (data as any)?.level === 'string'
+            ? [
+                `**Syra token risk: ${verdict || 'UNKNOWN'}**`,
+                mint ? `\n\n**Mint:** \`${mint}\`` : null,
+                summary ? `\n\n**Summary:** ${summary}` : null,
+                verdict ? `\n\n**Verdict:** **${verdict}**` : null,
+                onchainLines ? `\n\n---\n\n${onchainLines}` : null,
+                rawText ? `\n\n---\n\n**Syra response:**\n\n${rawText}` : null,
+              ]
+                .filter(Boolean)
+                .join('')
+            : 'Syra token risk complete.',
+        timestamp: new Date(),
+      },
+    ]);
   };
 
   const renderSessionList = (list: ChatSession[]) =>
@@ -692,6 +845,33 @@ export default function AgentArsweep() {
             <Plus className="relative h-4 w-4" />
             <span className="relative">New Chat</span>
           </motion.button>
+
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setAgentSection('chat')}
+              className={`flex h-10 items-center justify-center gap-2 rounded-xl border text-xs font-semibold transition-colors ${
+                agentSection === 'chat'
+                  ? 'border-white/25 bg-white/[0.08] text-white/95'
+                  : 'border-border bg-card/70 text-muted-foreground hover:bg-muted/40 hover:text-foreground dark:border-white/[0.10] dark:bg-white/[0.03] dark:text-white/55 dark:hover:bg-white/[0.06] dark:hover:text-white/85'
+              }`}
+            >
+              <Sparkles className="h-4 w-4" />
+              Chat
+            </button>
+            <button
+              type="button"
+              onClick={() => setAgentSection('prompts')}
+              className={`flex h-10 items-center justify-center gap-2 rounded-xl border text-xs font-semibold transition-colors ${
+                agentSection === 'prompts'
+                  ? 'border-white/25 bg-white/[0.08] text-white/95'
+                  : 'border-border bg-card/70 text-muted-foreground hover:bg-muted/40 hover:text-foreground dark:border-white/[0.10] dark:bg-white/[0.03] dark:text-white/55 dark:hover:bg-white/[0.06] dark:hover:text-white/85'
+              }`}
+            >
+              <LayoutList className="h-4 w-4" />
+              Prompts
+            </button>
+          </div>
         </div>
 
         <ScrollArea className="min-h-0 flex-1 px-3 py-4">
@@ -721,42 +901,50 @@ export default function AgentArsweep() {
         </ScrollArea>
 
         <div className="border-t border-border bg-gradient-to-t from-muted/40 to-transparent p-3 dark:border-white/[0.06] dark:from-black/40">
-          <div className="mb-3 flex items-center gap-2 px-0.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted ring-1 ring-border dark:bg-gradient-to-br dark:from-white/15 dark:to-slate-800/40 dark:ring-white/15">
-              <Crown className="h-3.5 w-3.5 text-foreground/85 dark:text-white/85" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/80 dark:text-white/70">
-                Premium
-              </span>
-              <p className="text-[9px] text-muted-foreground dark:text-white/35">Paid tools · x402</p>
-            </div>
-            <Zap className="h-3.5 w-3.5 shrink-0 text-muted-foreground dark:text-white/45" />
-          </div>
-          <div className="space-y-2">
-            {premiumFeatures.map((f) => (
-              <motion.button
-                key={f.type}
-                type="button"
-                whileTap={{ scale: 0.98 }}
-                onClick={() => {
-                  setPaymentType(f.type);
-                  setShowPayment(true);
-                }}
-                className="group flex w-full items-center gap-2.5 rounded-xl border border-border bg-card/80 px-2.5 py-2.5 text-left shadow-sm transition-all hover:bg-muted/50 dark:border-white/[0.07] dark:bg-white/[0.04] dark:shadow-black/25 dark:hover:border-white/22 dark:hover:bg-white/[0.07]"
-              >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted ring-1 ring-border transition-transform group-hover:scale-[1.02] dark:bg-gradient-to-br dark:from-white/[0.08] dark:to-white/[0.02] dark:ring-white/[0.08]">
-                  <f.Icon className="h-3.5 w-3.5 text-foreground/80 dark:text-white/80" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold text-foreground dark:text-white/90">{f.label}</p>
-                  <p className="truncate text-[9px] text-muted-foreground dark:text-white/38">{f.desc}</p>
-                </div>
-                <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-foreground ring-1 ring-border dark:bg-white/[0.08] dark:text-white/85 dark:ring-white/15">
-                  {f.price}
-                </span>
-              </motion.button>
-            ))}
+          <p className="mb-2.5 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground dark:text-white/40">
+            Links
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <a
+              href="https://x.com/Arsweep_Agent"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-10 items-center gap-2 rounded-xl border border-border bg-card/70 px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground dark:border-white/[0.10] dark:bg-white/[0.03] dark:text-white/60 dark:hover:bg-white/[0.06] dark:hover:text-white/90"
+              aria-label="Arsweep on X (Twitter)"
+              translate="no"
+            >
+              <XIcon className="h-4 w-4" />
+              X
+            </a>
+            <a
+              href="https://t.me/arsweepalert"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-10 items-center gap-2 rounded-xl border border-border bg-card/70 px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground dark:border-white/[0.10] dark:bg-white/[0.03] dark:text-white/60 dark:hover:bg-white/[0.06] dark:hover:text-white/90"
+              aria-label="Arsweep Telegram"
+              translate="no"
+            >
+              <TelegramIcon className="h-4 w-4" />
+              Telegram
+            </a>
+            <button
+              type="button"
+              onClick={() => navigate('/docs')}
+              className="flex h-10 items-center gap-2 rounded-xl border border-border bg-card/70 px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground dark:border-white/[0.10] dark:bg-white/[0.03] dark:text-white/60 dark:hover:bg-white/[0.06] dark:hover:text-white/90"
+              aria-label="Docs"
+            >
+              <BookOpenText className="h-4 w-4" />
+              Docs
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/app')}
+              className="flex h-10 items-center gap-2 rounded-xl border border-border bg-card/70 px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground dark:border-white/[0.10] dark:bg-white/[0.03] dark:text-white/60 dark:hover:bg-white/[0.06] dark:hover:text-white/90"
+              aria-label="Go to App"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              Arsweep App
+            </button>
           </div>
         </div>
       </aside>
@@ -817,7 +1005,7 @@ export default function AgentArsweep() {
                 <div className="flex flex-col items-end gap-1">
                   {showSwitchFromEvmHint ? (
                     <span className="max-w-[210px] text-right text-[9px] leading-tight text-muted-foreground dark:text-sky-200/85">
-                      Arsweep pakai Solana. Hubungkan wallet Solana (Phantom, …).
+                      Arsweep uses Solana. Connect a Solana wallet (Phantom, etc.).
                     </span>
                   ) : null}
                   <button
@@ -828,13 +1016,13 @@ export default function AgentArsweep() {
                       void connectSolana().finally(() => setAgentPrivyConnectBusy(false));
                     }}
                     className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted/60 disabled:opacity-60 dark:border-white/12 dark:bg-white/[0.08] dark:text-white/85 dark:hover:bg-white/[0.12]"
-                    title="Hubungkan wallet Solana lewat Privy"
+                    title="Connect a Solana wallet via Privy"
                   >
                     {agentPrivyConnectBusy ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     ) : null}
                     <span className="font-mono text-xs">
-                      {agentPrivyConnectBusy ? 'Membuka…' : 'Hubungkan Solana'}
+                      {agentPrivyConnectBusy ? 'Opening…' : 'Connect Solana'}
                     </span>
                   </button>
                 </div>
@@ -920,8 +1108,19 @@ export default function AgentArsweep() {
           </div>
         </header>
 
-        <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 md:px-6">
-          <div className="mx-auto w-full max-w-3xl space-y-5 py-6 pb-10">
+        {agentSection === 'prompts' ? (
+          <PromptsLibrary
+            libraryPrompts={libraryPrompts}
+            myPrompts={myPrompts}
+            onCreatePrompt={handleCreatePrompt}
+            onUsePrompt={handleUsePrompt}
+            onDeletePrompt={(id) => {
+              persistMyPrompts(myPrompts.filter((p) => p.id !== id));
+            }}
+          />
+        ) : (
+          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 md:px-6">
+            <div className="mx-auto w-full max-w-3xl space-y-5 py-6 pb-10">
             {messages.length === 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
@@ -1036,8 +1235,9 @@ export default function AgentArsweep() {
                 <p>{error}</p>
               </div>
             )}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="relative shrink-0 border-t border-border bg-background/80 p-3 backdrop-blur-xl md:px-6 md:pb-5 md:pt-4 mb-[calc(env(safe-area-inset-bottom)+8px)] dark:border-white/[0.07] dark:bg-[#050608]/90 dark:shadow-[0_-12px_40px_rgba(0,0,0,0.45)] before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-foreground/15 before:to-transparent dark:before:via-white/15">
           <form
@@ -1134,31 +1334,54 @@ export default function AgentArsweep() {
                 </div>
               </ScrollArea>
               <div className="border-t border-white/[0.06] bg-gradient-to-t from-black/30 to-transparent p-4">
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white/65">Premium</p>
-                <div className="space-y-2">
-                  {premiumFeatures.map((f) => (
-                    <button
-                      key={f.type}
-                      type="button"
-                      onClick={() => {
-                        setPaymentType(f.type);
-                        setShowPayment(true);
-                        setShowMobileSidebar(false);
-                      }}
-                      className="flex w-full items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.04] px-2.5 py-2.5 text-left transition-colors hover:border-white/25 hover:bg-white/[0.07]"
-                    >
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] ring-1 ring-white/[0.08]">
-                        <f.Icon className="h-3.5 w-3.5 text-white/80" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold text-white/90">{f.label}</p>
-                        <p className="text-[9px] text-white/38">{f.desc}</p>
-                      </div>
-                      <span className="shrink-0 rounded-md bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-bold text-white/85 ring-1 ring-white/15">
-                        {f.price}
-                      </span>
-                    </button>
-                  ))}
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white/65">Links</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href="https://x.com/Arsweep_Agent"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-10 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 text-xs font-semibold text-white/80 transition-colors hover:border-white/25 hover:bg-white/[0.07]"
+                    aria-label="Arsweep on X (Twitter)"
+                    translate="no"
+                  >
+                    <XIcon className="h-4 w-4" />
+                    X
+                  </a>
+                  <a
+                    href="https://t.me/arsweepalert"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-10 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 text-xs font-semibold text-white/80 transition-colors hover:border-white/25 hover:bg-white/[0.07]"
+                    aria-label="Arsweep Telegram"
+                    translate="no"
+                  >
+                    <TelegramIcon className="h-4 w-4" />
+                    Telegram
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate('/docs');
+                      setShowMobileSidebar(false);
+                    }}
+                    className="flex h-10 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 text-xs font-semibold text-white/80 transition-colors hover:border-white/25 hover:bg-white/[0.07]"
+                    aria-label="Docs"
+                  >
+                    <BookOpenText className="h-4 w-4" />
+                    Docs
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate('/app');
+                      setShowMobileSidebar(false);
+                    }}
+                    className="flex h-10 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 text-xs font-semibold text-white/80 transition-colors hover:border-white/25 hover:bg-white/[0.07]"
+                    aria-label="Go to App"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Arsweep App
+                  </button>
                 </div>
               </div>
             </motion.aside>
@@ -1171,6 +1394,12 @@ export default function AgentArsweep() {
         onClose={() => setShowPayment(false)}
         serviceType={paymentType}
         onPaidSuccess={onPremiumPaid}
+      />
+
+      <SyraRiskModal
+        isOpen={showSyraRisk}
+        onClose={() => setShowSyraRisk(false)}
+        onSuccess={onSyraRiskSuccess}
       />
     </div>
   );

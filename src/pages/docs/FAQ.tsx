@@ -33,7 +33,7 @@ export default function FAQ() {
         <p className="font-semibold mb-2">Still have questions?</p>
         <p className="text-sm text-muted-foreground mb-4">Reach out on X or join our Telegram.</p>
         <div className="flex justify-center gap-3 flex-wrap">
-          <a href="https://x.com/Ars​weep_AI" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition">@Arsweep_AI on X</a>
+          <a href="https://x.com/Arsweep_Agent" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition">@Arsweep_Agent on X</a>
           <a href="https://t.me/arsweepalert" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg border text-sm font-medium hover:bg-muted transition">Telegram Support</a>
         </div>
       </div>

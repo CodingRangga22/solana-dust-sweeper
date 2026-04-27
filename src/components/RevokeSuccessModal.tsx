@@ -32,7 +32,7 @@ export default function RevokeSuccessModal({ open, onOpenChange, walletAddress, 
   }, [open]);
 
   const shareText = encodeURIComponent(
-    `🔐 Just revoked ${approvalsRevoked} delegate approvals on Solana with Arsweep.\n\nLock down your wallet: arsweep.fun/revoke\n\n#Solana #WalletSecurity @Arsweep_AI`
+    `🔐 Just revoked ${approvalsRevoked} delegate approvals on Solana with Arsweep.\n\nLock down your wallet: arsweep.fun/revoke\n\n#Solana #WalletSecurity @Arsweep_Agent`
   );
   const shareUrl = `https://x.com/intent/tweet?text=${shareText}`;
   const tgText = encodeURIComponent(`🔐 Revoked ${approvalsRevoked} delegate approvals.\n\nTry it: arsweep.fun/revoke`);

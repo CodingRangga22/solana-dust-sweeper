@@ -27,6 +27,7 @@ cp .env.example .env
 - `VITE_PRIVY_APP_ID` \(required\)
 - `VITE_NETWORK` or `NEXT_PUBLIC_NETWORK` \(optional, defaults to `devnet`\)
 - `VITE_HELIUS_RPC_URL` / `VITE_RPC_ENDPOINT` / `NEXT_PUBLIC_RPC_URL` \(optional\)
+- `VITE_SYRA_API_BASE=/syra` \(recommended for Syra x402 in browser\)
 
 4) Run dev server:
 
@@ -41,6 +42,11 @@ bun run dev
 - `bun run lint`: ESLint
 - `bun run test`: Vitest run
 - `bun run test:watch`: Vitest watch
+
+## Syra x402 note (why “Invalid payment required response” can happen)
+Syra’s paid endpoints use HTTP `402 Payment Required` and return **x402 payment requirement headers**.  
+In many browsers, those headers are **not readable** unless the response includes proper CORS expose headers for your origin.  
+That’s why this repo uses a **same-origin proxy** at `/syra` in dev (Vite proxy) and provides an optional `/syra/*` proxy in `server/index.ts` for production deployments.
 
 ## Deployment (single build, two subdomains)
 Deploy the **same SPA build** to two subdomains:

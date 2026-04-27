@@ -59,7 +59,7 @@ const sections = [
     ],
     links: [
       { label: "Join Discord", href: "https://discord.gg/D2rtvK3fBs" },
-      { label: "Follow on X", href: "https://x.com/Arsweep_AI" },
+      { label: "Follow on X", href: "https://x.com/Arsweep_Agent" },
     ],
   },
 ];

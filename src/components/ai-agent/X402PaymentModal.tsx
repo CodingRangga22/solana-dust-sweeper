@@ -123,7 +123,7 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
 
         <DialogTitle className="sr-only">Payment Modal</DialogTitle>
         <DialogDescription className="sr-only">
-          Pembayaran fitur premium Arsweep melalui x402 dan facilitator Pay AI di Solana mainnet.
+          Arsweep premium payment via x402 and Pay AI facilitator on Solana mainnet.
         </DialogDescription>
 
         <div className="relative px-6 pb-2 pt-6">
@@ -154,13 +154,13 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
             <p className="mt-3 border-t border-white/[0.06] pt-3 text-xs leading-relaxed text-white/45">
               {canRunFree ? (
                 <>
-                  Akses gratis karena wallet Anda memenuhi tier ASWP{' '}
-                  <strong className="text-white/70">{aswp.tierLabel ?? 'holder'}</strong>. Tidak ada pembayaran USDC.
+                  Free access because your wallet qualifies for ASWP tier{' '}
+                  <strong className="text-white/70">{aswp.tierLabel ?? 'holder'}</strong>. No USDC payment required.
                 </>
               ) : (
                 <>
-                  Pembayaran USDC di <strong className="text-white/70">Solana mainnet</strong> dari wallet Anda. Setelah
-                  mengonfirmasi, wallet akan meminta tanda tangan transaksi sebelum fitur dijalankan.
+                  USDC payment on <strong className="text-white/70">Solana mainnet</strong> from your wallet. After you
+                  confirm, your wallet will ask you to sign a transaction before the tool runs.
                 </>
               )}
             </p>
@@ -168,19 +168,19 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
 
           {!connected || !publicKey ? (
             <p className="rounded-lg border border-white/20 bg-white/[0.06] px-3 py-2.5 text-sm text-white/85">
-              Hubungkan wallet terlebih dahulu.
+              Connect your wallet first.
             </p>
           ) : !signTransaction ? (
             <p className="rounded-lg border border-white/20 bg-white/[0.06] px-3 py-2.5 text-sm text-white/85">
-              Wallet ini tidak mengekspos penandatanganan transaksi tunggal. Coba Phantom / Solflare di desktop.
+              This wallet does not expose single-transaction signing. Try Phantom / Solflare on desktop.
             </p>
           ) : (
             <div className="space-y-2 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 text-sm shadow-sm">
-              <p className="font-medium text-white/90">Saldo mainnet (untuk pembayaran)</p>
+              <p className="font-medium text-white/90">Mainnet balances (for payment)</p>
               {balanceLoading ? (
                 <p className="flex items-center gap-2 text-white/45">
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-white/70" />
-                  Memuat saldo USDC…
+                  Loading USDC balance…
                 </p>
               ) : (
                 <>
@@ -191,14 +191,14 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
                     </span>
                   </p>
                   <p className="text-xs text-white/40">
-                    SOL (referensi):{' '}
+                    SOL (reference):{' '}
                     <span className="font-mono tabular-nums text-white/60">
                       {solLamports != null ? (solLamports / 1e9).toFixed(6) : '—'}
                     </span>
                     {solLamports != null && solLamports < minSolLamports ? (
                       <span className="text-white/70">
                         {' '}
-                        · Biaya jaringan biasanya ditanggung facilitator; jika gagal, tambah sedikit SOL.
+                        · Network fees are usually covered by the facilitator; if it fails, add a little SOL.
                       </span>
                     ) : null}
                   </p>
@@ -209,9 +209,9 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
 
           {walletReady && !balanceLoading && usdcBalance != null && !usdcOk && (
             <div className="rounded-xl border border-red-500/35 bg-red-950/30 p-3 text-sm text-red-200/95">
-              Saldo USDC Anda di Solana mainnet tidak cukup untuk transaksi ini. Diperlukan setidaknya{' '}
-              <span className="font-mono font-medium text-red-100">{priceUsdc.toFixed(2)} USDC</span>. Isi USDC mainnet di
-              wallet ini lalu coba lagi.
+              Your Solana mainnet USDC balance is not enough for this transaction. You need at least{' '}
+              <span className="font-mono font-medium text-red-100">{priceUsdc.toFixed(2)} USDC</span>. Top up mainnet USDC
+              in this wallet and try again.
             </div>
           )}
 
@@ -239,12 +239,12 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
             <span className="leading-snug">
               {canRunFree ? (
                 <>
-                  Saya mengerti fitur ini gratis karena tier ASWP, dan permintaan akan dijalankan atas wallet saya.
+                  I understand this tool is free due to my ASWP tier, and the request will run using my wallet.
                 </>
               ) : (
                 <>
-                  Saya mengerti bahwa saya akan <strong className="text-white/85">menandatangani</strong> transaksi pembayaran
-                  USDC sebesar {priceDisplay} di Solana mainnet, dan fitur premium hanya berjalan setelah pembayaran berhasil.
+                  I understand I will <strong className="text-white/85">sign</strong> a USDC payment transaction of{' '}
+                  {priceDisplay} on Solana mainnet, and the premium tool will only run after payment succeeds.
                 </>
               )}
             </span>
@@ -258,17 +258,17 @@ export function X402PaymentModal({ isOpen, onClose, serviceType, onPaidSuccess }
               'h-12 w-full rounded-xl font-semibold shadow-lg transition-all',
               'gradient-bg gradient-bg-hover text-[#05080d]',
               'hover:shadow-black/30',
-              // Shadcn button base applies disabled:opacity-50; override to avoid text vanishing.
-              'disabled:opacity-100 disabled:bg-white/[0.08] disabled:text-white/45 disabled:shadow-none',
+              // Keep disabled state readable (dark text on a lightened surface).
+              'disabled:opacity-100 disabled:bg-white/80 disabled:text-[#05080d] disabled:shadow-none',
             )}
           >
             {isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Menunggu tanda tangan / memproses…
+                Waiting for signature / processing…
               </>
             ) : (
-              canRunFree ? `Jalankan gratis (ASWP)` : `Tanda tangani & bayar ${priceDisplay}`
+              canRunFree ? `Run for free (ASWP)` : `Sign & pay ${priceDisplay}`
             )}
           </Button>
         </div>

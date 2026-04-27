@@ -51,7 +51,7 @@ const ChatWidget = () => {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full gradient-bg shadow-lg flex items-center justify-center text-primary-foreground hover:shadow-[0_0_30px_hsla(162,93%,51%,0.3)] transition-shadow duration-300"
+        className="fixed bottom-6 right-6 z-[70] w-14 h-14 rounded-full gradient-bg shadow-lg flex items-center justify-center text-primary-foreground hover:shadow-[0_0_30px_hsla(162,93%,51%,0.3)] transition-shadow duration-300"
         aria-label="Customer Support"
       >
         {open ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
@@ -68,7 +68,7 @@ const ChatWidget = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 glass rounded-2xl overflow-hidden shadow-[0_8px_32px_hsla(0,0%,0%,0.5)]"
+            className="fixed bottom-24 right-6 z-[70] w-80 sm:w-96 glass rounded-2xl overflow-hidden shadow-[0_8px_32px_hsla(0,0%,0%,0.5)]"
           >
             {/* Header */}
             <div className="gradient-bg px-5 py-4 flex items-center gap-3">

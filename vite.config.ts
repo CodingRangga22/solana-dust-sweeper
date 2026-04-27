@@ -10,6 +10,19 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     hmr: { overlay: false },
+    proxy: {
+      /**
+       * Syra x402 endpoints often don't expose payment headers to arbitrary browser origins.
+       * Proxying through Vite makes the request same-origin (localhost) so the x402 client can
+       * read 402 requirements + retry with proof.
+       */
+      "/syra": {
+        target: "https://api.syraa.fun",
+        changeOrigin: true,
+        secure: true,
+        rewrite: (p) => p.replace(/^\/syra/, ""),
+      },
+    },
   },
   plugins: [
     nodePolyfills({

@@ -294,7 +294,7 @@ export default function RevokePage() {
     const flagged = approvals.filter((a) => isKnownMaliciousDelegate(a.delegate, delegateLabels)).length;
     const wallet = owner ? short(owner.toBase58()) : "my wallet";
     const text = encodeURIComponent(
-      `🔐 Just scanned delegate approvals on Solana with Arsweep Revoke.\n\nWallet: ${wallet}\nApprovals: ${approvalsCount}\nDelegates: ${delegates}\nFlagged: ${flagged}\n\nRevoke approvals: arsweep.fun/revoke\n\n#Solana #WalletSecurity @Arsweep_AI`
+      `🔐 Just scanned delegate approvals on Solana with Arsweep Revoke.\n\nWallet: ${wallet}\nApprovals: ${approvalsCount}\nDelegates: ${delegates}\nFlagged: ${flagged}\n\nRevoke approvals: arsweep.fun/revoke\n\n#Solana #WalletSecurity @Arsweep_Agent`
     );
     return `https://x.com/intent/tweet?text=${text}`;
   }, [approvals, delegateLabels, owner]);

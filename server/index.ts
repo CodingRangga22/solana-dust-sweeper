@@ -9,6 +9,84 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+// ─── SYRA PROXY (x402 CORS helper) ─────────────────────
+// In browsers, Syra's 402 payment requirement headers may not be readable due to CORS.
+// Proxying through our server makes it same-origin so @x402/fetch can parse + retry with proof.
+const SYRA_UPSTREAM = (process.env.SYRA_UPSTREAM || 'https://api.syraa.fun').replace(/\/$/, '')
+const X402_EXPOSE = [
+  'x402-payment-required',
+  'x402-payment',
+  'x402-version',
+  'x402-network',
+  'x402-scheme',
+  'x402-schemes',
+  'x402-price',
+  'x402-resource',
+  'x402-accept',
+  'x402-error',
+]
+
+function mergeExpose(existing: string | null, add: string[]): string {
+  const set = new Set<string>()
+  for (const s of (existing || '').split(',')) {
+    const t = s.trim()
+    if (t) set.add(t)
+  }
+  for (const s of add) set.add(s)
+  return Array.from(set).join(', ')
+}
+
+app.all('/syra/*', async (req, res) => {
+  try {
+    const upstreamPath = req.originalUrl.replace(/^\/syra/, '')
+    const upstreamUrl = `${SYRA_UPSTREAM}${upstreamPath}`
+
+    // Forward request headers, but avoid hop-by-hop headers.
+    const headers: Record<string, string> = {}
+    for (const [k, v] of Object.entries(req.headers)) {
+      if (v == null) continue
+      const key = k.toLowerCase()
+      if (key === 'host' || key === 'connection' || key === 'content-length') continue
+      if (Array.isArray(v)) headers[k] = v.join(', ')
+      else headers[k] = String(v)
+    }
+
+    const hasBody = req.method !== 'GET' && req.method !== 'HEAD'
+    const body =
+      hasBody && req.body != null && Object.keys(req.body).length
+        ? JSON.stringify(req.body)
+        : hasBody
+          ? (req as any).rawBody
+          : undefined
+
+    const r = await fetch(upstreamUrl, {
+      method: req.method,
+      headers,
+      body: hasBody ? body : undefined,
+    })
+
+    // Copy status + headers
+    res.status(r.status)
+    r.headers.forEach((value, key) => {
+      // Express will manage these; skip to avoid conflicts.
+      if (key.toLowerCase() === 'transfer-encoding') return
+      res.setHeader(key, value)
+    })
+
+    // Ensure x402 headers are exposed to the browser
+    res.setHeader(
+      'Access-Control-Expose-Headers',
+      mergeExpose(String(r.headers.get('access-control-expose-headers') || ''), X402_EXPOSE),
+    )
+    res.setHeader('Access-Control-Allow-Origin', '*')
+
+    const buf = Buffer.from(await r.arrayBuffer())
+    res.send(buf)
+  } catch (e: any) {
+    res.status(502).json({ success: false, error: e?.message ?? 'Syra proxy failed' })
+  }
+})
+
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!

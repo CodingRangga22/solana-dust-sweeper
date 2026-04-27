@@ -69,7 +69,7 @@ const sections = [
     ],
     links: [
       { label: "Telegram Community", href: "https://t.me/arsweepalert" },
-      { label: "Follow on X", href: "https://x.com/Arsweep_AI" },
+      { label: "Follow on X", href: "https://x.com/Arsweep_Agent" },
     ],
   },
 ];

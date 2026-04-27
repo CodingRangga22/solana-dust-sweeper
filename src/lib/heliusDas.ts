@@ -3,7 +3,7 @@ import type { TokenMetadata } from "@/lib/tokenAccounts";
 
 const cache = new Map<string, TokenMetadata>();
 
-function heliusRpcUrl(): string | null {
+export function heliusRpcUrl(): string | null {
   const apiKey =
     import.meta.env.VITE_HELIUS_API_KEY ??
     import.meta.env.VITE_HELIUS_RPC_URL?.split("api-key=")[1] ??
@@ -11,6 +11,35 @@ function heliusRpcUrl(): string | null {
   if (!apiKey) return null;
   const heliusCluster = NETWORK === "devnet" ? "devnet" : "mainnet";
   return `https://${heliusCluster}.helius-rpc.com/?api-key=${apiKey}`;
+}
+
+export type HeliusAsset = {
+  id?: string;
+  mutable?: boolean;
+  authorities?: Array<{ address?: string; scopes?: string[] }>;
+  ownership?: { owner?: string };
+  content?: { metadata?: { name?: string; symbol?: string } };
+};
+
+export async function fetchHeliusAsset(mint: string): Promise<HeliusAsset | null> {
+  const url = heliusRpcUrl();
+  if (!url) return null;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "1",
+        method: "getAsset",
+        params: { id: mint },
+      }),
+    });
+    const json = await res.json();
+    return (json?.result ?? null) as HeliusAsset | null;
+  } catch {
+    return null;
+  }
 }
 
 function fallbackMeta(mint: string): TokenMetadata {
@@ -33,18 +62,7 @@ export async function fetchHeliusTokenMetadata(mint: string): Promise<TokenMetad
   }
 
   try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: "1",
-        method: "getAsset",
-        params: { id: mint },
-      }),
-    });
-    const json = await res.json();
-    const result = json?.result;
+    const result = await fetchHeliusAsset(mint);
     const metadata = result?.content?.metadata;
     const links = result?.content?.links;
     const meta: TokenMetadata = {

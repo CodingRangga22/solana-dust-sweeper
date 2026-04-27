@@ -86,8 +86,6 @@ interface TokenListProps {
   tokenModes?: Record<string, TokenMode>;
   onToggleMode?: (id: string) => void;
   swapQuotes?: Record<string, number>;
-  syraRisks?: Record<string, { level: "safe" | "caution" | "high" | "unknown"; reason: string }>;
-  syraLoadingMints?: Set<string>;
   analyticsSlot?: React.ReactNode;
 }
 
@@ -102,8 +100,6 @@ const TokenList = ({
   tokenModes = {},
   onToggleMode,
   swapQuotes = {},
-  syraRisks = {},
-  syraLoadingMints = new Set(),
   analyticsSlot,
 }: TokenListProps) => {
   const sweepableCount = tokenAccounts.filter((a) => a.isSweepable).length;
@@ -178,18 +174,6 @@ const TokenList = ({
                     const selected = account.isSweepable && selectedIds.has(id);
                     const { name, symbol, logoURI } = account.metadata;
                     const rug = account.rugcheck;
-                    const syra = syraRisks[mintStr];
-                    const syraLoading = syraLoadingMints.has(mintStr);
-                    const syraBadge =
-                      syra?.level === "high"
-                        ? { label: "Syra: High Risk", cls: "bg-red-500/20 text-red-300" }
-                        : syra?.level === "caution"
-                          ? { label: "Syra: Caution", cls: "bg-yellow-500/20 text-yellow-300" }
-                          : syra?.level === "safe"
-                            ? { label: "Syra: OK", cls: "bg-emerald-500/15 text-emerald-300" }
-                            : syraLoading
-                              ? { label: "Syra: Checking…", cls: "bg-muted text-muted-foreground" }
-                              : null;
                     const rugBadge =
                       rug?.level === "danger"
                         ? { label: "RugCheck: Danger", cls: "bg-red-500/20 text-red-300" }
@@ -309,15 +293,6 @@ const TokenList = ({
                                   {rugBadge.label}
                                 </span>
                               )}
-                              {syraBadge && (
-                                <span
-                                  className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 font-medium ${syraBadge.cls}`}
-                                  title={syra?.reason || "Syra risk"}
-                                >
-                                  <ShieldAlert className="w-3 h-3" />
-                                  {syraBadge.label}
-                                </span>
-                              )}
                               {account.hasValueWarning && (
                                 <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center gap-1 font-medium">
                                   <AlertTriangle className="w-3 h-3" />
@@ -355,8 +330,7 @@ const TokenList = ({
                                 mode={tokenModes[account.pubkey.toBase58()] ?? "close"}
                                 onToggle={() => onToggleMode(account.pubkey.toBase58())}
                                 hasLiquidity={account.hasLiquidityPool}
-                                disabled={disabled || syra?.level === "high"}
-                                disabledReason={syra?.level === "high" ? "High risk token — swap disabled" : undefined}
+                                disabled={disabled}
                                 estimatedSol={swapQuotes[account.pubkey.toBase58()]}
                               />
                             )}

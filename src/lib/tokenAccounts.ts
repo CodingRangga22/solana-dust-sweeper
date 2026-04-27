@@ -97,9 +97,13 @@ function computeTotalUsdCents(
 
 // ── Jupiter Quote API (liquidity check) ──────────────────────────────
 const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+const SOL_MINT = "So11111111111111111111111111111111111111112";
 
 async function checkHasLiquidity(mint: string, decimals: number): Promise<boolean> {
   try {
+    // If input and output are identical, Jupiter returns 400; treat as "liquid enough" for our purposes.
+    if (mint === SOL_MINT || mint === USDC_MINT) return true;
+
     // Jupiter "amount" is in input-mint base units, so we must respect decimals.
     const oneTokenBaseUnits = pow10BigInt(Math.max(0, decimals));
 
@@ -112,7 +116,7 @@ async function checkHasLiquidity(mint: string, decimals: number): Promise<boolea
 
     for (const amt of attempts) {
       const res = await fetch(
-        `https://api.jup.ag/swap/v1/quote?inputMint=${mint}&outputMint=${USDC_MINT}&amount=${amt.toString()}&slippageBps=5000`,
+        `https://api.jup.ag/swap/v1/quote?inputMint=${mint}&outputMint=${SOL_MINT}&amount=${amt.toString()}&slippageBps=5000`,
         { headers: jupiterHeaders() }
       );
       const json = await res.json();
